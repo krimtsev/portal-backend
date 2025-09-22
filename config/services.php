@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'google' => [
+        'credentials' => storage_path('config/google/credentials.json'),
+        'certificate' => storage_path('config/google/certificate.json'),
+    ],
+
 ];

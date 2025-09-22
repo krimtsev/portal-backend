@@ -12,7 +12,7 @@ class Partner extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $table = "partners";
+    protected $table = 'partners';
 
     /**
      * The attributes that should be cast.
@@ -24,16 +24,16 @@ class Partner extends Model
     ];
 
     protected $fillable = [
-        "organization",
-        "inn",
-        "name",
-        "contract_number",
-        "email",
-        "telnums",
-        "address",
-        "start_at",
-        "yclients_id",
-        "disabled"
+        'organization',
+        'inn',
+        'name',
+        'contract_number',
+        'email',
+        'telnums',
+        'address',
+        'start_at',
+        'yclients_id',
+        'disabled'
     ];
 
     public function user(): BelongsTo

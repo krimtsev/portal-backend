@@ -13,6 +13,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->statefulApi();
+        $middleware->alias([
+            'query.token' => \App\Http\Middleware\TokenAuth::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
