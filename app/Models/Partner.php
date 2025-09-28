@@ -40,4 +40,24 @@ class Partner extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    /**
+     * Получение активных партнеров с выборкой динамических полей
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param array $fields - какие поля вернуть
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeActiveWhere($query, array $fields = ['id','name'])
+    {
+        $query->where('disabled', 0);
+
+        $selectFields = array_filter(
+            $fields,
+            fn($field) => in_array($field, $this->fillable) || $field === 'id'
+        );
+
+        return $query->select($selectFields);
+    }
 }
+

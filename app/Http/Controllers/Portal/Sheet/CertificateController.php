@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Sheet;
+namespace App\Http\Controllers\Portal\Sheet;
 
 use App\Helpers\Pagination\Pagination;
 use App\Http\Controllers\Controller;
