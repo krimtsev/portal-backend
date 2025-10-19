@@ -39,6 +39,13 @@ class JsonResponse
         ], Response::HTTP_BAD_REQUEST);
     }
 
+    static function FileNotFound(string $message = null): \Illuminate\Http\JsonResponse
+    {
+        return response()->json([
+            'message' => $message ?? 'File not found'
+        ], Response::HTTP_NOT_FOUND);
+    }
+
     static function UserNotFound(): \Illuminate\Http\JsonResponse
     {
         return response()->json([

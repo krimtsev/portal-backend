@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Responses\JsonResponse;
-use App\Models\Partner;
+use App\Models\Partner\Partner;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
@@ -34,7 +34,7 @@ class AuthController extends Controller
             return JsonResponse::UserNotFound();
         }
 
-        $partner = Partner::select("id", "name", "disabled")
+        $partner = Partner::select('id', 'name', 'disabled')
             ->where('id', $user->partner_id)
             ->first();
 

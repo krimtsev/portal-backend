@@ -6,7 +6,7 @@ namespace App\Http\Controllers\Portal\Contacts;
 use App\Helpers\Pagination\Pagination;
 use App\Http\Controllers\Controller;
 use App\Http\Responses\JsonResponse;
-use App\Models\Partner;
+use App\Models\Partner\Partner;
 use Illuminate\Http\Request;
 
 class FranchiseeController extends Controller
@@ -16,7 +16,7 @@ class FranchiseeController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function __invoke(Request $request): \Illuminate\Http\JsonResponse
+    public function list(Request $request): \Illuminate\Http\JsonResponse
     {
         $query = Partner::activeWhere(['id', 'name', 'telnums']);
 

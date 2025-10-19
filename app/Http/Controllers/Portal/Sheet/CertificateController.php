@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Portal\Sheet;
 use App\Helpers\Pagination\Pagination;
 use App\Http\Controllers\Controller;
 use App\Http\Responses\JsonResponse;
-use App\Models\Certificate;
+use App\Models\Certificate\Certificate;
 use Illuminate\Http\Request;
 
 class CertificateController extends Controller

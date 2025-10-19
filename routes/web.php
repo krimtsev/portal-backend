@@ -6,11 +6,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-/*Route::prefix('debug')->group(function () {
+/**
+Route::prefix('debug')->group(function () {
     Route::get('/certificates/update',
-        [App\Http\Controllers\Sheet\CertificateController::class, 'update']
+        [App\Http\Tasks\Sheet\UpdateCertificatesTask::class, 'update']
     );
     Route::get('/certificates/duplicates',
-        [App\Http\Controllers\Sheet\CertificateController::class, 'duplicateRows']
+        [App\Http\Tasks\Sheet\UpdateCertificatesTask::class, 'duplicateRows']
     );
-});*/
+});
+*/

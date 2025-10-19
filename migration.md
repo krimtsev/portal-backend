@@ -120,3 +120,55 @@ FROM
 
 COMMIT;
 SET FOREIGN_KEY_CHECKS=1;
+
+
+# Cloud
+SET FOREIGN_KEY_CHECKS=0;
+START TRANSACTION;
+
+INSERT INTO `cloud_folders` (
+    `id`,
+    `name`,
+    `slug`,
+    `folder`,
+    `category_id`,
+    `created_at`
+)
+SELECT
+    `id`,
+    `name`,
+    `slug`,
+    `folder`,
+    `category_id`,
+    `created_at`
+FROM
+    `_upload`;
+
+INSERT INTO `cloud_files` (
+    `id`,
+    `title`,
+    `name`,
+    `origin`,
+    `path`,
+    `type`,
+    `ext`,
+    `downloads`,
+    `upload_id`,
+    `created_at`
+)
+SELECT
+    `id`,
+    `title`,
+    `name`,
+    `origin`,
+    `path`,
+    `type`,
+    `ext`,
+    `downloads`,
+    `upload_id`,
+    `created_at`
+FROM
+    `_upload_files`;
+
+COMMIT;
+SET FOREIGN_KEY_CHECKS=1;

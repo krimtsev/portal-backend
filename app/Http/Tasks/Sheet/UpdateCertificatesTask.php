@@ -3,7 +3,7 @@
 namespace App\Http\Tasks\Sheet;
 
 use App\Http\Services\Google\GoogleSheetService;
-use App\Models\Certificate;
+use App\Models\Certificate\Certificate;
 use Illuminate\Support\Str;
 
 class UpdateCertificatesTask
