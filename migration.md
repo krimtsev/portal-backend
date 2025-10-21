@@ -1,4 +1,5 @@
 # DELETE ALL
+``` sql
 SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE cache;
 DROP TABLE cache_locks;
@@ -14,8 +15,10 @@ DROP TABLE sessions;
 DROP TABLE users;
 DROP TABLE users_access_rights;
 SET FOREIGN_KEY_CHECKS=1;
+```
 
 # Users
+``` sql
 SET FOREIGN_KEY_CHECKS=0;
 START TRANSACTION;
 
@@ -59,8 +62,10 @@ FROM
 
 COMMIT;
 SET FOREIGN_KEY_CHECKS=1;
+```
 
 # Partners
+``` sql
 SET FOREIGN_KEY_CHECKS=0;
 START TRANSACTION;
 
@@ -72,7 +77,6 @@ INSERT INTO `partners` (
     `name`,
     `contract_number`,
     `email`,
-    `telnums`,
     `yclients_id`,
     `mango_telnum`,
     `address`,
@@ -87,7 +91,6 @@ SELECT
     `name`,
     `contract_number`,
     `email`,
-    `telnums`,
     `yclients_id`,
     `mango_telnum`,
     `address`,
@@ -120,9 +123,10 @@ FROM
 
 COMMIT;
 SET FOREIGN_KEY_CHECKS=1;
-
+```
 
 # Cloud
+``` sql
 SET FOREIGN_KEY_CHECKS=0;
 START TRANSACTION;
 
@@ -172,3 +176,26 @@ FROM
 
 COMMIT;
 SET FOREIGN_KEY_CHECKS=1;
+```
+
+# Перекладываем номера отдельно в базу партнеров 
+``` sql
+INSERT INTO partner_telnums (partner_id, name, number, created_at, updated_at)
+SELECT
+    p.id AS partner_id,
+    jt.name,
+    jt.number,
+    NOW() AS created_at,
+    NOW() AS updated_at
+FROM partners p
+CROSS JOIN JSON_TABLE(
+    p.telnums,
+    '$[*]' COLUMNS (
+        name   VARCHAR(255) PATH '$.name',
+        number VARCHAR(50)  PATH '$.number'
+    )
+) AS jt
+WHERE p.telnums IS NOT NULL
+    AND jt.number IS NOT NULL
+    AND jt.number <> '';
+```

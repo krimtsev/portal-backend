@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('name');
             $table->string('contract_number', 50)->nullable();
             $table->string('email')->nullable();
-            $table->json('telnums')->nullable();
             $table->string('yclients_id')->nullable();
             $table->string('mango_telnum')->nullable();
             $table->string('address')->nullable();

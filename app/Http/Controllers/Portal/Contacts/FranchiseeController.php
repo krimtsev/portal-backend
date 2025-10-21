@@ -18,12 +18,13 @@ class FranchiseeController extends Controller
      */
     public function list(Request $request): \Illuminate\Http\JsonResponse
     {
-        $query = Partner::activeWhere(['id', 'name', 'telnums']);
+        $query = Partner::with('telnums')
+                    ->activeWhere(['id', 'name']);
 
         return JsonResponse::Send(Pagination::paginate(
             $query,
             $request,
-            ['name'],
+            ['name', 'telnums.number', 'telnums.name'],
             ['id']
         ));
     }

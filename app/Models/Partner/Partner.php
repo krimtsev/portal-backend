@@ -3,24 +3,20 @@
 namespace App\Models\Partner;
 
 use App\Models\User\User;
+use App\Models\Partner\PartnerTelnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Partner extends Model
 {
-    use HasFactory;
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'partners';
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array
-     */
-    protected $casts = [
+     protected $casts = [
         'pay_end' => 'datetime:Y-m-d H:i:s',
     ];
 
@@ -30,12 +26,16 @@ class Partner extends Model
         'name',
         'contract_number',
         'email',
-        'telnums',
         'address',
         'start_at',
         'yclients_id',
         'disabled'
     ];
+
+    public function telnums(): HasMany
+    {
+        return $this->hasMany(PartnerTelnum::class, 'partner_id');
+    }
 
     public function user(): BelongsTo
     {
