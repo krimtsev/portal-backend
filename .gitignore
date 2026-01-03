@@ -20,6 +20,7 @@
 /storage/pail
 /storage/config
 /storage/cloud
+/storage/tickets
 /vendor
 Homestead.json
 Homestead.yaml

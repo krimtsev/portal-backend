@@ -2,13 +2,11 @@
 
 namespace App\Models\Partner;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PartnerTelnum extends Model
 {
-    use HasFactory;
-
     protected $table = 'partner_telnums';
 
     protected $fillable = [
@@ -17,7 +15,7 @@ class PartnerTelnum extends Model
         'number',
     ];
 
-    public function partner()
+    public function partner(): BelongsTo
     {
         return $this->belongsTo(Partner::class);
     }

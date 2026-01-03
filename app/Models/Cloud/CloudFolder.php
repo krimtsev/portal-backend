@@ -3,12 +3,14 @@
 namespace App\Models\Cloud;
 
 use App\Models\Cloud\Traits\HasBreadcrumbs;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Builder;
 
 class CloudFolder extends Model
 {
-    use HasFactory, HasBreadcrumbs;
+    use HasBreadcrumbs;
 
     protected $table = 'cloud_folders';
 
@@ -28,7 +30,7 @@ class CloudFolder extends Model
     /**
      * Дочерние папки
      */
-    public function children(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function children(): HasMany
     {
         return $this->hasMany(CloudFolder::class, 'category_id');
     }
@@ -36,14 +38,14 @@ class CloudFolder extends Model
     /**
      * Родительская папка
      */
-    public function parent(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function parent(): BelongsTo
     {
         return $this->belongsTo(CloudFolder::class, 'category_id');
     }
 
 
     // Рекурсивная загрузка всех детей
-    public function allChildrenRecursive()
+    public function allChildrenRecursive(): Builder|HasMany
     {
         return $this->children()->with('allChildrenRecursive');
     }

@@ -2,13 +2,10 @@
 
 namespace App\Models\Cloud;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class CloudFile extends Model
 {
-    use HasFactory;
-
     protected $table = 'cloud_files';
 
     protected $fillable = [
@@ -26,7 +23,8 @@ class CloudFile extends Model
         'created_at'  => 'date:Y-m-d',
     ];
 
-/*    public function folders(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    /*
+    public function folders(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(CloudFolder::class, 'id', 'cloud_folders_id');
     }
@@ -34,5 +32,6 @@ class CloudFile extends Model
     public function folder(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(CloudFolder::class, 'id', 'cloud_folders_id');
-    }*/
+    }
+    */
 }

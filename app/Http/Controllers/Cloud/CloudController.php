@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Portal\Cloud;
+namespace App\Http\Controllers\Cloud;
 
 
+use App\Helpers\Cache\Cache;
 use App\Http\Controllers\Controller;
 use App\Http\Responses\JsonResponse;
 use App\Models\Cloud\CloudFile;
 use App\Models\Cloud\CloudFolder;
 use Illuminate\Http\Request;
-use App\Helpers\Cache\Cache;
 
 class CloudController extends Controller
 {

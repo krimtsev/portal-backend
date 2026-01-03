@@ -11,13 +11,16 @@ class Pagination
         Request $request,
         array $searchColumns = [],
         array $sortable = [],
+        array $filterable = [],
     ): array
     {
-        $sortBy    = $request->query('sortBy', $sortable[0] ?? 'id');
-        $sortOrder = $request->query('sortOrder', 'asc');
-        $perPage   = (int) $request->query('perPage', 50);
-        $search    = $request->query('search');
-        $page      = (int) $request->query('page', 1);
+        $sortBy    = $request->input('sortBy', $sortable[0] ?? 'id');
+        $sortOrder = $request->input('sortOrder', 'asc');
+        $perPage   = (int) $request->input('perPage', 50);
+        $search    = $request->input('search');
+        $page      = (int) $request->input('page', 1);
+        $filters = $request->input('filters', []);
+        \Log::debug($filters);
 
         // Поиск
         if (!empty($search) && !empty($searchColumns)) {
@@ -34,6 +37,24 @@ class Pagination
                     }
                 }
             });
+        }
+
+        // Фильтры
+        if (!empty($filters) && is_array($filters)) {
+            foreach ($filters as $column => $value) {
+                if ($value === null || $value === '') continue;
+                if (!in_array($column, $filterable)) continue;
+
+                if (is_array($value)) {
+                    $query->where(function($q) use ($column, $value) {
+                        foreach ($value as $v) {
+                            $q->orWhere($column, $v);
+                        }
+                    });
+                } else {
+                    $query->where($column, $value);
+                }
+            }
         }
 
         // Сортировка

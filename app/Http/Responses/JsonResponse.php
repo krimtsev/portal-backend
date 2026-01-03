@@ -22,6 +22,13 @@ class JsonResponse
         return response()->json($content, $code);
     }
 
+    static function Created(): \Illuminate\Http\JsonResponse
+    {
+        return response()->json([
+            'message' => 'Created'
+        ], Response::HTTP_CREATED);
+    }
+
     /**
      * Методы для отправки ошибок
      */
@@ -32,24 +39,34 @@ class JsonResponse
         ], Response::HTTP_FORBIDDEN);
     }
 
-    static function BadRequest(): \Illuminate\Http\JsonResponse
+    static function BadRequest(?array $data): \Illuminate\Http\JsonResponse
     {
-        return response()->json([
-            'message' => 'Bad Request'
-        ], Response::HTTP_BAD_REQUEST);
+        $content = [
+            'message' => 'Bad Request',
+            'data' => array_merge([], $data)
+        ];
+
+        return response()->json($content, Response::HTTP_BAD_REQUEST);
     }
 
-    static function FileNotFound(string $message = null): \Illuminate\Http\JsonResponse
+    static function FileNotFound(string $message = 'File not found'): \Illuminate\Http\JsonResponse
     {
         return response()->json([
-            'message' => $message ?? 'File not found'
+            'message' => $message
         ], Response::HTTP_NOT_FOUND);
     }
 
-    static function UserNotFound(): \Illuminate\Http\JsonResponse
+    static function UserNotFound(string $message = 'User Not Found'): \Illuminate\Http\JsonResponse
     {
         return response()->json([
-            'message' => 'User Not Found'
+            'message' => $message
         ], Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    static function InvalidCredentials(): \Illuminate\Http\JsonResponse
+    {
+        return response()->json([
+            'message' => 'Invalid credentials'
+        ], Response::HTTP_UNAUTHORIZED);
     }
 }

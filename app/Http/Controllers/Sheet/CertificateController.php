@@ -1,30 +1,32 @@
 <?php
 
-
-namespace App\Http\Controllers\Portal\Contacts;
+namespace App\Http\Controllers\Sheet;
 
 use App\Helpers\Pagination\Pagination;
 use App\Http\Controllers\Controller;
 use App\Http\Responses\JsonResponse;
-use App\Models\Partner\Partner;
+use App\Models\Certificate\Certificate;
 use Illuminate\Http\Request;
 
-class FranchiseeController extends Controller
+class CertificateController extends Controller
 {
     /**
-     * Получить список контактов
+     * Получить список сертификатов
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function list(Request $request): \Illuminate\Http\JsonResponse
     {
-        $query = Partner::with('telnums')
-                    ->activeWhere(['id', 'name']);
+        $query = Certificate::select(
+            "price",
+            "identifier",
+            "partner",
+        );
 
         return JsonResponse::Send(Pagination::paginate(
             $query,
             $request,
-            ['name', 'telnums.number', 'telnums.name'],
+            ['identifier', 'partner'],
             ['id']
         ));
     }

@@ -4,19 +4,19 @@ namespace App\Models\Partner;
 
 use App\Models\User\User;
 use App\Models\Partner\PartnerTelnum;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Partner extends Model
 {
-    use HasFactory, SoftDeletes;
+    use SoftDeletes;
 
     protected $table = 'partners';
 
-     protected $casts = [
+    protected $casts = [
         'pay_end' => 'datetime:Y-m-d H:i:s',
     ];
 
@@ -29,7 +29,8 @@ class Partner extends Model
         'address',
         'start_at',
         'yclients_id',
-        'disabled'
+        'disabled',
+        'group_id'
     ];
 
     public function telnums(): HasMany
@@ -45,11 +46,11 @@ class Partner extends Model
     /**
      * Получение активных партнеров с выборкой динамических полей
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param Builder $query
      * @param array $fields - какие поля вернуть
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return Builder
      */
-    public function scopeActiveWhere($query, array $fields = ['id','name'])
+    public function scopeActiveWhere($query, array $fields = ['id', 'name']): Builder
     {
         $query->where('disabled', 0);
 
@@ -60,5 +61,9 @@ class Partner extends Model
 
         return $query->select($selectFields);
     }
-}
 
+    public function group(): BelongsTo
+    {
+        return $this->belongsTo(PartnerGroup::class, 'group_id');
+    }
+}

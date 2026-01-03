@@ -14,6 +14,10 @@ DROP TABLE posts;
 DROP TABLE sessions;
 DROP TABLE users;
 DROP TABLE users_access_rights;
+DROP TABLE tickets_categories;
+DROP TABLE tickets;
+DROP TABLE tickets_files;
+DROP TABLE tickets_messages;
 SET FOREIGN_KEY_CHECKS=1;
 ```
 
@@ -198,4 +202,64 @@ CROSS JOIN JSON_TABLE(
 WHERE p.telnums IS NOT NULL
     AND jt.number IS NOT NULL
     AND jt.number <> '';
+```
+
+# Partner groups
+``` sql
+SET FOREIGN_KEY_CHECKS=0;
+START TRANSACTION;
+
+INSERT INTO partner_groups (title, created_at, updated_at)
+SELECT MIN(name) AS group_title, NOW(), NOW()
+FROM _partners
+WHERE tg_chat_id IS NOT NULL
+GROUP BY tg_chat_id
+HAVING COUNT(*) > 1;
+
+UPDATE partners p
+JOIN (
+    SELECT tg_chat_id, MIN(name) AS first_name
+    FROM _partners
+    WHERE tg_chat_id IS NOT NULL
+    GROUP BY tg_chat_id
+    HAVING COUNT(*) > 1
+) g
+JOIN partner_groups pg 
+    ON pg.title = g.first_name COLLATE utf8mb4_unicode_ci
+JOIN _partners src
+    ON src.name COLLATE utf8mb4_unicode_ci = pg.title
+SET p.group_id = pg.id
+WHERE p.name COLLATE utf8mb4_unicode_ci = src.name;
+
+COMMIT;
+SET FOREIGN_KEY_CHECKS=1;
+```
+
+# Tickets
+``` sql
+SET FOREIGN_KEY_CHECKS=0;
+START TRANSACTION;
+
+INSERT INTO `tickets_categories` (
+    `id`,
+    `title`
+)
+SELECT
+    `id`,
+    `title`
+FROM
+    `_tickets_categories`;
+
+UPDATE tickets_categories SET slug = 'franchise'         WHERE id = 1;
+UPDATE tickets_categories SET slug = 'build'             WHERE id = 2;
+UPDATE tickets_categories SET slug = 'marketing'         WHERE id = 3;
+UPDATE tickets_categories SET slug = 'network_admin'     WHERE id = 4;
+UPDATE tickets_categories SET slug = 'network_barbering' WHERE id = 5;
+UPDATE tickets_categories SET slug = 'community'         WHERE id = 6;
+UPDATE tickets_categories SET slug = 'office_manager'    WHERE id = 7;
+UPDATE tickets_categories SET slug = 'it_department'     WHERE id = 8;
+UPDATE tickets_categories SET slug = 'accounting'        WHERE id = 9;
+
+COMMIT;
+SET FOREIGN_KEY_CHECKS=1;
 ```

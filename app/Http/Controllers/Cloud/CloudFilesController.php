@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Portal\Cloud;
+namespace App\Http\Controllers\Cloud;
 
 use App\Http\Controllers\Controller;
 use App\Http\Responses\JsonResponse;
@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class CloudDownloadController extends Controller
+class CloudFilesController extends Controller
 {
     public function download(Request $request): \Illuminate\Http\JsonResponse|StreamedResponse
     {

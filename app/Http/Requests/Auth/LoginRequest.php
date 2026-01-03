@@ -50,6 +50,10 @@ class LoginRequest extends FormRequest
         }
 
         RateLimiter::clear($this->throttleKey());
+
+        if ($this->boolean('remember')) {
+            config(['session.lifetime' => config('session.remember_lifetime')]);
+        }
     }
 
     /**
