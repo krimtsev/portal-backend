@@ -24,8 +24,9 @@ class PartnerController extends Controller
             ]);
         }
 
-        $partner = Partner::with('group.partners')
-            ->findOrFail($partnerId);
+        $partner = Partner::with(['group.partners' => function ($query) {
+            $query->orderBy('name');
+        }])->findOrFail($partnerId);
 
         if ($partner->group) {
             $partners = $partner->group->partners->map(function ($partner) {

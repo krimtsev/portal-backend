@@ -8,6 +8,7 @@ use App\Http\Requests\Ticket\TicketsCreateRequest;
 use App\Http\Requests\Ticket\TicketsUpdateRequest;
 use App\Http\Resources\Ticket\TicketListResource;
 use App\Http\Resources\Ticket\TicketResource;
+use App\Models\Partner\Partner;
 use App\Models\Ticket\TicketMessage;
 use Illuminate\Http\Request;
 use App\Http\Responses\JsonResponse;
@@ -19,6 +20,24 @@ class TicketsController extends Controller
 {
     public function list(Request $request): \Illuminate\Http\JsonResponse
     {
+        $user = $request->user();
+        $partnerId = $user->partner_id;
+
+        if (!$partnerId) {
+            return JsonResponse::Send([
+                'partner_id' => null,
+                'partners' => []
+            ]);
+        }
+
+        $partner = Partner::with('group.partners')->findOrFail($partnerId);
+
+        if ($partner->group) {
+            $accessiblePartnerIds = $partner->group->partners->pluck('id');
+        } else {
+            $accessiblePartnerIds = collect([$partner->id]);
+        }
+
         $query = Ticket::with([
             'category:id,title',
             'partner:id,name',
@@ -30,7 +49,7 @@ class TicketsController extends Controller
             'partner_id',
             'user_id',
             'state',
-        );
+        )->whereIn('partner_id', $accessiblePartnerIds);
 
         $result = Pagination::paginate(
             $query,

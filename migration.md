@@ -26,6 +26,8 @@ SET FOREIGN_KEY_CHECKS=1;
 SET FOREIGN_KEY_CHECKS=0;
 START TRANSACTION;
 
+UPDATE `_users` SET email = NULL WHERE email = '';
+
 INSERT INTO `users` (
     `login`,
     `name`,
@@ -55,14 +57,6 @@ FROM
 UPDATE users SET role = 'user' WHERE role = '1';
 UPDATE users SET role = 'sysadmin' WHERE role = '2';
 UPDATE users SET role = 'admin' WHERE role = '3';
-
-INSERT INTO `users_access_rights` (
-    `user_id`
-)
-SELECT
-    `id` as `user_id`
-FROM
-    `_users`;
 
 COMMIT;
 SET FOREIGN_KEY_CHECKS=1;
@@ -103,28 +97,6 @@ SELECT
 FROM
     `_partners`;
 
-INSERT INTO `partner_reports_settings` (
-    `id`,
-    `partner_id`,
-    `tg_active`,
-    `tg_chat_id`,
-    `pay_end`,
-    `lost_client_days`,
-    `repeat_client_days`,
-    `new_client_days`
-)
-SELECT
-    `id`,
-    `id` as `partner_id`,
-    `tg_active`,
-    `tg_chat_id`,
-    `tg_pay_end` as `pay_end`,
-    `lost_client_days`,
-    `repeat_client_days`,
-    `new_client_days`
-FROM
-    `_partners`;
-
 COMMIT;
 SET FOREIGN_KEY_CHECKS=1;
 ```
@@ -133,6 +105,9 @@ SET FOREIGN_KEY_CHECKS=1;
 ``` sql
 SET FOREIGN_KEY_CHECKS=0;
 START TRANSACTION;
+
+TRUNCATE TABLE cloud_files;
+TRUNCATE TABLE cloud_folders;
 
 INSERT INTO `cloud_folders` (
     `id`,
@@ -161,7 +136,7 @@ INSERT INTO `cloud_files` (
     `type`,
     `ext`,
     `downloads`,
-    `upload_id`,
+    `cloud_folders_id`,
     `created_at`
 )
 SELECT
@@ -173,7 +148,7 @@ SELECT
     `type`,
     `ext`,
     `downloads`,
-    `upload_id`,
+    `upload_id` as `cloud_folders_id`,
     `created_at`
 FROM
     `_upload_files`;
@@ -191,7 +166,7 @@ SELECT
     jt.number,
     NOW() AS created_at,
     NOW() AS updated_at
-FROM partners p
+FROM _partners p
 CROSS JOIN JSON_TABLE(
     p.telnums,
     '$[*]' COLUMNS (
@@ -209,14 +184,21 @@ WHERE p.telnums IS NOT NULL
 SET FOREIGN_KEY_CHECKS=0;
 START TRANSACTION;
 
+TRUNCATE TABLE partner_groups;
+
 INSERT INTO partner_groups (title, created_at, updated_at)
-SELECT MIN(name) AS group_title, NOW(), NOW()
+SELECT 
+    MIN(name) AS group_title, 
+    NOW(), 
+    NOW()
 FROM _partners
 WHERE tg_chat_id IS NOT NULL
 GROUP BY tg_chat_id
 HAVING COUNT(*) > 1;
 
 UPDATE partners p
+JOIN _partners src
+    ON src.name COLLATE utf8mb4_unicode_ci = p.name COLLATE utf8mb4_unicode_ci
 JOIN (
     SELECT tg_chat_id, MIN(name) AS first_name
     FROM _partners
@@ -224,12 +206,16 @@ JOIN (
     GROUP BY tg_chat_id
     HAVING COUNT(*) > 1
 ) g
-JOIN partner_groups pg 
-    ON pg.title = g.first_name COLLATE utf8mb4_unicode_ci
-JOIN _partners src
-    ON src.name COLLATE utf8mb4_unicode_ci = pg.title
+    ON g.tg_chat_id = src.tg_chat_id
+JOIN partner_groups pg
+    ON pg.title COLLATE utf8mb4_unicode_ci = g.first_name COLLATE utf8mb4_unicode_ci
 SET p.group_id = pg.id
-WHERE p.name COLLATE utf8mb4_unicode_ci = src.name;
+WHERE src.tg_chat_id IN (
+    SELECT tg_chat_id
+    FROM _partners
+    GROUP BY tg_chat_id
+    HAVING COUNT(*) > 1
+);
 
 COMMIT;
 SET FOREIGN_KEY_CHECKS=1;
