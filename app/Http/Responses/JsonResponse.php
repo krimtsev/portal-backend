@@ -32,10 +32,10 @@ class JsonResponse
     /**
      * Методы для отправки ошибок
      */
-    static function Forbidden(): \Illuminate\Http\JsonResponse
+    static function Forbidden(string $message = 'Forbidden'): \Illuminate\Http\JsonResponse
     {
         return response()->json([
-            'message' => 'Forbidden'
+            'message' => $message
         ], Response::HTTP_FORBIDDEN);
     }
 

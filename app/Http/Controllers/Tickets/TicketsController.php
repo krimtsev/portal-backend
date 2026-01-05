@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Tickets;
 use App\Enums\Ticket\TicketState;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Ticket\TicketsCreateRequest;
+use App\Http\Requests\Ticket\TicketsUpdateRequest;
+use App\Http\Resources\Ticket\TicketListResource;
 use App\Http\Resources\Ticket\TicketResource;
 use App\Models\Ticket\TicketMessage;
 use Illuminate\Http\Request;
@@ -38,9 +40,25 @@ class TicketsController extends Controller
             ['category_id', 'partner_id'],
         );
 
-        $result['list'] = TicketResource::collection($result['list']);
+        $result['list'] = TicketListResource::collection($result['list']);
 
         return JsonResponse::Send($result);
+    }
+
+    public function get(Request $request, int $id): \Illuminate\Http\JsonResponse
+    {
+        $ticket = Ticket::with([
+            'category:id,title',
+            'partner:id,name',
+            'user:id,name,login',
+            'messages.user:id,name,login',
+            'messages.files',
+            'events.user:id,name,login',
+        ])->findOrFail($id);
+
+        return JsonResponse::Send([
+            'data' => new TicketResource($ticket),
+        ]);
     }
 
     public function create(TicketsCreateRequest $request): \Illuminate\Http\JsonResponse
@@ -77,28 +95,83 @@ class TicketsController extends Controller
         return JsonResponse::Created();
     }
 
-    public function get(Request $request, int $id): \Illuminate\Http\JsonResponse
+    private function canEdit(Ticket $ticket): bool
     {
-        $result = Ticket::with([
-            'category:id,title',
-            'partner:id,name',
-            'user:id,name'
-        ])->select(
-            'id',
-            'title',
-            'category_id',
-            'partner_id',
-            'user_id',
-            'state',
-        )->findOrFail($id);
-
-        return JsonResponse::Send([
-            'data' => (new TicketResource($result))
+        return !in_array($ticket->state, [
+            TicketState::Success->value,
+            TicketState::Closed->value,
+            TicketState::Cancel->value,
         ]);
     }
 
-    public function update(Request $request)
+    public function update(Request $request, Ticket $ticket): \Illuminate\Http\JsonResponse
     {
-        return $request;
+        if (!$this->canEdit($ticket)) {
+            return JsonResponse::Forbidden('This ticket cannot be edited.');
+        }
+
+        $updatableFields = ['title', 'state', 'category_id', 'partner_id'];
+        $changesRequest = new Request();
+
+        foreach ($updatableFields as $field) {
+            if ($request->has($field) && $ticket->$field !== $request->input($field)) {
+                $changesRequest->merge([$field => $request->input($field)]);
+                $ticket->$field = $request->input($field);
+            }
+        }
+
+        // Фиксируем изменения в событиях
+        $eventsController = new TicketsEventsController();
+        $eventsController->create($ticket, $changesRequest);
+
+        $ticket->save();
+
+        return JsonResponse::Send([
+            'ticket_id' => $ticket->id,
+            'message'   => 'Ticket updated successfully.',
+        ]);
+    }
+
+    public function updateMessage(TicketsUpdateRequest $request, Ticket $ticket): \Illuminate\Http\JsonResponse
+    {
+        if (!$this->canEdit($ticket)) {
+            return JsonResponse::Forbidden('This ticket cannot be edited.');
+        }
+
+        $data = $request->validated();
+
+        $ticketMessage = TicketMessage::create([
+            'ticket_id' => $ticket->id,
+            'user_id'   => Auth::id(),
+            'text'      => $data['message'],
+        ]);
+
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                TicketsFilesController::add($ticket->id, $ticketMessage->id, $file);
+            }
+        }
+
+        $ticketsController = new TicketsController();
+        return $ticketsController->get(new Request(), $ticket->id);
+    }
+
+    public function remove(Ticket $ticket): \Illuminate\Http\JsonResponse
+    {
+        if (!$this->canEdit($ticket)) {
+            return JsonResponse::Forbidden('This ticket cannot be edited or removed.');
+        }
+
+        $request = new Request([
+            'state' => TicketState::Closed->value
+        ]);
+
+        $eventsController = new TicketsEventsController();
+        $eventsController->create($ticket, $request);
+
+        $ticket->state = $request->input("state");
+        $ticket->save();
+
+        return JsonResponse::Send([]);
     }
 }

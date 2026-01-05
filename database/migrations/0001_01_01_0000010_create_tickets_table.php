@@ -34,6 +34,8 @@ class CreateTicketsTable extends Migration
             // json ключей и значений { 'name': '...' }
             $table->json('attributes')->nullable();
 
+            $table->string('type');
+
             $table->foreignId('category_id')->constrained('tickets_categories');
             $table->foreignId('partner_id')->constrained('partners');
             $table->foreignId('user_id')->constrained('users');
@@ -64,6 +66,7 @@ class CreateTicketsTable extends Migration
             $table->string('type');
             $table->string('ext');
             $table->foreignId('ticket_message_id')->constrained('tickets_messages');
+
             $table->timestamps();
         });
 
@@ -72,7 +75,9 @@ class CreateTicketsTable extends Migration
             $table->foreignId('ticket_id')->constrained('tickets');
             $table->json('changes');
             $table->foreignId('user_id')->nullable()->constrained('users');
+
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

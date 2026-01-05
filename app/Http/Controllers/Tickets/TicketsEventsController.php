@@ -45,11 +45,9 @@ class TicketsEventsController extends Controller
         }
 
         if ($changes) {
-            $user = Auth::user();
-
             TicketEvent::create([
                 'ticket_id' => $ticket->id,
-                'user_id'   => $user->id,
+                'user_id'   => Auth::id(),
                 'changes'   => $changes,
             ]);
         }

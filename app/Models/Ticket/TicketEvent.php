@@ -5,6 +5,7 @@ namespace App\Models\Ticket;
 use App\Models\User\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TicketEvent extends Model
 {
@@ -19,11 +20,17 @@ class TicketEvent extends Model
     ];
 
     protected $casts = [
-        'created_at'  => 'date:Y-m-d',
+        'created_at' => 'datetime',
+        'changes' => 'array',
     ];
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function message(): BelongsTo
+    {
+        return $this->belongsTo(TicketMessage::class, 'ticket_message_id');
     }
 }
