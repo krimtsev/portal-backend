@@ -14,9 +14,6 @@ class TicketsFilesController extends Controller {
 
     /**
      * Скачать файл тикета
-     *
-     * @param string $ticket  Идентификатор тикета
-     * @param string $name    Имя файла
      */
     public function download(string $ticket, string $name): \Illuminate\Http\JsonResponse|StreamedResponse
     {
@@ -49,6 +46,9 @@ class TicketsFilesController extends Controller {
         ]);
     }
 
+    /**
+     * Загрузить файл
+     */
     public static function add(int $ticketId, int $ticketMessageId, UploadedFile $file): void
     {
         $path = Storage::disk('tickets')->putFile($ticketId, $file);

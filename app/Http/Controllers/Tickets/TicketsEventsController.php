@@ -10,41 +10,27 @@ use Illuminate\Support\Facades\Auth;
 
 class TicketsEventsController extends Controller
 {
-    function create(Ticket $ticket, Request $request): void
+    /**
+     * Добавить запись изменений
+     */
+    public function create(Ticket $ticket, Request $request): void
     {
+        $fields = ['state', 'category_id', 'partner_id'];
         $changes = [];
 
-        if (
-            $request->has('state') &&
-            $ticket->state !== $request->state
-        ) {
-            $changes['state'] = [
-                'old' => $ticket->state,
-                'new' => $request->state,
-            ];
+        foreach ($fields as $field) {
+            if (
+                $request->has($field) &&
+                $ticket->{$field} !== $request->input($field)
+            ) {
+                $changes[$field] = [
+                    'old' => $ticket->{$field},
+                    'new' => $request->input($field),
+                ];
+            }
         }
 
-        if (
-            $request->has('category_id') &&
-            $ticket->category_id !== $request->category_id
-        ) {
-            $changes['category_id'] = [
-                'old' => $ticket->category_id,
-                'new' => $request->category_id,
-            ];
-        }
-
-        if (
-            $request->has('partner_id') &&
-            $ticket->partner_id !== $request->partner_id
-        ) {
-            $changes['partner_id'] = [
-                'old' => $ticket->partner_id,
-                'new' => $request->partner_id,
-            ];
-        }
-
-        if ($changes) {
+        if (!empty($changes)) {
             TicketEvent::create([
                 'ticket_id' => $ticket->id,
                 'user_id'   => Auth::id(),

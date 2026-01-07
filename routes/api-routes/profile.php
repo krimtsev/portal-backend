@@ -13,10 +13,10 @@ Route::prefix('v1/profile')
 
         Route::put('/change-password', [Controllers\Auth\ChangePasswordController::class, 'update']);
 
-        Route::get('/ticket-categories', [Controllers\Tickets\TicketsCategoriesController::class, 'all']);
+        Route::get('/ticket-categories', [Controllers\Tickets\TicketsCategoriesController::class, 'list']);
         Route::get('/ticket-category/{category:slug}', [Controllers\Tickets\TicketsCategoriesController::class, 'getCategoryBySlug']);
 
-        Route::post('/tickets', [Controllers\Tickets\TicketsController::class, 'list']);
+        Route::post('/tickets', [Controllers\Tickets\TicketsController::class, 'restrictedList']);
 
         Route::prefix('ticket')->group(function () {
             Route::post('/', [Controllers\Tickets\TicketsController::class, 'create']);

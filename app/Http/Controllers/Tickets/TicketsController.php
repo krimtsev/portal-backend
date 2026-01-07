@@ -15,30 +15,13 @@ use App\Http\Responses\JsonResponse;
 use App\Helpers\Pagination\Pagination;
 use App\Models\Ticket\Ticket;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Builder;
 
 class TicketsController extends Controller
 {
-    public function list(Request $request): \Illuminate\Http\JsonResponse
+    private function paginatedList(Builder $query, Request $request): \Illuminate\Http\JsonResponse
     {
-        $user = $request->user();
-        $partnerId = $user->partner_id;
-
-        if (!$partnerId) {
-            return JsonResponse::Send([
-                'partner_id' => null,
-                'partners' => []
-            ]);
-        }
-
-        $partner = Partner::with('group.partners')->findOrFail($partnerId);
-
-        if ($partner->group) {
-            $accessiblePartnerIds = $partner->group->partners->pluck('id');
-        } else {
-            $accessiblePartnerIds = collect([$partner->id]);
-        }
-
-        $query = Ticket::with([
+        $query->with([
             'category:id,title',
             'partner:id,name',
             'user:id,name'
@@ -49,14 +32,15 @@ class TicketsController extends Controller
             'partner_id',
             'user_id',
             'state',
-        )->whereIn('partner_id', $accessiblePartnerIds);
+            'created_at',
+        );
 
         $result = Pagination::paginate(
             $query,
             $request,
             ['title'],
             ['id'],
-            ['category_id', 'partner_id'],
+            ['category_id', 'partner_id', 'state'],
         );
 
         $result['list'] = TicketListResource::collection($result['list']);
@@ -64,6 +48,45 @@ class TicketsController extends Controller
         return JsonResponse::Send($result);
     }
 
+    /**
+     * Получить список с проверкой доступных пользователю партнеров
+     */
+    public function restrictedList(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $user = $request->user();
+
+        if (!$user->partner_id) {
+            return JsonResponse::Send([
+                'list' => [],
+            ]);
+        }
+
+        $partner = Partner::with('group.partners')->findOrFail($user->partner_id);
+
+        $accessiblePartnerIds = $partner->group
+            ? $partner->group->partners->pluck('id')
+            : collect([$partner->id]);
+
+        return $this->paginatedList(
+            Ticket::whereIn('partner_id', $accessiblePartnerIds),
+            $request
+        );
+    }
+
+    /**
+     * Получить список
+     */
+    public function list(Request $request): \Illuminate\Http\JsonResponse
+    {
+        return $this->paginatedList(
+            Ticket::query(),
+            $request
+        );
+    }
+
+    /**
+     * Получить заявление по id
+     */
     public function get(Request $request, int $id): \Illuminate\Http\JsonResponse
     {
         $ticket = Ticket::with([
@@ -80,6 +103,9 @@ class TicketsController extends Controller
         ]);
     }
 
+    /**
+     * Создать заявление
+     */
     public function create(TicketsCreateRequest $request): \Illuminate\Http\JsonResponse
     {
         $data = $request->validated();
@@ -89,6 +115,7 @@ class TicketsController extends Controller
         $ticketPayload = [
             'title'       => $data['title'],
             'attributes'  => $data['attributes'],
+            'type'        => $data['type'],
             'category_id' => $data['category_id'],
             'partner_id'  => $data['partner_id'],
             'user_id'     => $userId,
@@ -114,15 +141,10 @@ class TicketsController extends Controller
         return JsonResponse::Created();
     }
 
-    private function canEdit(Ticket $ticket): bool
-    {
-        return !in_array($ticket->state, [
-            TicketState::Success->value,
-            TicketState::Closed->value,
-            TicketState::Cancel->value,
-        ]);
-    }
-
+    /**
+     * Обновить заявление
+     * Выполняется только для активного статуса [new, in_progress, waiting]
+     */
     public function update(Request $request, Ticket $ticket): \Illuminate\Http\JsonResponse
     {
         if (!$this->canEdit($ticket)) {
@@ -151,6 +173,10 @@ class TicketsController extends Controller
         ]);
     }
 
+    /**
+     * Обновление сообщения
+     * Выполняется пользователем, ожидает только сообщение и файлы
+     */
     public function updateMessage(TicketsUpdateRequest $request, Ticket $ticket): \Illuminate\Http\JsonResponse
     {
         if (!$this->canEdit($ticket)) {
@@ -175,6 +201,10 @@ class TicketsController extends Controller
         return $ticketsController->get(new Request(), $ticket->id);
     }
 
+    /**
+     * Закрыть заявление
+     * Переволд в статус Closed, закрывается пользователем
+     */
     public function remove(Ticket $ticket): \Illuminate\Http\JsonResponse
     {
         if (!$this->canEdit($ticket)) {
@@ -192,5 +222,14 @@ class TicketsController extends Controller
         $ticket->save();
 
         return JsonResponse::Send([]);
+    }
+
+    private function canEdit(Ticket $ticket): bool
+    {
+        return !in_array($ticket->state, [
+            TicketState::Success->value,
+            TicketState::Closed->value,
+            TicketState::Cancel->value,
+        ]);
     }
 }

@@ -32,11 +32,17 @@ class TicketsCreateRequest extends FormRequest
                 'nullable',
                 'array'
             ],
+            'type' => [
+                'string'
+            ],
             'message' => [
                 'nullable',
                 'string',
             ],
-            'files' => ['nullable', 'array'],
+            'files' => [
+                'nullable',
+                'array'
+            ],
             'files.*' => [
                 'file',
                 'max:1024',

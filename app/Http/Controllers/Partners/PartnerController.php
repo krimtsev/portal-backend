@@ -11,6 +11,7 @@ class PartnerController extends Controller
 {
     /**
      * Получение списка партнеров доступных пользователю
+     * Учиитываем partner_id и partner_groups
      */
     public function getUserPartners(Request $request): \Illuminate\Http\JsonResponse
     {
@@ -47,6 +48,17 @@ class PartnerController extends Controller
         return JsonResponse::Send([
             'partner_id' => $partnerId,
             'partners' => $partners,
+        ]);
+    }
+
+    public function shortList(): \Illuminate\Http\JsonResponse
+    {
+        $partners = Partner::activeWhere(['id', 'name'])
+            ->orderBy('name')
+            ->get();
+
+        return JsonResponse::Send([
+            'list' => $partners
         ]);
     }
 }

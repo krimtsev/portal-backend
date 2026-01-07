@@ -14,16 +14,17 @@ class Ticket extends Model
 {
     use SoftDeletes;
 
-    protected $table = 'tickets';
-
     protected $fillable = [
         'title',
+        'attributes',
+        'type',
         'category_id',
         'partner_id',
         'user_id',
-        'attributes',
         'state'
     ];
+
+    protected $table = 'tickets';
 
     protected $casts = [
         'created_at'  => 'date:Y-m-d',

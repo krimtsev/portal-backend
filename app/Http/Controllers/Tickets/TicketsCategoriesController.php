@@ -12,7 +12,10 @@ use App\Helpers\Pagination\Pagination;
 
 class TicketsCategoriesController extends Controller
 {
-    public function all(): \Illuminate\Http\JsonResponse
+    /**
+     * Получить полный список категорий
+     */
+    public function list(): \Illuminate\Http\JsonResponse
     {
         $list = TicketCategory::select(
             'id',
@@ -25,7 +28,10 @@ class TicketsCategoriesController extends Controller
         ]);
     }
 
-    public function list(Request $request): \Illuminate\Http\JsonResponse
+    /**
+     * Получить список категорий с пагинацией
+     */
+    public function listPaginated(Request $request): \Illuminate\Http\JsonResponse
     {
         $query = TicketCategory::select(
             'id',
@@ -40,6 +46,9 @@ class TicketsCategoriesController extends Controller
         ));
     }
 
+    /**
+     * Обновить категорию
+     */
     public function update(TicketsCategoriesRequest $request, TicketCategory $category): \Illuminate\Http\JsonResponse
     {
         $data = $request->validated();
@@ -49,6 +58,11 @@ class TicketsCategoriesController extends Controller
         return JsonResponse::Send([]);
     }
 
+    /**
+     * Получить информаицю категории по slug
+     * Используется для получения id
+     * id категории может отличаться у разных парнтеров
+     */
     public function getCategoryBySlug(TicketCategory $category): \Illuminate\Http\JsonResponse
     {
         return JsonResponse::Send([
