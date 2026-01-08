@@ -117,7 +117,7 @@ class TicketsController extends Controller
 
             $ticketPayload = [
                 'title' => $data['title'],
-                'attributes' => $data['attributes'],
+                'attributes' => $data['attributes'] ?? null,
                 'type' => $data['type'],
                 'category_id' => $data['category_id'],
                 'partner_id' => $data['partner_id'],

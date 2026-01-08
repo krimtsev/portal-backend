@@ -14,10 +14,10 @@ class UpdateCertificatesCommand extends Command
     {
         if ($this->option('sync')) {
             UpdateCertificatesJob::dispatchSync();
+            $this->info('Job на обновление сертификатов запущена.');
         } else {
             UpdateCertificatesJob::dispatch();
+            $this->info('Job на обновление сертификатов поставлена в очередь.');
         }
-
-        $this->info('Job на обновление сертификатов поставлена в очередь.');
     }
 }
