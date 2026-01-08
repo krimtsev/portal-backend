@@ -13,26 +13,23 @@ class TicketsEventsController extends Controller
     /**
      * Добавить запись изменений
      */
-    public function create(Ticket $ticket, Request $request): void
+    public function create(Ticket $original, Ticket $updated): void
     {
-        $fields = ['state', 'category_id', 'partner_id'];
+        $fields = ['title', 'state', 'category_id', 'partner_id'];
         $changes = [];
 
         foreach ($fields as $field) {
-            if (
-                $request->has($field) &&
-                $ticket->{$field} !== $request->input($field)
-            ) {
+            if ($original->$field !== $updated->$field) {
                 $changes[$field] = [
-                    'old' => $ticket->{$field},
-                    'new' => $request->input($field),
+                    'old' => $original->$field,
+                    'new' => $updated->$field,
                 ];
             }
         }
 
-        if (!empty($changes)) {
+        if ($changes) {
             TicketEvent::create([
-                'ticket_id' => $ticket->id,
+                'ticket_id' => $updated->id,
                 'user_id'   => Auth::id(),
                 'changes'   => $changes,
             ]);

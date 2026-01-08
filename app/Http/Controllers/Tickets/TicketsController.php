@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Tickets;
 use App\Enums\Ticket\TicketState;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Ticket\TicketsCreateRequest;
+use App\Http\Requests\Ticket\TicketsUpdateMessageRequest;
 use App\Http\Requests\Ticket\TicketsUpdateRequest;
 use App\Http\Resources\Ticket\TicketListResource;
 use App\Http\Resources\Ticket\TicketResource;
@@ -16,6 +17,7 @@ use App\Helpers\Pagination\Pagination;
 use App\Models\Ticket\Ticket;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class TicketsController extends Controller
 {
@@ -110,33 +112,35 @@ class TicketsController extends Controller
     {
         $data = $request->validated();
 
-        $userId = Auth::id();
+        DB::transaction(function() use ($data, $request) {
+            $userId = Auth::id();
 
-        $ticketPayload = [
-            'title'       => $data['title'],
-            'attributes'  => $data['attributes'],
-            'type'        => $data['type'],
-            'category_id' => $data['category_id'],
-            'partner_id'  => $data['partner_id'],
-            'user_id'     => $userId,
-            'state'       => TicketState::New,
-        ];
+            $ticketPayload = [
+                'title' => $data['title'],
+                'attributes' => $data['attributes'],
+                'type' => $data['type'],
+                'category_id' => $data['category_id'],
+                'partner_id' => $data['partner_id'],
+                'user_id' => $userId,
+                'state' => TicketState::New,
+            ];
 
-        $ticket = Ticket::create($ticketPayload);
+            $ticket = Ticket::create($ticketPayload);
 
-        $ticketMessagePayload = [
-            'ticket_id' => $ticket->id,
-            'user_id'   => $userId,
-            'text'      => $data['message'],
-        ];
+            $ticketMessagePayload = [
+                'ticket_id' => $ticket->id,
+                'user_id' => $userId,
+                'text' => $data['message'],
+            ];
 
-        $ticketMessage = TicketMessage::create($ticketMessagePayload);
+            $ticketMessage = TicketMessage::create($ticketMessagePayload);
 
-        if ($request->hasFile('files')) {
-            foreach ($request->file('files') as $file) {
-                TicketsFilesController::add($ticket->id, $ticketMessage->id, $file);
+            if ($request->hasFile('files')) {
+                foreach ($request->file('files') as $file) {
+                    TicketsFilesController::add($ticket->id, $ticketMessage->id, $file);
+                }
             }
-        }
+        });
 
         return JsonResponse::Created();
     }
@@ -145,39 +149,55 @@ class TicketsController extends Controller
      * Обновить заявление
      * Выполняется только для активного статуса [new, in_progress, waiting]
      */
-    public function update(Request $request, Ticket $ticket): \Illuminate\Http\JsonResponse
+    public function update(TicketsUpdateRequest $request, Ticket $ticket): \Illuminate\Http\JsonResponse
     {
         if (!$this->canEdit($ticket)) {
             return JsonResponse::Forbidden('This ticket cannot be edited.');
         }
 
-        $updatableFields = ['title', 'state', 'category_id', 'partner_id'];
-        $changesRequest = new Request();
+        $data = $request->validated();
 
-        foreach ($updatableFields as $field) {
-            if ($request->has($field) && $ticket->$field !== $request->input($field)) {
-                $changesRequest->merge([$field => $request->input($field)]);
-                $ticket->$field = $request->input($field);
+        DB::transaction(function() use ($ticket, $data, $request) {
+            $original = clone $ticket;
+
+            $ticket->update([
+                'title'       => $data['title'],
+                'category_id' => $data['category_id'],
+                'partner_id'  => $data['partner_id'],
+                'state'       => $data['state'],
+            ]);
+
+            if (!empty($data['message']) || $request->hasFile('files')) {
+                $userId = Auth::id();
+
+                $ticketMessagePayload = [
+                    'ticket_id' => $ticket->id,
+                    'user_id' => $userId,
+                    'text' => $data['message'],
+                ];
+
+                $ticketMessage = TicketMessage::create($ticketMessagePayload);
+
+                if ($request->hasFile('files')) {
+                    foreach ($request->file('files') as $file) {
+                        TicketsFilesController::add($ticket->id, $ticketMessage->id, $file);
+                    }
+                }
             }
-        }
 
-        // Фиксируем изменения в событиях
-        $eventsController = new TicketsEventsController();
-        $eventsController->create($ticket, $changesRequest);
+            $eventsController = new TicketsEventsController();
+            $eventsController->create($original, $ticket);
+        });
 
-        $ticket->save();
-
-        return JsonResponse::Send([
-            'ticket_id' => $ticket->id,
-            'message'   => 'Ticket updated successfully.',
-        ]);
+        $ticketsController = new TicketsController();
+        return $ticketsController->get(new Request(), $ticket->id);
     }
 
     /**
      * Обновление сообщения
      * Выполняется пользователем, ожидает только сообщение и файлы
      */
-    public function updateMessage(TicketsUpdateRequest $request, Ticket $ticket): \Illuminate\Http\JsonResponse
+    public function updateMessage(TicketsUpdateMessageRequest $request, Ticket $ticket): \Illuminate\Http\JsonResponse
     {
         if (!$this->canEdit($ticket)) {
             return JsonResponse::Forbidden('This ticket cannot be edited.');
@@ -211,12 +231,14 @@ class TicketsController extends Controller
             return JsonResponse::Forbidden('This ticket cannot be edited or removed.');
         }
 
+        $original = $ticket->only(['state']);
+
         $request = new Request([
             'state' => TicketState::Closed->value
         ]);
 
         $eventsController = new TicketsEventsController();
-        $eventsController->create($ticket, $request);
+        $eventsController->create($original, $request, $ticket->id);
 
         $ticket->state = $request->input("state");
         $ticket->save();

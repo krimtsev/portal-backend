@@ -27,6 +27,8 @@ class Ticket extends Model
     protected $table = 'tickets';
 
     protected $casts = [
+        'partner_id'  => 'integer',
+        'category_id' => 'integer',
         'created_at'  => 'date:Y-m-d',
         'state'       => TicketState::class,
         'attributes'  => 'array'

@@ -3,6 +3,8 @@
 namespace App\Http\Requests\Ticket;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
+use App\Enums\Ticket\TicketState;
 
 class TicketsUpdateRequest extends FormRequest
 {
@@ -14,10 +16,32 @@ class TicketsUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'message' => [
+            'title' => [
+                'required',
                 'string',
             ],
-            'files' => ['nullable', 'array'],
+            'category_id' => [
+                'required',
+                'integer',
+                'exists:tickets_categories,id',
+            ],
+            'partner_id' => [
+                'required',
+                'integer',
+                'exists:partners,id'
+            ],
+            'state' => [
+                'required',
+                new Enum(TicketState::class),
+            ],
+            'message' => [
+                'nullable',
+                'string',
+            ],
+            'files' => [
+                'nullable',
+                'array'
+            ],
             'files.*' => [
                 'file',
                 'max:1024',

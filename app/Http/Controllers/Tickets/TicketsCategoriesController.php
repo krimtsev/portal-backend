@@ -21,7 +21,8 @@ class TicketsCategoriesController extends Controller
             'id',
             'title',
             'slug',
-        )->get();
+        )->orderBy('title')
+        ->get();
 
         return JsonResponse::Send([
             'list' => $list

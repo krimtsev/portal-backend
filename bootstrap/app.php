@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->statefulApi();
         $middleware->alias([
             'query.token' => \App\Http\Middleware\TokenAuth::class,
+            'role' => \App\Http\Middleware\CheckRole::class
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
