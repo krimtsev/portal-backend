@@ -15,6 +15,8 @@ class TicketListResource extends JsonResource
             'state'      => $this->state->value,
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
 
+            'last_message_at' => $this->last_message_at,
+
             'category' => $this->whenLoaded('category', function () {
                 return [
                     'id'    => $this->category->id,

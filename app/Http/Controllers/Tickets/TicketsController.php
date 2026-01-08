@@ -27,15 +27,24 @@ class TicketsController extends Controller
             'category:id,title',
             'partner:id,name',
             'user:id,name'
-        ])->select(
-            'id',
-            'title',
-            'category_id',
-            'partner_id',
-            'user_id',
-            'state',
-            'created_at',
-        );
+        ])
+            ->select(
+                'id',
+                'title',
+                'category_id',
+                'partner_id',
+                'user_id',
+                'state',
+                'created_at',
+            )
+            ->selectSub(
+                DB::table('tickets_messages')
+                    ->selectRaw('MAX(tickets_messages.created_at)')
+                    ->whereColumn('tickets_messages.ticket_id', 'tickets.id')
+                    ->whereNull('tickets_messages.deleted_at'),
+                'last_message_at'
+            )
+            ->orderBy('tickets.created_at', 'desc');
 
         $result = Pagination::paginate(
             $query,
