@@ -225,23 +225,21 @@ class TicketsController extends Controller
      * Закрыть заявление
      * Переволд в статус Closed, закрывается пользователем
      */
-    public function remove(Ticket $ticket): \Illuminate\Http\JsonResponse
+    public function remove(Request $request, Ticket $ticket): \Illuminate\Http\JsonResponse
     {
         if (!$this->canEdit($ticket)) {
             return JsonResponse::Forbidden('This ticket cannot be edited or removed.');
         }
 
-        $original = $ticket->only(['state']);
+        DB::transaction(function() use ($ticket, $request) {
+            $original = clone $ticket;
 
-        $request = new Request([
-            'state' => TicketState::Closed->value
-        ]);
+            $ticket->state = TicketState::Closed->value;
+            $ticket->save();
 
-        $eventsController = new TicketsEventsController();
-        $eventsController->create($original, $request, $ticket->id);
-
-        $ticket->state = $request->input("state");
-        $ticket->save();
+            $eventsController = new TicketsEventsController();
+            $eventsController->create($original, $ticket);
+        });
 
         return JsonResponse::Send([]);
     }
