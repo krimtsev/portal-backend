@@ -7,12 +7,16 @@ use App\Jobs\UpdateCertificatesJob;
 
 class UpdateCertificatesCommand extends Command
 {
-    protected $signature = 'certificates:update';
+    protected $signature = 'certificates:update {--sync}';
     protected $description = 'Обновление сертификатов из Google Sheets';
 
     public function handle(): void
     {
-        UpdateCertificatesJob::dispatch();
+        if ($this->option('sync')) {
+            UpdateCertificatesJob::dispatchSync();
+        } else {
+            UpdateCertificatesJob::dispatch();
+        }
 
         $this->info('Job на обновление сертификатов поставлена в очередь.');
     }
