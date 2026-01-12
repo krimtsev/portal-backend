@@ -249,3 +249,100 @@ UPDATE tickets_categories SET slug = 'accounting'        WHERE id = 9;
 COMMIT;
 SET FOREIGN_KEY_CHECKS=1;
 ```
+
+# Tickets
+``` sql
+SET FOREIGN_KEY_CHECKS=0;
+START TRANSACTION;
+
+TRUNCATE TABLE tickets;
+TRUNCATE TABLE tickets_messages;
+TRUNCATE TABLE tickets_files;
+
+INSERT INTO `tickets` (
+    `id`,
+    `title`,
+    `type`,
+    `category_id`,
+    `partner_id`,
+    `user_id`,
+    `state`,
+    `created_at`,
+    `updated_at`,
+    `deleted_at`
+)
+SELECT
+    `id`,
+    `title`,
+    'general' AS `type`,
+    `category_id`,
+    `partner_id`,
+    `user_id`,
+    `state`,
+    `created_at`,
+    `updated_at`,
+    `deleted_at`
+FROM
+    `_tickets`;
+
+UPDATE tickets
+SET state = CASE state
+    WHEN 1 THEN 'new'
+    WHEN 2 THEN 'in_progress'
+    WHEN 3 THEN 'waiting'
+    WHEN 4 THEN 'success'
+    WHEN 5 THEN 'closed'
+    WHEN 6 THEN 'cancel'
+    ELSE state
+    END
+WHERE state IN (1,2,3,4,5,6);
+
+INSERT INTO `tickets_messages` (
+    `id`,
+    `text`,
+    `ticket_id`,
+    `user_id`,
+    `created_at`,
+    `updated_at`,
+    `deleted_at`
+)
+SELECT
+    `id`,
+    `text`,
+    `ticket_id`,
+    `user_id`,
+    `created_at`,
+    `updated_at`,
+    `deleted_at`
+FROM
+    `_tickets_messages`;
+
+INSERT INTO `tickets_files` (
+    `id`,
+    `title`,
+    `name`,
+    `origin`,
+    `path`,
+    `type`,
+    `ext`,
+    `ticket_message_id`,
+    `created_at`,
+    `updated_at`
+)
+SELECT
+    `id`,
+    `title`,
+    `name`,
+    `origin`,
+    `path`,
+    `type`,
+    `ext`,
+    `ticket_message_id`,
+    `created_at`,
+    `updated_at`
+FROM
+    `_tickets_files`;
+
+COMMIT;
+SET FOREIGN_KEY_CHECKS=1;
+```
