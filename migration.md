@@ -281,7 +281,7 @@ SELECT
     `state`,
     `created_at`,
     `updated_at`,
-    `deleted_at`
+    IFNULL(`deleted_at`, NULL) AS `deleted_at`
 FROM
     `_tickets`;
 
@@ -358,6 +358,20 @@ SET text = REPLACE(
     '</b>', ''
     )
 WHERE text LIKE '%<b>%';
+
+COMMIT;
+SET FOREIGN_KEY_CHECKS=1;
+```
+
+# Исправляем удаленные
+``` sql
+SET FOREIGN_KEY_CHECKS=0;
+START TRANSACTION;
+
+UPDATE tickets t
+    JOIN _tickets s ON t.id = s.id
+SET t.deleted_at = s.deleted_at
+WHERE t.deleted_at <> s.deleted_at OR (t.deleted_at IS NULL AND s.deleted_at IS NOT NULL);
 
 COMMIT;
 SET FOREIGN_KEY_CHECKS=1;
