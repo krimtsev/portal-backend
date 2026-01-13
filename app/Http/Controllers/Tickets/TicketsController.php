@@ -23,6 +23,12 @@ class TicketsController extends Controller
 {
     private function paginatedList(Builder $query, Request $request): \Illuminate\Http\JsonResponse
     {
+        $showDeleted = filter_var($request->input('show_deleted', false), FILTER_VALIDATE_BOOLEAN);
+
+        if (!$showDeleted) {
+            $query->whereNull('tickets.deleted_at');
+        }
+
         $query->with([
             'category:id,title',
             'partner:id,name',
