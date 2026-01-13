@@ -221,7 +221,7 @@ COMMIT;
 SET FOREIGN_KEY_CHECKS=1;
 ```
 
-# Tickets
+# Tickets category
 ``` sql
 SET FOREIGN_KEY_CHECKS=0;
 START TRANSACTION;
@@ -342,6 +342,22 @@ SELECT
     `updated_at`
 FROM
     `_tickets_files`;
+
+COMMIT;
+SET FOREIGN_KEY_CHECKS=1;
+```
+
+# Normalize ticket messages 
+``` sql
+SET FOREIGN_KEY_CHECKS=0;
+START TRANSACTION;
+
+UPDATE tickets_messages
+SET text = REPLACE(
+    REPLACE(text, '<b>', ''),
+    '</b>', ''
+    )
+WHERE text LIKE '%<b>%';
 
 COMMIT;
 SET FOREIGN_KEY_CHECKS=1;

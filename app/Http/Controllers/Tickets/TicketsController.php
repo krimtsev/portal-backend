@@ -138,8 +138,8 @@ class TicketsController extends Controller
 
             $ticketMessagePayload = [
                 'ticket_id' => $ticket->id,
-                'user_id' => $userId,
-                'text' => $data['message'],
+                'user_id'   => $userId,
+                'text'      => $this->normalizeMessage($data['message']),
             ];
 
             $ticketMessage = TicketMessage::create($ticketMessagePayload);
@@ -181,8 +181,8 @@ class TicketsController extends Controller
 
                 $ticketMessagePayload = [
                     'ticket_id' => $ticket->id,
-                    'user_id' => $userId,
-                    'text' => $data['message'],
+                    'user_id'   => $userId,
+                    'text'      => $this->normalizeMessage($data['message']),
                 ];
 
                 $ticketMessage = TicketMessage::create($ticketMessagePayload);
@@ -217,7 +217,7 @@ class TicketsController extends Controller
         $ticketMessage = TicketMessage::create([
             'ticket_id' => $ticket->id,
             'user_id'   => Auth::id(),
-            'text'      => $data['message'],
+            'text'      => $this->normalizeMessage($data['message']),
         ]);
 
         if ($request->hasFile('files')) {
@@ -251,6 +251,24 @@ class TicketsController extends Controller
         });
 
         return JsonResponse::Send([]);
+    }
+
+    private function normalizeMessage(string $value): string
+    {
+        // Преобразуем любые переносы в единые \n
+        $value = str_replace(["\r\n", "\r"], "\n", $value);
+
+        // Убираем пробелы в начале каждой строки
+        $value = preg_replace('/^[ \t]+/m', '', $value);
+
+        // Схлопываем 3 и более переносов в два
+        $value = preg_replace("/\n{3,}/", "\n\n", $value);
+
+        // Схлопываем несколько пробелов подряд в один
+        $value = preg_replace('/[ \t]{2,}/', ' ', $value);
+
+        // Обрезаем пробелы и переносы в начале и конце всего текста
+        return trim($value);
     }
 
     private function canEdit(Ticket $ticket): bool
