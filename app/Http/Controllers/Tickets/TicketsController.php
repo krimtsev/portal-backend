@@ -142,14 +142,10 @@ class TicketsController extends Controller
 
             $ticket = Ticket::create($ticketPayload);
 
-            $text = array_key_exists('message', $data)
-                ? $this->normalizeMessage($data['message'])
-                : null;
-
             $ticketMessagePayload = [
                 'ticket_id' => $ticket->id,
                 'user_id'   => $userId,
-                'text'      => $text,
+                'text'      => $this->normalizeMessage($data['message']),
             ];
 
             $ticketMessage = TicketMessage::create($ticketMessagePayload);
@@ -189,14 +185,10 @@ class TicketsController extends Controller
             if (!empty($data['message']) || $request->hasFile('files')) {
                 $userId = Auth::id();
 
-                $text = array_key_exists('message', $data)
-                    ? $this->normalizeMessage($data['message'])
-                    : null;
-
                 $ticketMessagePayload = [
                     'ticket_id' => $ticket->id,
                     'user_id'   => $userId,
-                    'text'      => $text,
+                    'text'      => $this->normalizeMessage($data['message']),
                 ];
 
                 $ticketMessage = TicketMessage::create($ticketMessagePayload);
@@ -228,14 +220,10 @@ class TicketsController extends Controller
 
         $data = $request->validated();
 
-        $text = array_key_exists('message', $data)
-            ? $this->normalizeMessage($data['message'])
-            : null;
-
         $ticketMessage = TicketMessage::create([
             'ticket_id' => $ticket->id,
             'user_id'   => Auth::id(),
-            'text'      => $text,
+            'text'      => $this->normalizeMessage($data['message']),
         ]);
 
         if ($request->hasFile('files')) {
@@ -271,8 +259,12 @@ class TicketsController extends Controller
         return JsonResponse::Send([]);
     }
 
-    private function normalizeMessage(string $value): ?string
+    private function normalizeMessage(?string $value): ?string
     {
+        if ($value === null) {
+            return null;
+        }
+
         // Преобразуем любые переносы в единые \n
         $value = str_replace(["\r\n", "\r"], "\n", $value);
 
@@ -286,9 +278,7 @@ class TicketsController extends Controller
         $value = preg_replace('/[ \t]{2,}/', ' ', $value);
 
         // Обрезаем пробелы и переносы в начале и конце всего текста
-        $value = trim($value);
-
-        return $value === '' ? null : $value;
+        return trim($value);
     }
 
     private function canEdit(Ticket $ticket): bool
