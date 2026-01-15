@@ -342,32 +342,14 @@ SELECT
     `updated_at`
 FROM
     `_tickets_files`;
-
-COMMIT;
-SET FOREIGN_KEY_CHECKS=1;
-```
-
-# Normalize ticket messages 
-``` sql
-SET FOREIGN_KEY_CHECKS=0;
-START TRANSACTION;
-
+    
 UPDATE tickets_messages
 SET text = REPLACE(
     REPLACE(text, '<b>', ''),
     '</b>', ''
     )
-WHERE text LIKE '%<b>%';
-
-COMMIT;
-SET FOREIGN_KEY_CHECKS=1;
-```
-
-# Исправляем удаленные
-``` sql
-SET FOREIGN_KEY_CHECKS=0;
-START TRANSACTION;
-
+WHERE text LIKE '%<b>%';    
+    
 UPDATE tickets t
     JOIN _tickets s ON t.id = s.id
 SET t.deleted_at = s.deleted_at
