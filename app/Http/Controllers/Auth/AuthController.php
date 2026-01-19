@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Responses\JsonResponse;
 use App\Models\Partner\Partner;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
@@ -17,11 +18,12 @@ class AuthController extends Controller
         return self::userData();
     }
 
-    public function logout(): \Illuminate\Http\JsonResponse
+    public function logout(Request $request): \Illuminate\Http\JsonResponse
     {
-        if (Auth::check()) {
-            Auth::logout();
-        }
+        Auth::guard('web')->logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return JsonResponse::Send(null, 'Logged out');
     }
