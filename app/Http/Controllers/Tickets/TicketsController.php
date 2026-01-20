@@ -242,7 +242,8 @@ class TicketsController extends Controller
             $eventsController->create($original, $ticket);
         });
 
-        return $this->get(new Request(), $ticket->id);
+        $ticketsController = new TicketsController();
+        return $ticketsController->get(new Request(), $ticket->id);
     }
 
     /**
@@ -273,7 +274,8 @@ class TicketsController extends Controller
             }
         }
 
-        return $this->get(new Request(), $ticket->id);
+        $ticketsController = new TicketsController();
+        return $ticketsController->get(new Request(), $ticket->id);
     }
 
     /**
