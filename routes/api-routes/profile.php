@@ -13,16 +13,17 @@ Route::prefix('v1/profile')
 
         Route::put('/change-password', [Controllers\Auth\ChangePasswordController::class, 'update']);
 
-        Route::get('/ticket-categories', [Controllers\Tickets\TicketsCategoriesController::class, 'list']);
-        Route::get('/ticket-category/{category:slug}', [Controllers\Tickets\TicketsCategoriesController::class, 'getCategoryBySlug']);
+        Route::prefix('ticket-categories')->group(function () {
+            Route::get('/list', [Controllers\Tickets\TicketsCategoriesController::class, 'list']);
+            Route::get('/slug/{category:slug}', [Controllers\Tickets\TicketsCategoriesController::class, 'getCategoryBySlug']);
+        });
 
-        Route::post('/tickets', [Controllers\Tickets\TicketsController::class, 'restrictedList']);
-
-        Route::prefix('ticket')->group(function () {
-            Route::post('/', [Controllers\Tickets\TicketsController::class, 'create']);
-            Route::get('{id}', [Controllers\Tickets\TicketsController::class, 'get']);
-            Route::post('{ticket}/message', [Controllers\Tickets\TicketsController::class, 'updateMessage']);
-            Route::delete('{ticket}', [Controllers\Tickets\TicketsController::class, 'remove']);
-            Route::get('{ticket}/download/{name}', [Controllers\Tickets\TicketsFilesController::class, 'download']);
+        Route::prefix('tickets')->group(function () {
+            Route::post('list', [Controllers\Tickets\TicketsController::class, 'list']);
+            Route::post('ticket', [Controllers\Tickets\TicketsController::class, 'create']);
+            Route::get('ticket/{ticket}', [Controllers\Tickets\TicketsController::class, 'get']);
+            Route::post('ticket/{ticket}/message', [Controllers\Tickets\TicketsController::class, 'updateMessage']);
+            Route::delete('ticket/{ticket}', [Controllers\Tickets\TicketsController::class, 'remove']);
+            Route::get('ticket/{ticket}/download/{name}', [Controllers\Tickets\TicketsFilesController::class, 'download']);
         });
     });

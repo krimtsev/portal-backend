@@ -14,8 +14,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->statefulApi();
         $middleware->alias([
-            'query.token' => \App\Http\Middleware\TokenAuth::class,
-            'role' => \App\Http\Middleware\CheckRole::class
+            'query.token'       => \App\Http\Middleware\TokenAuth::class,
+            'role'              => \App\Http\Middleware\CheckRole::class,
+            'dashboard.context' => \App\Http\Middleware\DashboardContext::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

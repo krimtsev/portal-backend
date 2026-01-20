@@ -21,6 +21,39 @@ use Illuminate\Support\Facades\DB;
 
 class TicketsController extends Controller
 {
+    private function isDashboard(): bool
+    {
+        return (bool) request()->attributes->get('is_dashboard', false);
+    }
+
+    private function getPartnerIds(): array
+    {
+        $user = auth()->user();
+        if (!$user || !$user->partner_id) {
+            return [];
+        }
+
+        $partner = Partner::with('group.partners')->find($user->partner_id);
+        if (!$partner) {
+            return [];
+        }
+
+        return $partner->group
+            ? $partner->group->partners->pluck('id')->toArray()
+            : [$partner->id];
+    }
+
+    private function ticketAccess(Ticket $ticket): bool
+    {
+        if (!$this->isDashboard()) {
+            if (!in_array($ticket->partner_id, $this->getPartnerIds())) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private function paginatedList(Builder $query, Request $request): \Illuminate\Http\JsonResponse
     {
         $showDeleted = filter_var($request->input('show_deleted', false), FILTER_VALIDATE_BOOLEAN);
@@ -66,37 +99,26 @@ class TicketsController extends Controller
     }
 
     /**
-     * Получить список с проверкой доступных пользователю партнеров
-     */
-    public function restrictedList(Request $request): \Illuminate\Http\JsonResponse
-    {
-        $user = $request->user();
-
-        if (!$user->partner_id) {
-            return JsonResponse::Send([
-                'list' => [],
-            ]);
-        }
-
-        $partner = Partner::with('group.partners')->findOrFail($user->partner_id);
-
-        $accessiblePartnerIds = $partner->group
-            ? $partner->group->partners->pluck('id')
-            : collect([$partner->id]);
-
-        return $this->paginatedList(
-            Ticket::whereIn('partner_id', $accessiblePartnerIds),
-            $request
-        );
-    }
-
-    /**
      * Получить список
      */
     public function list(Request $request): \Illuminate\Http\JsonResponse
     {
+        $query = Ticket::query();
+
+        if (!$this->isDashboard()) {
+            $allowedIds = $this->getPartnerIds();
+
+            if (empty($allowedIds)) {
+                return JsonResponse::Send([
+                    'list' => [],
+                ]);
+            }
+
+            $query->whereIn('partner_id', $allowedIds);
+        }
+
         return $this->paginatedList(
-            Ticket::query(),
+            $query,
             $request
         );
     }
@@ -104,16 +126,20 @@ class TicketsController extends Controller
     /**
      * Получить заявление по id
      */
-    public function get(Request $request, int $id): \Illuminate\Http\JsonResponse
+    public function get(Request $request, Ticket $ticket): \Illuminate\Http\JsonResponse
     {
-        $ticket = Ticket::with([
+        if (!$this->ticketAccess($ticket)) {
+            return JsonResponse::Forbidden();
+        }
+
+        $ticket->load([
             'category:id,title',
             'partner:id,name',
             'user:id,name,login',
             'messages.user:id,name,login',
             'messages.files',
             'events.user:id,name,login',
-        ])->findOrFail($id);
+        ]);
 
         return JsonResponse::Send([
             'data' => new TicketResource($ticket),
@@ -126,6 +152,14 @@ class TicketsController extends Controller
     public function create(TicketsCreateRequest $request): \Illuminate\Http\JsonResponse
     {
         $data = $request->validated();
+
+        if (!$this->isDashboard()) {
+            $allowedIds = $this->getPartnerIds();
+
+            if (!in_array($data['partner_id'], $allowedIds)) {
+                return JsonResponse::Forbidden();
+            }
+        }
 
         DB::transaction(function() use ($data, $request) {
             $userId = Auth::id();
@@ -166,6 +200,10 @@ class TicketsController extends Controller
      */
     public function update(TicketsUpdateRequest $request, Ticket $ticket): \Illuminate\Http\JsonResponse
     {
+        if (!$this->ticketAccess($ticket)) {
+            return JsonResponse::Forbidden();
+        }
+
         if (!$this->canEdit($ticket)) {
             return JsonResponse::Forbidden('This ticket cannot be edited.');
         }
@@ -204,8 +242,7 @@ class TicketsController extends Controller
             $eventsController->create($original, $ticket);
         });
 
-        $ticketsController = new TicketsController();
-        return $ticketsController->get(new Request(), $ticket->id);
+        return $this->get(new Request(), $ticket->id);
     }
 
     /**
@@ -214,6 +251,10 @@ class TicketsController extends Controller
      */
     public function updateMessage(TicketsUpdateMessageRequest $request, Ticket $ticket): \Illuminate\Http\JsonResponse
     {
+        if (!$this->ticketAccess($ticket)) {
+            return JsonResponse::Forbidden();
+        }
+
         if (!$this->canEdit($ticket)) {
             return JsonResponse::Forbidden('This ticket cannot be edited.');
         }
@@ -232,8 +273,7 @@ class TicketsController extends Controller
             }
         }
 
-        $ticketsController = new TicketsController();
-        return $ticketsController->get(new Request(), $ticket->id);
+        return $this->get(new Request(), $ticket->id);
     }
 
     /**
@@ -242,6 +282,10 @@ class TicketsController extends Controller
      */
     public function remove(Request $request, Ticket $ticket): \Illuminate\Http\JsonResponse
     {
+        if (!$this->ticketAccess($ticket)) {
+            return JsonResponse::Forbidden();
+        }
+
         if (!$this->canEdit($ticket)) {
             return JsonResponse::Forbidden('This ticket cannot be edited or removed.');
         }
