@@ -243,7 +243,7 @@ class TicketsController extends Controller
         });
 
         $ticketsController = new TicketsController();
-        return $ticketsController->get(new Request(), $ticket->id);
+        return $ticketsController->get(new Request(), $ticket);
     }
 
     /**
@@ -275,7 +275,7 @@ class TicketsController extends Controller
         }
 
         $ticketsController = new TicketsController();
-        return $ticketsController->get(new Request(), $ticket->id);
+        return $ticketsController->get(new Request(), $ticket);
     }
 
     /**
