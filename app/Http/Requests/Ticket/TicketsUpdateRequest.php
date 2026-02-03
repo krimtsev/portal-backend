@@ -45,7 +45,7 @@ class TicketsUpdateRequest extends FormRequest
             'files.*' => [
                 'file',
                 'max:1024',
-                'mimes:jpg,jpeg,png,tif,pdf,doc,docx,zip,xlsx,xls,txt,ai,pptx',
+                'mimes:jpg,jpeg,png,webp,tif,pdf,doc,docx,zip,xlsx,xls,txt,ai,pptx',
             ],
         ];
     }

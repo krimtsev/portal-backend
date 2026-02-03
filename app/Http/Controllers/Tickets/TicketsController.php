@@ -161,12 +161,14 @@ class TicketsController extends Controller
             }
         }
 
-        DB::transaction(function() use ($data, $request) {
+           DB::transaction(function() use ($data, $request) {
             $userId = Auth::id();
+
+            $attributes = $this->prepareAttributes($data);
 
             $ticketPayload = [
                 'title' => $data['title'],
-                'attributes' => $data['attributes'] ?? null,
+                'attributes' => $attributes,
                 'type' => $data['type'],
                 'category_id' => $data['category_id'],
                 'partner_id' => $data['partner_id'],
@@ -303,6 +305,25 @@ class TicketsController extends Controller
         });
 
         return JsonResponse::Send([]);
+    }
+
+    /**
+     * Очистка массива атрибутов от пустых значений
+     */
+    private function prepareAttributes(array $data): ?array
+    {
+        if (!isset($data['attributes']) || !is_array($data['attributes'])) {
+            return null;
+        }
+
+        $filtered = array_filter($data['attributes'], function ($value) {
+            if (is_array($value)) {
+                return !empty($value);
+            }
+            return $value !== null && $value !== '';
+        });
+
+        return empty($filtered) ? null : $filtered;
     }
 
     private function normalizeMessage(?string $value): ?string

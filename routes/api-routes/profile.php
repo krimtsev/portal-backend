@@ -7,8 +7,8 @@ Route::prefix('v1/profile')
     ->middleware(['auth:sanctum'])
     ->group(function () {
         Route::prefix('user-profile')->group(function () {
-            Route::get('/', [Controllers\User\UserProfileController::class, 'show']);
-            Route::put('/', [Controllers\User\UserProfileController::class, 'update']);
+            Route::get('/', [Controllers\Users\UserProfileController::class, 'show']);
+            Route::put('/', [Controllers\Users\UserProfileController::class, 'update']);
         });
 
         Route::put('/change-password', [Controllers\Auth\ChangePasswordController::class, 'update']);

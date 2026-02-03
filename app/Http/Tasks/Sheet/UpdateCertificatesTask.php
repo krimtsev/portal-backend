@@ -43,7 +43,16 @@ class UpdateCertificatesTask
         $path = config('services.google.certificate');
         $sheet = json_decode(file_get_contents($path));
 
-        $table = (new GoogleSheetService)->readSheet($sheet);
+        try {
+            $table = (new GoogleSheetService)->readSheet($sheet);
+        } catch (\Throwable $e) {
+            logger()->error('Certificates get rows failed', [
+                'message' => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+            ]);
+
+            throw $e;
+        }
 
         $rows = [];
 

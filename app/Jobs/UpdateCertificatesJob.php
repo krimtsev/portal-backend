@@ -3,13 +3,14 @@
 namespace App\Jobs;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Http\Tasks\Sheet\UpdateCertificatesTask;
 
-class UpdateCertificatesJob implements ShouldQueue
+class UpdateCertificatesJob implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -17,5 +18,10 @@ class UpdateCertificatesJob implements ShouldQueue
     {
         $service = app(UpdateCertificatesTask::class);
         $service->update();
+    }
+
+    public function uniqueId(): string
+    {
+        return 'update-certificates';
     }
 }
