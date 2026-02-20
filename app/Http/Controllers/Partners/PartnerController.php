@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Partners;
 
+use App\Helpers\Pagination\Pagination;
+use App\Http\Resources\Partner\PartnerListResource;
 use App\Models\Partner\Partner;
 use App\Http\Controllers\Controller;
 use App\Http\Responses\JsonResponse;
@@ -60,5 +62,33 @@ class PartnerController extends Controller
         return JsonResponse::Send([
             'list' => $partners
         ]);
+    }
+
+    public function list(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $query = Partner::select(
+            'id',
+            'name',
+            'inn',
+            'ogrnip',
+            'organization',
+            'yclients_id',
+            'mango_telnum',
+            'contract_number',
+            'start_at',
+            'disabled'
+        )->orderBy('name', 'asc');
+
+        $result = Pagination::paginate(
+            $query,
+            $request,
+            ['name'],
+            ['name'],
+            [],
+        );
+
+        $result['list'] = PartnerListResource::collection($result['list']);
+
+        return JsonResponse::Send($result);
     }
 }

@@ -10,7 +10,6 @@ class TicketResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-
         $messages = TicketMessageResource::collection($this->messages)->resolve();
 
         $partners = Partner::all()->keyBy('id');

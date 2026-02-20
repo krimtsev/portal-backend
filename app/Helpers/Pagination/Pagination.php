@@ -3,6 +3,7 @@ namespace App\Helpers\Pagination;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class Pagination
 {
@@ -14,13 +15,14 @@ class Pagination
         array $filterable = [],
     ): array
     {
-        $sortBy    = $request->input('sortBy', $sortable[0] ?? 'id');
-        $sortOrder = $request->input('sortOrder', 'asc');
-        $perPage   = (int) $request->input('perPage', 50);
-        $search    = $request->input('search');
-        $page      = (int) $request->input('page', 1);
-        $filters = $request->input('filters', []);
-        \Log::debug($filters);
+        [
+            $sortBy,
+            $sortOrder,
+            $perPage,
+            $search,
+            $page,
+            $filters
+        ] = (new QueryParameters($request, $sortable))->all();
 
         // Поиск
         if (!empty($search) && !empty($searchColumns)) {
@@ -67,14 +69,19 @@ class Pagination
 
         return [
             'list' => $list->items(),
-            'page' => [
-                'currentPage' => $list->currentPage(),
-                'lastPage'    => $list->lastPage(),
-                'perPage'     => $list->perPage(),
-                'total'       => $list->total(),
-                'from'        => $list->firstItem() ?? 0,
-                'to'          => $list->lastItem() ?? 0,
-            ]
+            'page' => self::formatResponse($list)
+        ];
+    }
+
+    public static function formatResponse(LengthAwarePaginator $list): array
+    {
+        return [
+            'currentPage' => $list->currentPage(),
+            'lastPage'    => $list->lastPage(),
+            'perPage'     => $list->perPage(),
+            'total'       => $list->total(),
+            'from'        => $list->firstItem() ?? 0,
+            'to'          => $list->lastItem() ?? 0,
         ];
     }
 }

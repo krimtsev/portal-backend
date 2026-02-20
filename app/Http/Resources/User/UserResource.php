@@ -3,19 +3,23 @@
 namespace App\Http\Resources\User;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Http\Resources\Partner\PartnerResource;
 
 class UserResource extends JsonResource
 {
     public function toArray($request): array
     {
         return [
-            'login'  => $this->login,
-            'name'   => $this->name,
-            'role'   => $this->role,
-            'email'  => $this->email,
-            'avatar' => $this->avatar,
-            'partner' => new PartnerResource($this->whenLoaded('partner')),
+            'name'    => $this->name,
+            'login'   => $this->login,
+            'role'    => $this->role,
+            'email'   => $this->email,
+            'partner' => $this->whenLoaded('partner', function() {
+                return [
+                    'id'   => $this->partner->id,
+                    'name' => $this->partner->name,
+                ];
+            }),
+            'disabled' => (bool) $this->disabled
         ];
     }
 }

@@ -17,12 +17,24 @@ class Partner extends Model
     protected $table = 'partners';
 
     protected $casts = [
-        'pay_end' => 'datetime:Y-m-d H:i:s',
+        'organization'    => 'string',
+        'inn'             => 'string',
+        'ogrnip'          => 'string',
+        'name'            => 'string',
+        'contract_number' => 'string',
+        'email'           => 'string',
+        'yclients_id'     => 'string',
+        'mango_telnum'    => 'string',
+        'address'         => 'string',
+        'pay_end'         => 'datetime:Y-m-d H:i:s',
+        'start_at'        => 'date:Y-m-d',
+        'disabled'        => 'boolean',
     ];
 
     protected $fillable = [
         'organization',
         'inn',
+        'ogrnip',
         'name',
         'contract_number',
         'email',

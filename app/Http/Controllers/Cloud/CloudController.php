@@ -23,8 +23,8 @@ class CloudController extends Controller
         $cacheKey = $this->getCacheKey($slug, $search);
 
         $data = Cache::remember($cacheKey, self::CACHE_TTL, function () use ($slug, $search) {
-            $files = [];
             $folders = [];
+            $files = [];
             $breadcrumbs = [];
 
             $folder = $this->getFolder($slug);

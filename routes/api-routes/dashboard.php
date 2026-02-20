@@ -34,5 +34,14 @@ Route::prefix('v1/dashboard')
             ->middleware(['role:sysadmin'])
             ->group(function () {
                 Route::post('list', [Controllers\Users\UserController::class, 'list']);
+                Route::get('user/{user}', [Controllers\Users\UserController::class, 'get']);
+                Route::post('user/{user}', [Controllers\Users\UserController::class, 'create']);
+                Route::put('user/{user}', [Controllers\Users\UserController::class, 'update']);
+            });
+
+        Route::prefix('partners')
+            ->middleware(['role:sysadmin'])
+            ->group(function () {
+                Route::post('list', [Controllers\Partners\PartnerController::class, 'list']);
             });
 });

@@ -29,6 +29,13 @@ class JsonResponse
         ], Response::HTTP_CREATED);
     }
 
+    static function Updated(): \Illuminate\Http\JsonResponse
+    {
+        return response()->json([
+            'message' => 'Updated'
+        ], Response::HTTP_OK);
+    }
+
     /**
      * Методы для отправки ошибок
      */

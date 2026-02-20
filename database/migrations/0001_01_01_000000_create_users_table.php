@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('login')->unique();
             $table->string('role')->default('user');
-            $table->unsignedBigInteger('partner_id');
+            $table->unsignedBigInteger('partner_id')->nullable();
             $table->boolean('disabled')->default(0);
             $table->string('email')->unique()->nullable();
             $table->timestamp('email_verified_at')->nullable();
