@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Tickets;
 
 use App\Enums\Ticket\TicketState;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Ticket\TicketsCreateRequest;
-use App\Http\Requests\Ticket\TicketsUpdateMessageRequest;
-use App\Http\Requests\Ticket\TicketsUpdateRequest;
+use App\Http\Requests\Ticket\TicketCreateRequest;
+use App\Http\Requests\Ticket\TicketUpdateMessageRequest;
+use App\Http\Requests\Ticket\TicketUpdateRequest;
 use App\Http\Resources\Ticket\TicketListResource;
 use App\Http\Resources\Ticket\TicketResource;
 use App\Models\Partner\Partner;
@@ -149,7 +149,7 @@ class TicketsController extends Controller
     /**
      * Создать заявление
      */
-    public function create(TicketsCreateRequest $request): \Illuminate\Http\JsonResponse
+    public function create(TicketCreateRequest $request): \Illuminate\Http\JsonResponse
     {
         $data = $request->validated();
 
@@ -200,7 +200,7 @@ class TicketsController extends Controller
      * Обновить заявление
      * Выполняется только для активного статуса [new, in_progress, waiting]
      */
-    public function update(TicketsUpdateRequest $request, Ticket $ticket): \Illuminate\Http\JsonResponse
+    public function update(TicketUpdateRequest $request, Ticket $ticket): \Illuminate\Http\JsonResponse
     {
         if (!$this->ticketAccess($ticket)) {
             return JsonResponse::Forbidden();
@@ -252,7 +252,7 @@ class TicketsController extends Controller
      * Обновление сообщения
      * Выполняется пользователем, ожидает только сообщение и файлы
      */
-    public function updateMessage(TicketsUpdateMessageRequest $request, Ticket $ticket): \Illuminate\Http\JsonResponse
+    public function updateMessage(TicketUpdateMessageRequest $request, Ticket $ticket): \Illuminate\Http\JsonResponse
     {
         if (!$this->ticketAccess($ticket)) {
             return JsonResponse::Forbidden();

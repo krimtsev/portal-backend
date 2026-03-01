@@ -12,16 +12,10 @@ class PartnerGroup extends Model
 
     protected $fillable = [
         'title',
-        'main_partner_id',
     ];
 
     public function partners(): HasMany
     {
         return $this->hasMany(Partner::class, 'group_id');
-    }
-
-    public function mainPartner(): BelongsTo
-    {
-        return $this->belongsTo(Partner::class, 'main_partner_id');
     }
 }

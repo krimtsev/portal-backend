@@ -41,6 +41,7 @@ class Partner extends Model
         'address',
         'start_at',
         'yclients_id',
+        'mango_telnum',
         'disabled',
         'group_id'
     ];

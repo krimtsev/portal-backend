@@ -18,6 +18,18 @@ class PartnerResource extends JsonResource
             'mango_telnum'    => $this->mango_telnum,
             'contract_number' => $this->contract_number,
             'email'           => $this->email,
+            'start_at'        => $this->start_at?->format('Y-m-d'),
+            'group_id'        => $this->group_id,
+            'disabled'        => (bool) $this->disabled,
+            'telnums'         => $this->whenLoaded('telnums', function() {
+                return $this->telnums->map(function($telnum) {
+                    return [
+                        'id'         => $telnum->id,
+                        'name'       => $telnum->name,
+                        'number'     => $telnum->number,
+                    ];
+                });
+            }),
         ];
     }
 }

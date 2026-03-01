@@ -12,7 +12,31 @@ Route::prefix('v1/dashboard')
         Route::prefix('partners')
             ->middleware(['role:admin,sysadmin'])
             ->group(function () {
-                Route::get('short-list', [Controllers\Partners\PartnerController::class, 'shortList']);
+                Route::get('options', [Controllers\Partners\PartnerController::class, 'options']);
+            });
+
+        Route::prefix('partners')
+            ->middleware(['role:sysadmin'])
+            ->group(function () {
+                Route::post('list', [Controllers\Partners\PartnerController::class, 'list']);
+                Route::get('partner/{partner}', [Controllers\Partners\PartnerController::class, 'get']);
+                Route::post('partner/{partner}', [Controllers\Partners\PartnerController::class, 'create']);
+                Route::put('partner/{partner}', [Controllers\Partners\PartnerController::class, 'update']);
+            });
+
+        Route::prefix('partner-groups')
+            ->middleware(['role:admin,sysadmin'])
+            ->group(function () {
+                Route::get('options', [Controllers\Partners\PartnerGroupController::class, 'options']);
+            });
+
+        Route::prefix('partner-groups')
+            ->middleware(['role:admin,sysadmin'])
+            ->group(function () {
+                Route::post('list', [Controllers\Partners\PartnerGroupController::class, 'list']);
+                Route::get('partner-group/{partnerGroup}', [Controllers\Partners\PartnerGroupController::class, 'get']);
+                Route::post('partner-group/{partnerGroup}', [Controllers\Partners\PartnerGroupController::class, 'create']);
+                Route::put('partner-group/{partnerGroup}', [Controllers\Partners\PartnerGroupController::class, 'update']);
             });
 
         Route::prefix('ticket-categories')
@@ -37,11 +61,5 @@ Route::prefix('v1/dashboard')
                 Route::get('user/{user}', [Controllers\Users\UserController::class, 'get']);
                 Route::post('user/{user}', [Controllers\Users\UserController::class, 'create']);
                 Route::put('user/{user}', [Controllers\Users\UserController::class, 'update']);
-            });
-
-        Route::prefix('partners')
-            ->middleware(['role:sysadmin'])
-            ->group(function () {
-                Route::post('list', [Controllers\Partners\PartnerController::class, 'list']);
             });
 });

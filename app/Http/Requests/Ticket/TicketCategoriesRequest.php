@@ -4,7 +4,7 @@ namespace App\Http\Requests\Ticket;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class TicketsCategoriesRequest extends FormRequest
+class TicketCategoriesRequest extends FormRequest
 {
     public function authorize(): bool
     {
