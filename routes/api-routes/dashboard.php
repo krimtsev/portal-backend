@@ -37,6 +37,7 @@ Route::prefix('v1/dashboard')
                 Route::get('partner-group/{partnerGroup}', [Controllers\Partners\PartnerGroupController::class, 'get']);
                 Route::post('partner-group/{partnerGroup}', [Controllers\Partners\PartnerGroupController::class, 'create']);
                 Route::put('partner-group/{partnerGroup}', [Controllers\Partners\PartnerGroupController::class, 'update']);
+                Route::delete('partner-group/{partnerGroup}', [Controllers\Partners\PartnerGroupController::class, 'remove']);
             });
 
         Route::prefix('ticket-categories')

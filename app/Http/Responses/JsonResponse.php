@@ -36,6 +36,13 @@ class JsonResponse
         ], Response::HTTP_OK);
     }
 
+    static function Removed(): \Illuminate\Http\JsonResponse
+    {
+        return response()->json([
+            'message' => 'Removed'
+        ], Response::HTTP_OK);
+    }
+
     /**
      * Методы для отправки ошибок
      */

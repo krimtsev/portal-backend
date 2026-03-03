@@ -98,4 +98,15 @@ class PartnerGroupController extends Controller
 
         return JsonResponse::Updated();
     }
+
+    public function remove(Request $request, PartnerGroup $partnerGroup): \Illuminate\Http\JsonResponse
+    {
+        DB::transaction(function () use ($partnerGroup) {
+            $partnerGroup->partners()->update(['group_id' => null]);
+
+            $partnerGroup->delete();
+        });
+
+        return JsonResponse::Removed();
+    }
 }
