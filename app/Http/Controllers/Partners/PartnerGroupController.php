@@ -7,9 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Partner\PartnerGroupCreateRequest;
 use App\Http\Requests\Partner\PartnerGroupUpdateRequest;
 use App\Http\Resources\PartnerGroups\PartnerGroupsListResource;
-use App\Http\Responses\JsonResponse;
 use App\Models\Partner\Partner;
 use App\Models\Partner\PartnerGroup;
+use App\Responses\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 

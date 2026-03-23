@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Ticket;
 
+use App\Constants\File\FileSettings;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\Ticket\TicketState;
@@ -42,11 +43,7 @@ class TicketUpdateRequest extends FormRequest
                 'nullable',
                 'array'
             ],
-            'files.*' => [
-                'file',
-                'max:1024',
-                'mimes:jpg,jpeg,png,webp,tif,pdf,doc,docx,zip,xlsx,xls,txt,ai,pptx',
-            ],
+            'files.*' => FileSettings::getRules(200),
         ];
     }
 }

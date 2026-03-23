@@ -19,7 +19,7 @@ Route::prefix('v1')->group(function () {
         Route::prefix('cloud')->group(function () {
             Route::get('list', [Controllers\Cloud\CloudController::class, 'list']);
 
-            Route::get('download', [Controllers\Cloud\CloudFilesController::class, 'download']);
+            Route::get('folder/{folder}/download/{fileName}', [Controllers\Cloud\CloudFilesController::class, 'download']);
         });
 
         Route::get('messages', [Controllers\Message\MessageController::class, 'list']);

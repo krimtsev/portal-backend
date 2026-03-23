@@ -12,6 +12,9 @@ class CloudFolder extends Model
 {
     use HasBreadcrumbs;
 
+    public const CACHE_TTL = 7200; // 2 часа
+    public const CACHE_TAG = "cloud";
+
     protected $table = 'cloud_folders';
 
     protected $fillable = [
@@ -24,8 +27,6 @@ class CloudFolder extends Model
     protected $casts = [
         'created_at'  => 'date:Y-m-d',
     ];
-
-    const FOLDER = 'cloud';
 
     /**
      * Дочерние папки
@@ -44,13 +45,30 @@ class CloudFolder extends Model
     }
 
 
-    // Рекурсивная загрузка всех детей
-    public function allChildrenRecursive(): Builder|HasMany
+    /**
+     * Рекурсивная загрузка всех детей
+     */
+    public function childrenRecursive(): Builder|HasMany
     {
-        return $this->children()->with('allChildrenRecursive');
+        return $this->children()->with('childrenRecursive');
     }
 
-    // Получить все ID текущей и вложенных папок
+    public function withFilesRecursive(): HasMany
+    {
+        return $this->children()->with(['withFilesRecursive', 'files' => function($q) {
+            $q->select('id', 'title', 'ext', 'cloud_folders_id');
+        }]);
+    }
+
+    public function files(): HasMany
+    {
+        return $this->hasMany(CloudFile::class, 'cloud_folders_id')
+            ->select('id', 'title', 'ext', 'downloads', 'cloud_folders_id', 'name');
+    }
+
+    /**
+     * Получить все ID текущей и вложенных папок
+     */
     public function getAllChildrenIds(): array
     {
         $ids = [$this->id];

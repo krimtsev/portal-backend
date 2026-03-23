@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Tickets;
 
 use App\Http\Controllers\Controller;
-use App\Http\Responses\JsonResponse;
 use App\Models\Ticket\TicketFile;
+use App\Responses\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class TicketsFilesController extends Controller {
@@ -15,15 +15,10 @@ class TicketsFilesController extends Controller {
     /**
      * Скачать файл тикета
      */
-    public function download(string $ticket, string $name): \Illuminate\Http\JsonResponse|StreamedResponse
+    public function download(Request $request, string $ticket, string $fileName): \Illuminate\Http\JsonResponse|StreamedResponse
     {
-
-        if (!$name) {
-            return JsonResponse::FileNotFound();
-        }
-
         $file = TicketFile::select('path', 'name', 'title', 'ext', 'type')
-            ->where('name', $name)
+            ->where('name', $fileName)
             ->first();
 
         if (!$file) {

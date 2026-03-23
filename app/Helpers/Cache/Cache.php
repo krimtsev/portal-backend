@@ -23,7 +23,7 @@ class Cache
     /**
      * Универсальный forget с опциональными тегами.
      */
-    public static function forget(string $key, ?string $tag = null)
+    public static function forget(string $key, ?string $tag = null): bool
     {
         $driver = config('cache.default');
 
@@ -32,5 +32,19 @@ class Cache
         }
 
         return FacadeCache::forget($key);
+    }
+
+    /**
+     * Универсальный flush с опциональным тегом.
+     */
+    public static function flush(?string $tag = null): bool
+    {
+        $driver = config('cache.default');
+
+        if ($tag && in_array($driver, ['redis', 'memcached'])) {
+            return FacadeCache::tags($tag)->flush();
+        }
+
+        return FacadeCache::flush();
     }
 }

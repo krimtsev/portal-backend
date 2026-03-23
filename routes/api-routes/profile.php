@@ -24,6 +24,6 @@ Route::prefix('v1/profile')
             Route::get('ticket/{ticket}', [Controllers\Tickets\TicketsController::class, 'get']);
             Route::post('ticket/{ticket}/message', [Controllers\Tickets\TicketsController::class, 'updateMessage']);
             Route::delete('ticket/{ticket}', [Controllers\Tickets\TicketsController::class, 'remove']);
-            Route::get('ticket/{ticket}/download/{name}', [Controllers\Tickets\TicketsFilesController::class, 'download']);
+            Route::get('ticket/{ticket}/download/{fileName}', [Controllers\Tickets\TicketsFilesController::class, 'download']);
         });
     });

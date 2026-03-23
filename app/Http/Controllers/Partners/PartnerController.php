@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Partners;
 
 use App\Helpers\Pagination\Pagination;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Partner\PartnerCreateRequest;
 use App\Http\Requests\Partner\PartnerUpdateRequest;
 use App\Http\Resources\Partner\PartnerListResource;
 use App\Http\Resources\Partner\PartnerResource;
 use App\Models\Partner\Partner;
-use App\Http\Controllers\Controller;
-use App\Http\Responses\JsonResponse;
+use App\Responses\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 

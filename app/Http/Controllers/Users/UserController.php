@@ -8,8 +8,8 @@ use App\Http\Requests\User\UserCreateRequest;
 use App\Http\Requests\User\UserUpdateRequest;
 use App\Http\Resources\User\UserListResource;
 use App\Http\Resources\User\UserResource;
-use App\Http\Responses\JsonResponse;
 use App\Models\User\User;
+use App\Responses\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 

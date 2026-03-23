@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Ticket;
 
+use App\Constants\File\FileSettings;
 use Illuminate\Foundation\Http\FormRequest;
 
 class TicketCreateRequest extends FormRequest
@@ -43,11 +44,7 @@ class TicketCreateRequest extends FormRequest
                 'nullable',
                 'array'
             ],
-            'files.*' => [
-                'file',
-                'max:1024',
-                'mimes:jpg,jpeg,png,tif,pdf,doc,docx,zip,xlsx,xls,txt,ai,pptx',
-            ],
+            'files.*' => FileSettings::getRules(200),
         ];
     }
 }

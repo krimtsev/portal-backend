@@ -22,16 +22,4 @@ class CloudFile extends Model
     protected $casts = [
         'created_at'  => 'date:Y-m-d',
     ];
-
-    /*
-    public function folders(): \Illuminate\Database\Eloquent\Relations\BelongsTo
-    {
-        return $this->belongsTo(CloudFolder::class, 'id', 'cloud_folders_id');
-    }
-
-    public function folder(): \Illuminate\Database\Eloquent\Relations\HasOne
-    {
-        return $this->hasOne(CloudFolder::class, 'id', 'cloud_folders_id');
-    }
-    */
 }

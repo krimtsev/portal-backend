@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Tickets;
 
 use App\Enums\Ticket\TicketState;
+use App\Helpers\Pagination\Pagination;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Ticket\TicketCreateRequest;
 use App\Http\Requests\Ticket\TicketUpdateMessageRequest;
@@ -10,13 +11,12 @@ use App\Http\Requests\Ticket\TicketUpdateRequest;
 use App\Http\Resources\Ticket\TicketListResource;
 use App\Http\Resources\Ticket\TicketResource;
 use App\Models\Partner\Partner;
-use App\Models\Ticket\TicketMessage;
-use Illuminate\Http\Request;
-use App\Http\Responses\JsonResponse;
-use App\Helpers\Pagination\Pagination;
 use App\Models\Ticket\Ticket;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Ticket\TicketMessage;
+use App\Responses\JsonResponse;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class TicketsController extends Controller
@@ -304,7 +304,7 @@ class TicketsController extends Controller
             $eventsController->create($original, $ticket);
         });
 
-        return JsonResponse::Send([]);
+        return JsonResponse::Removed();
     }
 
     /**

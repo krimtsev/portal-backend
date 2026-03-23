@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ChangePassword\ChangePasswordRequest;
+use App\Responses\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Http\Responses\JsonResponse;
 
 class ChangePasswordController extends Controller
 {

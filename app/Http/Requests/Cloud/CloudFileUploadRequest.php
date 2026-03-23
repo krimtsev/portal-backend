@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Ticket;
+namespace App\Http\Requests\Cloud;
 
-use App\Constants\File\FileSettings;
 use Illuminate\Foundation\Http\FormRequest;
+use App\Constants\File\FileSettings;
 
-class TicketUpdateMessageRequest extends FormRequest
+class CloudFileUploadRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -15,10 +15,10 @@ class TicketUpdateMessageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'message' => [
-                'string',
+            'files' => [
+                'required',
+                'array'
             ],
-            'files' => ['nullable', 'array'],
             'files.*' => FileSettings::getRules(200),
         ];
     }

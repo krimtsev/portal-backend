@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Contacts;
 
 use App\Helpers\Pagination\Pagination;
 use App\Http\Controllers\Controller;
-use App\Http\Responses\JsonResponse;
 use App\Models\Partner\Partner;
+use App\Responses\JsonResponse;
 use Illuminate\Http\Request;
 
 class FranchiseeController extends Controller

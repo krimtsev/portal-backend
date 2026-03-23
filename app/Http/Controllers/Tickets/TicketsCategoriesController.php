@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Tickets;
 
-use App\Http\Controllers\Controller;
-use App\Models\Ticket\TicketCategory;
-use App\Http\Requests\Ticket\TicketCategoriesRequest;
-use Illuminate\Http\Request;
-use App\Http\Responses\JsonResponse;
 use App\Helpers\Pagination\Pagination;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Ticket\TicketCategoriesRequest;
+use App\Models\Ticket\TicketCategory;
+use App\Responses\JsonResponse;
+use Illuminate\Http\Request;
 
 
 class TicketsCategoriesController extends Controller

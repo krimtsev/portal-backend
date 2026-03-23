@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Message;
 
-use App\Models\Message\Message;
 use App\Http\Controllers\Controller;
-use App\Http\Responses\JsonResponse;
+use App\Models\Message\Message;
+use App\Responses\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
 class MessageController extends Controller

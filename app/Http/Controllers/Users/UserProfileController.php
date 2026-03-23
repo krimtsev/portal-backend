@@ -6,7 +6,7 @@ namespace App\Http\Controllers\Users;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Partner\PartnerResource;
 use App\Http\Resources\User\UserProfileResource;
-use App\Http\Responses\JsonResponse;
+use App\Responses\JsonResponse;
 use Illuminate\Http\Request;
 
 class UserProfileController extends Controller

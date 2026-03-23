@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Http\Responses\JsonResponse;
+use App\Responses\JsonResponse;
 use Closure;
 use Illuminate\Http\Request;
 
