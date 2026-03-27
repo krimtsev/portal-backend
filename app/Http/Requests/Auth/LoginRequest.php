@@ -27,8 +27,9 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'login' => ['required', 'string'],
+            'login'    => ['required', 'string'],
             'password' => ['required', 'string'],
+            'remember' => ['nullable', 'boolean'],
         ];
     }
 
@@ -52,10 +53,6 @@ class LoginRequest extends FormRequest
         RateLimiter::clear($this->throttleKey());
 
         session()->regenerate();
-
-        //if ($this->boolean('remember')) {
-        //    config(['session.lifetime' => config('session.remember_lifetime')]);
-        //}
     }
 
     /**
