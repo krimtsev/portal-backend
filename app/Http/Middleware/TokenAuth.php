@@ -17,7 +17,7 @@ class TokenAuth
         $requestToken = $request->query('token');
 
         if (empty($token) || $requestToken !== $token) {
-            return JsonResponse::Send(null, 'Invalid or missing API key', 401);
+            return JsonResponse::Send(null, trans('auth.invalid_key'), 401);
         }
 
         if ($request->has('token')) {

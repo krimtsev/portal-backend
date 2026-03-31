@@ -39,11 +39,11 @@ class CloudUpdateRequest extends FormRequest
                     if (!$folder) return;
 
                     if (is_null($folder->category_id) && !is_null($value)) {
-                        $fail('Корневой папке нельзя назначить родительскую категорию.');
+                        $fail(trans('cloud.validation.root_cannot_have_parent'));
                     }
 
                     if (!is_null($folder->category_id) && is_null($value)) {
-                        $fail('Эту папку нельзя перенести в корень.');
+                        $fail(trans('cloud.validation.cannot_move_to_root'));
                     }
                 },
             ],

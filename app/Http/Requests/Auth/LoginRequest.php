@@ -50,6 +50,13 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        if (Auth::user()->disabled) {
+            Auth::logout();
+            throw ValidationException::withMessages([
+                'login' => trans('auth.blocked'),
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
 
         session()->regenerate();

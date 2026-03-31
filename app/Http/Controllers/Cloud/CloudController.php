@@ -145,7 +145,7 @@ class CloudController extends Controller
         $data['folder'] = $folderUuid;
 
         if (!Storage::disk('cloud')->makeDirectory($folderUuid)) {
-            return JsonResponse::Forbidden('Could not create directory');
+            return JsonResponse::Forbidden(trans('cloud.fail_create_directory'));
         }
 
         $folder = CloudFolder::create($data);
@@ -173,7 +173,7 @@ class CloudController extends Controller
         $hasSubfolders = CloudFolder::where('category_id', $folder->id)->exists();
 
         if ($hasSubfolders) {
-            return JsonResponse::Forbidden('The folder cannot be deleted because it contains subdirectories.');
+            return JsonResponse::Forbidden(trans('cloud.folder_contains_subdirectories'));
         }
 
         $folderId = $folder->id;

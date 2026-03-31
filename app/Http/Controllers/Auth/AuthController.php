@@ -25,7 +25,7 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return JsonResponse::Send(null, 'Logged out');
+        return JsonResponse::Send(null, trans('auth.logout'));
     }
 
     public function userData(): \Illuminate\Http\JsonResponse
@@ -36,13 +36,13 @@ class AuthController extends Controller
             return JsonResponse::UserNotFound();
         }
 
-        $partner = Partner::select('id', 'name', 'disabled')
-            ->where('id', $user->partner_id)
-            ->first();
-
         if ($user->disabled) {
             return JsonResponse::Forbidden();
         }
+
+        $partner = Partner::select('id', 'name', 'disabled')
+            ->where('id', $user->partner_id)
+            ->first();
 
         return JsonResponse::Send(
             [

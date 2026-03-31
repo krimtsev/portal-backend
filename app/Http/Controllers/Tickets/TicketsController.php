@@ -207,7 +207,7 @@ class TicketsController extends Controller
         }
 
         if (!$this->canEdit($ticket)) {
-            return JsonResponse::Forbidden('This ticket cannot be edited.');
+            return JsonResponse::Forbidden(trans('ticket.not_editable'));
         }
 
         $data = $request->validated();
@@ -259,7 +259,7 @@ class TicketsController extends Controller
         }
 
         if (!$this->canEdit($ticket)) {
-            return JsonResponse::Forbidden('This ticket cannot be edited.');
+            return JsonResponse::Forbidden(trans('ticket.not_editable'));
         }
 
         $data = $request->validated();
@@ -291,7 +291,7 @@ class TicketsController extends Controller
         }
 
         if (!$this->canEdit($ticket)) {
-            return JsonResponse::Forbidden('This ticket cannot be edited or removed.');
+            return JsonResponse::Forbidden(trans('ticket.not_modifiable'));
         }
 
         DB::transaction(function() use ($ticket, $request) {

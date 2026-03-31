@@ -55,7 +55,7 @@ class CloudFilesController extends Controller
     private function ensureFileBelongsToFolder(CloudFolder $folder, CloudFile $file): ?\Illuminate\Http\JsonResponse
     {
         if ($file->cloud_folders_id !== $folder->id) {
-            return JsonResponse::Forbidden('The file does not belong to this folder.');
+            return JsonResponse::Forbidden(trans('cloud.file_not_in_folder'));
         }
 
         return null;
@@ -101,7 +101,7 @@ class CloudFilesController extends Controller
         $createdFiles = [];
 
         if (!$path || !Storage::disk('cloud')->exists($path)) {
-            return JsonResponse::Forbidden('Директория не найдена.');
+            return JsonResponse::Forbidden(trans('cloud.directory_not_found'));
         }
 
         foreach ($request->file('files') as $file) {

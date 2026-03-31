@@ -40,4 +40,13 @@ return [
         'certificate' => storage_path('config/google/certificate.json'),
     ],
 
+    'yclients' => [
+        'app_token' => env('YCLIENTS_APP_TOKEN'),
+        'partner_token' => env('YCLIENTS_PARTNER_TOKEN'),
+    ],
+
+    'mango' => [
+        'key' => env('MANGO_VPBX_API_KEY'),
+        'salt' => env('MANGO_SALT'),
+    ],
 ];
