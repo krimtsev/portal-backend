@@ -6,6 +6,7 @@ use App\Helpers\Pagination\Pagination;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\UserCreateRequest;
 use App\Http\Requests\User\UserUpdateRequest;
+use App\Http\Resources\User\UserExportResource;
 use App\Http\Resources\User\UserListResource;
 use App\Http\Resources\User\UserResource;
 use App\Models\User\User;
@@ -74,5 +75,14 @@ class UserController extends Controller
         User::create($data);
 
         return JsonResponse::Created();
+    }
+
+    public function export(): array
+    {
+        $users = User::with('partner:id,name')
+            ->orderBy('login')
+            ->get();
+
+        return UserExportResource::collection($users)->resolve();
     }
 }

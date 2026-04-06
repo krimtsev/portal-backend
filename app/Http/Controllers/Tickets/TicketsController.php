@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Ticket\TicketCreateRequest;
 use App\Http\Requests\Ticket\TicketUpdateMessageRequest;
 use App\Http\Requests\Ticket\TicketUpdateRequest;
+use App\Http\Resources\Ticket\TicketExportResource;
 use App\Http\Resources\Ticket\TicketListResource;
 use App\Http\Resources\Ticket\TicketResource;
 use App\Models\Partner\Partner;
@@ -355,5 +356,16 @@ class TicketsController extends Controller
             TicketState::Closed->value,
             TicketState::Cancel->value,
         ]);
+    }
+
+    public function export(): array
+    {
+        $tickets = Ticket::query()
+            ->latest()
+            ->limit(500)
+            ->with('category')
+            ->get();
+
+        return TicketExportResource::collection($tickets)->resolve();
     }
 }

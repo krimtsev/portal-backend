@@ -6,6 +6,7 @@ use App\Helpers\Pagination\Pagination;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Partner\PartnerCreateRequest;
 use App\Http\Requests\Partner\PartnerUpdateRequest;
+use App\Http\Resources\Partner\PartnerExportResource;
 use App\Http\Resources\Partner\PartnerListResource;
 use App\Http\Resources\Partner\PartnerResource;
 use App\Models\Partner\Partner;
@@ -146,5 +147,13 @@ class PartnerController extends Controller
         });
 
         return JsonResponse::Updated();
+    }
+
+    public function export(): array
+    {
+        $users = Partner::orderBy('name')
+            ->get();
+
+        return PartnerExportResource::collection($users)->resolve();
     }
 }

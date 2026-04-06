@@ -22,6 +22,7 @@ Route::prefix('v1/dashboard')
                 Route::get('partner/{partner}', [Controllers\Partners\PartnerController::class, 'get']);
                 Route::post('partner/{partner}', [Controllers\Partners\PartnerController::class, 'create']);
                 Route::put('partner/{partner}', [Controllers\Partners\PartnerController::class, 'update']);
+                Route::get('export', [Controllers\Partners\PartnerController::class, 'export']);
             });
 
         Route::prefix('partner-groups')
@@ -53,6 +54,8 @@ Route::prefix('v1/dashboard')
                 Route::get('ticket/{ticket}', [Controllers\Tickets\TicketsController::class, 'get']);
                 Route::post('ticket/{ticket}', [Controllers\Tickets\TicketsController::class, 'update']);
                 Route::get('ticket/{ticket}/download/{fileName}', [Controllers\Tickets\TicketsFilesController::class, 'download']);
+                Route::get('export', [Controllers\Tickets\TicketsController::class, 'export']);
+
             });
 
         Route::prefix('users')
@@ -62,6 +65,7 @@ Route::prefix('v1/dashboard')
                 Route::get('user/{user}', [Controllers\Users\UserController::class, 'get']);
                 Route::post('user/{user}', [Controllers\Users\UserController::class, 'create']);
                 Route::put('user/{user}', [Controllers\Users\UserController::class, 'update']);
+                Route::get('export', [Controllers\Users\UserController::class, 'export']);
             });
 
         Route::prefix('cloud')

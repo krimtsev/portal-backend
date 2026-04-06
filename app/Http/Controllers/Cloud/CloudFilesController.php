@@ -37,11 +37,9 @@ class CloudFilesController extends Controller
 
         $downloadName = sprintf('%s.%s', $file->title, $file->ext);
 
-        return new StreamedResponse(function () use ($path) {
-            echo Storage::disk('cloud')->get($path);
-        }, 200, [
-            'Content-Type'        => $file->type  ?? 'application/octet-stream',
-            'Content-Disposition' => 'attachment; filename="' . $downloadName . '"',
+        return Storage::disk('cloud')->download($file->path, $downloadName, [
+            'Content-Type'   => $file->type ?? 'application/octet-stream',
+            'Content-Length' => Storage::disk('cloud')->size($file->path),
         ]);
     }
 
