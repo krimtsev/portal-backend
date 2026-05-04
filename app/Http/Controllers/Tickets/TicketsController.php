@@ -361,9 +361,17 @@ class TicketsController extends Controller
     public function export(): array
     {
         $tickets = Ticket::query()
+            ->select(
+                'id',
+                'title',
+                'type',
+                'state',
+                'created_at',
+                'category_id'
+            )
+            ->with('category:id,title')
             ->latest()
             ->limit(500)
-            ->with('category')
             ->get();
 
         return TicketExportResource::collection($tickets)->resolve();

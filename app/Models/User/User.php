@@ -7,7 +7,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use App\Observers\User\UserObserver;
 
+#[ObservedBy([UserObserver::class])]
 class User extends Authenticatable
 {
     use HasApiTokens, Notifiable;
@@ -59,5 +63,10 @@ class User extends Authenticatable
     public function partner(): BelongsTo
     {
         return $this->belongsTo(Partner::class, 'partner_id');
+    }
+
+    public function access(): HasOne
+    {
+        return $this->hasOne(UserAccess::class, 'user_id');
     }
 }

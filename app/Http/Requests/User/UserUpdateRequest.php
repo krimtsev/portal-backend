@@ -52,6 +52,14 @@ class UserUpdateRequest extends FormRequest
                 'sometimes',
                 'boolean',
             ],
+            'access' => [
+                'nullable',
+                'array'
+            ],
+            'access.location_map' => [
+                'nullable',
+                'boolean'
+            ],
         ];
     }
 }

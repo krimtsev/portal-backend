@@ -151,9 +151,21 @@ class PartnerController extends Controller
 
     public function export(): array
     {
-        $users = Partner::orderBy('name')
+        $partners = Partner::query()
+            ->select(
+                'id',
+                'organization',
+                'name',
+                'inn',
+                'ogrnip',
+                'contract_number',
+                'address',
+                'disabled',
+                'start_at'
+            )
+            ->orderBy('name')
             ->get();
 
-        return PartnerExportResource::collection($users)->resolve();
+        return PartnerExportResource::collection($partners)->resolve();
     }
 }

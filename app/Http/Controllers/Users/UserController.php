@@ -13,6 +13,7 @@ use App\Models\User\User;
 use App\Responses\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -44,7 +45,10 @@ class UserController extends Controller
 
     public function get(Request $request, User $user): \Illuminate\Http\JsonResponse
     {
-        $user->load(['partner:id,name']);
+        $user->load([
+            'partner:id,name',
+            'access'
+        ]);
 
         return JsonResponse::Send([
             'data' => new UserResource($user),
@@ -61,7 +65,13 @@ class UserController extends Controller
             unset($data['password']);
         }
 
-        $user->update($data);
+        DB::transaction(function () use ($data, $user) {
+            $user->update($data);
+
+            if (isset($data['access'])) {
+                $user->access()->update($data['access']);
+            }
+        });
 
         return JsonResponse::Updated();
     }
@@ -79,7 +89,17 @@ class UserController extends Controller
 
     public function export(): array
     {
-        $users = User::with('partner:id,name')
+        $users = User::query()
+            ->select(
+                'id',
+                'name',
+                'login',
+                'role',
+                'disabled',
+                'last_activity',
+                'partner_id'
+            )
+            ->with('partner:id,name')
             ->orderBy('login')
             ->get();
 

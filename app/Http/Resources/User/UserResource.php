@@ -19,7 +19,12 @@ class UserResource extends JsonResource
                     'name' => $this->partner->name,
                 ];
             }),
-            'disabled' => (bool) $this->disabled
+            'disabled' => (bool) $this->disabled,
+            'access'   => $this->whenLoaded('access', function() {
+                return [
+                    'location_map' => (bool) ($this->access->location_map ?? false),
+                ];
+            }),
         ];
     }
 }

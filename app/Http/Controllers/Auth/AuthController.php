@@ -30,6 +30,7 @@ class AuthController extends Controller
 
     public function userData(): \Illuminate\Http\JsonResponse
     {
+        /** @var \App\Models\User\User $user */
         $user = Auth::user();
 
         if (!$user) {
@@ -44,6 +45,8 @@ class AuthController extends Controller
             ->where('id', $user->partner_id)
             ->first();
 
+        $user->load('access');
+
         return JsonResponse::Send(
             [
                 'user' => [
@@ -53,6 +56,9 @@ class AuthController extends Controller
                     'avatar'  => $user->avatar,
                     'email'   => $user->email,
                     'partner' => $partner
+                ],
+                'access'  => [
+                    'location_map' => $user->access->location_map,
                 ],
             ]
         );
