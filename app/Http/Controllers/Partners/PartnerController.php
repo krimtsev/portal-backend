@@ -87,7 +87,17 @@ class PartnerController extends Controller
         $result = Pagination::paginate(
             $query,
             $request,
-            ['name'],
+            [
+                'name',
+                'organization',
+                'inn',
+                'ogrnip',
+                'yclients_id',
+                'mango_telnum',
+                'contract_number',
+                'address',
+                'telnums.number',
+            ],
             ['name'],
             ['disabled'],
         );

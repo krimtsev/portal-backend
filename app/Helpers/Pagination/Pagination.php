@@ -26,16 +26,17 @@ class Pagination
 
         // Поиск
         if (!empty($search) && !empty($searchColumns)) {
-            $query->where(function ($q) use ($search, $searchColumns) {
+            $searchTerm = trim($search);
+            $query->where(function ($q) use ($searchTerm, $searchColumns) {
                 foreach ($searchColumns as $column) {
                     // Проверяем, связанная ли это модель (формат: relation.column)
                     if (str_contains($column, '.')) {
                         [$relation, $relColumn] = explode('.', $column, 2);
-                        $q->orWhereHas($relation, function ($q2) use ($relColumn, $search) {
-                            $q2->where($relColumn, 'like', "%{$search}%");
+                        $q->orWhereHas($relation, function ($q2) use ($relColumn, $searchTerm) {
+                            $q2->where($relColumn, 'like', "%{$searchTerm}%");
                         });
                     } else {
-                        $q->orWhere($column, 'like', "%{$search}%");
+                        $q->orWhere($column, 'like', "%{$searchTerm}%");
                     }
                 }
             });
