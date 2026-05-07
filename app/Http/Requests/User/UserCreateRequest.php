@@ -11,6 +11,13 @@ class UserCreateRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'notes' => $this->notes ? trim($this->notes) : "",
+        ]);
+    }
+
     public function rules(): array
     {
         return [
@@ -30,6 +37,10 @@ class UserCreateRequest extends FormRequest
                 'nullable',
                 'email',
                 'unique:users,email',
+            ],
+            'notes' => [
+                'nullable',
+                'string',
             ],
             'role' => [
                 'required',

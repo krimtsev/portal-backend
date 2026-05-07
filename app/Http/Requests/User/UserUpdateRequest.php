@@ -12,6 +12,13 @@ class UserUpdateRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'notes' => $this->notes ? trim($this->notes) : "",
+        ]);
+    }
+
     public function rules(): array
     {
         $userId = $this->route('user')->id;
@@ -33,6 +40,10 @@ class UserUpdateRequest extends FormRequest
                 'nullable',
                 'email',
                 Rule::unique('users', 'email')->ignore($userId),
+            ],
+            'notes' => [
+                'nullable',
+                'string',
             ],
             'role' => [
                 'sometimes',
