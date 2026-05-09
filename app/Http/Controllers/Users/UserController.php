@@ -28,6 +28,7 @@ class UserController extends Controller
             'last_activity'
         )->with([
             'partner:id,name',
+            'access',
         ])->orderBy('id', 'desc');
 
         $result = Pagination::paginate(

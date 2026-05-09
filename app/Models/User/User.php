@@ -58,6 +58,7 @@ class User extends Authenticatable
             'partner_id'        => 'integer',
             'created_at'        => 'datetime',
             'last_activity'     => 'datetime',
+            'notes'             => 'string',
         ];
     }
 
