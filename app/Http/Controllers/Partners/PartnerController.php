@@ -99,7 +99,9 @@ class PartnerController extends Controller
                 'telnums.number',
             ],
             ['name'],
-            ['disabled'],
+            [
+                'columns' => ['disabled']
+            ],
         );
 
         $result['list'] = PartnerListResource::collection($result['list']);

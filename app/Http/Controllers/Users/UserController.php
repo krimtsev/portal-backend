@@ -36,7 +36,10 @@ class UserController extends Controller
             $request,
             ['login'],
             ['name', 'id'],
-            ['partner_id', 'disabled', 'role'],
+            [
+                'columns'   => ['partner_id', 'disabled', 'role'],
+                'relations' => ['access'],
+            ],
         );
 
         $result['list'] = UserListResource::collection($result['list']);

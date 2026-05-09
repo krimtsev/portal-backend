@@ -36,8 +36,7 @@ class PartnerGroupController extends Controller
             $query,
             $request,
             ['title'],
-            ['title'],
-            [],
+            ['title']
         );
 
         $result['list'] = PartnerGroupsListResource::collection($result['list']);
