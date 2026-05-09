@@ -11,6 +11,7 @@ class UserListResource extends JsonResource
         return [
             'id'            => $this->id,
             'login'         => $this->login,
+            'name'          => $this->name,
             'role'          => $this->role,
             'disabled'      => (bool)$this->disabled,
             'last_activity' => $this->last_activity?->format('Y-m-d H:i:s'),

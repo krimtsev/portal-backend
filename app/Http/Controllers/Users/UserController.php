@@ -22,6 +22,7 @@ class UserController extends Controller
         $query = User::select(
             'id',
             'login',
+            'name',
             'role',
             'partner_id',
             'disabled',
@@ -34,7 +35,7 @@ class UserController extends Controller
         $result = Pagination::paginate(
             $query,
             $request,
-            ['login'],
+            ['login', 'name'],
             ['name', 'id'],
             [
                 'columns'   => ['partner_id', 'disabled', 'role'],
