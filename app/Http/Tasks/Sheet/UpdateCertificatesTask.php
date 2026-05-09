@@ -59,10 +59,14 @@ class UpdateCertificatesTask
         foreach ($table as $line => $value) {
             if(count($value) < 3) continue;
 
+            [$priceRaw, $idRaw, $partnerRaw] = array_map('trim', array_slice($value, 0, 3));
+
+            $price = preg_replace('/[.,]/', '', $priceRaw);
+
             $rows[] = [
-                'price'      => Str::lower(Str::trim($value[0])),
-                'identifier' => Str::lower(Str::trim($value[1])),
-                'partner'    => Str::lower(Str::trim($value[2])),
+                'price'      => Str::upper($price),
+                'identifier' => Str::upper($idRaw),
+                'partner'    => Str::upper($partnerRaw),
                 'line'       => $line + 1,
             ];
         }
