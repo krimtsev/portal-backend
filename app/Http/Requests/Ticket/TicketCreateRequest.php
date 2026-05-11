@@ -34,6 +34,7 @@ class TicketCreateRequest extends FormRequest
                 'array'
             ],
             'type' => [
+                'required',
                 'string'
             ],
             'message' => [
