@@ -52,7 +52,8 @@ class UserController extends Controller
     {
         $user->load([
             'partner:id,name',
-            'access'
+            'access',
+            'departments'
         ]);
 
         return JsonResponse::Send([
@@ -73,6 +74,10 @@ class UserController extends Controller
         DB::transaction(function () use ($data, $user) {
             $user->update($data);
 
+            if (isset($data['departments'])) {
+                $user->departments()->sync($data['departments']);
+            }
+
             if (isset($data['access'])) {
                 $user->access()->update($data['access']);
             }
@@ -87,7 +92,13 @@ class UserController extends Controller
 
         $data['password'] = Hash::make($data['password']);
 
-        User::create($data);
+        DB::transaction(function () use ($data) {
+            $user = User::create($data);
+
+            if (!empty($data['departments'])) {
+                $user->departments()->sync($data['departments']);
+            }
+        });
 
         return JsonResponse::Created();
     }

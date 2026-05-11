@@ -64,14 +64,13 @@ class TicketsController extends Controller
         }
 
         $query->with([
-            'category:id,title',
             'partner:id,name',
             'user:id,name'
         ])
             ->select(
                 'id',
                 'title',
-                'category_id',
+                'department',
                 'partner_id',
                 'user_id',
                 'state',
@@ -92,7 +91,7 @@ class TicketsController extends Controller
             ['title'],
             ['id'],
             [
-                'columns'   => ['category_id', 'partner_id', 'state'],
+                'columns' => ['department', 'partner_id', 'state'],
             ],
         );
 
@@ -136,7 +135,6 @@ class TicketsController extends Controller
         }
 
         $ticket->load([
-            'category:id,title',
             'partner:id,name',
             'user:id,name,login',
             'messages.user:id,name,login',
@@ -170,13 +168,13 @@ class TicketsController extends Controller
             $attributes = $this->prepareAttributes($data);
 
             $ticketPayload = [
-                'title' => $data['title'],
+                'title'      => $data['title'],
                 'attributes' => $attributes,
-                'type' => $data['type'],
-                'category_id' => $data['category_id'],
+                'type'       => $data['type'],
+                'department' => $data['department'],
                 'partner_id' => $data['partner_id'],
-                'user_id' => $userId,
-                'state' => TicketState::New,
+                'user_id'    => $userId,
+                'state'      => TicketState::New,
             ];
 
             $ticket = Ticket::create($ticketPayload);
@@ -219,10 +217,10 @@ class TicketsController extends Controller
             $original = clone $ticket;
 
             $ticket->update([
-                'title'       => $data['title'],
-                'category_id' => $data['category_id'],
-                'partner_id'  => $data['partner_id'],
-                'state'       => $data['state'],
+                'title'      => $data['title'],
+                'department' => $data['department'],
+                'partner_id' => $data['partner_id'],
+                'state'      => $data['state'],
             ]);
 
             if (!empty($data['message']) || $request->hasFile('files')) {
@@ -252,8 +250,8 @@ class TicketsController extends Controller
     }
 
     /**
-     * Обновление сообщения
-     * Выполняется пользователем, ожидает только сообщение и файлы
+     * Обновление сообщения.
+     * Выполняется пользователем, ожидает только сообщение и файлы.
      */
     public function updateMessage(TicketUpdateMessageRequest $request, Ticket $ticket): \Illuminate\Http\JsonResponse
     {
@@ -285,7 +283,7 @@ class TicketsController extends Controller
 
     /**
      * Закрыть заявление
-     * Переволд в статус Closed, закрывается пользователем
+     * Перевод в статус Closed, закрывается пользователем
      */
     public function remove(Request $request, Ticket $ticket): \Illuminate\Http\JsonResponse
     {
@@ -341,10 +339,10 @@ class TicketsController extends Controller
         // Убираем пробелы в начале каждой строки
         $value = preg_replace('/^[ \t]+/m', '', $value);
 
-        // Схлопываем 3 и более переносов в два
+        // Объединяем 3 и более переносов в два
         $value = preg_replace("/\n{3,}/", "\n\n", $value);
 
-        // Схлопываем несколько пробелов подряд в один
+        // Объединяем несколько пробелов подряд в один
         $value = preg_replace('/[ \t]{2,}/', ' ', $value);
 
         // Обрезаем пробелы и переносы в начале и конце всего текста
@@ -366,12 +364,11 @@ class TicketsController extends Controller
             ->select(
                 'id',
                 'title',
+                'department',
                 'type',
                 'state',
                 'created_at',
-                'category_id'
             )
-            ->with('category:id,title')
             ->latest()
             ->limit(500)
             ->get();

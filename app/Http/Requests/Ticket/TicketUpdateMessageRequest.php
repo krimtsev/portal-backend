@@ -18,7 +18,10 @@ class TicketUpdateMessageRequest extends FormRequest
             'message' => [
                 'string',
             ],
-            'files' => ['nullable', 'array'],
+            'files' => [
+                'nullable',
+                'array',
+            ],
             'files.*' => FileSettings::getRules(200),
         ];
     }

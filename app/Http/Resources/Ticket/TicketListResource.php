@@ -9,20 +9,13 @@ class TicketListResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'         => $this->id,
-            'title'      => $this->title,
-            'type'       => $this->type,
-            'state'      => $this->state->value,
-            'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
-
+            'id'              => $this->id,
+            'title'           => $this->title,
+            'type'            => $this->type,
+            'state'           => $this->state->value,
+            'created_at'      => $this->created_at?->format('Y-m-d H:i:s'),
             'last_message_at' => $this->last_message_at,
-
-            'category' => $this->whenLoaded('category', function () {
-                return [
-                    'id'    => $this->category->id,
-                    'title' => $this->category->title,
-                ];
-            }),
+            'department'      => $this->department,
 
             'partner' => $this->whenLoaded('partner', function () {
                 return [

@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\User;
 
+use App\Enums\Department;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class UserCreateRequest extends FormRequest
 {
@@ -57,6 +59,21 @@ class UserCreateRequest extends FormRequest
             ],
             'disabled' => [
                 'boolean',
+            ],
+            'departments' => [
+                'nullable',
+                'array',
+            ],
+            'departments.*' => [
+                new Enum(Department::class)
+            ],
+            'access' => [
+                'nullable',
+                'array'
+            ],
+            'access.location_map' => [
+                'nullable',
+                'boolean'
             ],
         ];
     }

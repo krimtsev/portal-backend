@@ -2,13 +2,15 @@
 
 namespace App\Models\Ticket;
 
+use App\Enums\Department;
 use App\Enums\Ticket\TicketState;
+use App\Enums\Ticket\TicketType;
 use App\Models\Partner\Partner;
 use App\Models\User\User;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Ticket extends Model
 {
@@ -18,7 +20,7 @@ class Ticket extends Model
         'title',
         'attributes',
         'type',
-        'category_id',
+        'department',
         'partner_id',
         'user_id',
         'state'
@@ -28,16 +30,12 @@ class Ticket extends Model
 
     protected $casts = [
         'partner_id'  => 'integer',
-        'category_id' => 'integer',
         'created_at'  => 'date:Y-m-d',
         'state'       => TicketState::class,
+        'type'        => TicketType::class,
+        'department'  => Department::class,
         'attributes'  => 'array'
     ];
-
-    public function category(): BelongsTo
-    {
-        return $this->belongsTo(TicketCategory::class, 'category_id');
-    }
 
     public function partner(): BelongsTo
     {

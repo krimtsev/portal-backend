@@ -3,7 +3,10 @@
 namespace App\Http\Requests\Ticket;
 
 use App\Constants\File\FileSettings;
+use App\Enums\Department;
+use App\Enums\Ticket\TicketType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class TicketCreateRequest extends FormRequest
 {
@@ -19,10 +22,9 @@ class TicketCreateRequest extends FormRequest
                 'required',
                 'string',
             ],
-            'category_id' => [
+            'department' => [
                 'required',
-                'integer',
-                'exists:tickets_categories,id',
+                new Enum(Department::class),
             ],
             'partner_id' => [
                 'required',
@@ -34,7 +36,8 @@ class TicketCreateRequest extends FormRequest
                 'array'
             ],
             'type' => [
-                'string'
+                'required',
+                new Enum(TicketType::class),
             ],
             'message' => [
                 'nullable',

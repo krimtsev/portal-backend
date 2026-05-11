@@ -41,12 +41,6 @@ Route::prefix('v1/dashboard')
                 Route::delete('partner-group/{partnerGroup}', [Controllers\Partners\PartnerGroupController::class, 'remove']);
             });
 
-        Route::prefix('ticket-categories')
-            ->middleware(['role:admin,sysadmin'])
-            ->group(function () {
-                Route::get('list', [Controllers\Tickets\TicketsCategoriesController::class, 'list']);
-            });
-
         Route::prefix('tickets')
             ->middleware(['role:admin,sysadmin'])
             ->group(function () {

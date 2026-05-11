@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests\User;
 
+use App\Enums\Department;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
 
 class UserUpdateRequest extends FormRequest
 {
@@ -62,6 +64,13 @@ class UserUpdateRequest extends FormRequest
             'disabled' => [
                 'sometimes',
                 'boolean',
+            ],
+            'departments' => [
+                'nullable',
+                'array',
+            ],
+            'departments.*' => [
+                new Enum(Department::class)
             ],
             'access' => [
                 'nullable',

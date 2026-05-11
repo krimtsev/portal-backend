@@ -3,6 +3,8 @@
 namespace App\Models\User;
 
 use App\Models\Partner\Partner;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -17,7 +19,6 @@ class User extends Authenticatable
     use HasApiTokens, Notifiable;
 
     /**
-     * The attributes that are mass assignable.
      *
      * @var list<string>
      */
@@ -35,7 +36,6 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
      *
      * @var list<string>
      */
@@ -45,7 +45,6 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
      *
      * @return array<string, string>
      */
@@ -70,5 +69,27 @@ class User extends Authenticatable
     public function access(): HasOne
     {
         return $this->hasOne(UserAccess::class, 'user_id');
+    }
+
+    public function departments(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            UserDepartment::class,
+            'user_departments',
+            'user_id',
+            'department_slug',
+            'id',
+            'department_slug'
+        )->using(UserDepartment::class);
+    }
+
+    /**
+     * Scope для получения уникальных пользователей по списку отделов
+     */
+    public function scopeInDepartments($query, array $slugs)
+    {
+        return $query->whereHas('departments', function($q) use ($slugs) {
+            $q->whereIn('department_slug', $slugs);
+        });
     }
 }

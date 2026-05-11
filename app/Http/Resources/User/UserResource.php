@@ -26,6 +26,9 @@ class UserResource extends JsonResource
                     'location_map' => (bool) ($this->access->location_map ?? false),
                 ];
             }),
+            'departments' => $this->whenLoaded('departments', function() {
+                return $this->departments->pluck('department_slug')->toArray();
+            }),
         ];
     }
 }

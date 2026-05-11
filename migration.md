@@ -221,35 +221,6 @@ COMMIT;
 SET FOREIGN_KEY_CHECKS=1;
 ```
 
-# Tickets category
-``` sql
-SET FOREIGN_KEY_CHECKS=0;
-START TRANSACTION;
-
-INSERT INTO `tickets_categories` (
-    `id`,
-    `title`
-)
-SELECT
-    `id`,
-    `title`
-FROM
-    `_tickets_categories`;
-
-UPDATE tickets_categories SET slug = 'franchise'         WHERE id = 1;
-UPDATE tickets_categories SET slug = 'build'             WHERE id = 2;
-UPDATE tickets_categories SET slug = 'marketing'         WHERE id = 3;
-UPDATE tickets_categories SET slug = 'network_admin'     WHERE id = 4;
-UPDATE tickets_categories SET slug = 'network_barbering' WHERE id = 5;
-UPDATE tickets_categories SET slug = 'community'         WHERE id = 6;
-UPDATE tickets_categories SET slug = 'office_manager'    WHERE id = 7;
-UPDATE tickets_categories SET slug = 'it_department'     WHERE id = 8;
-UPDATE tickets_categories SET slug = 'accounting'        WHERE id = 9;
-
-COMMIT;
-SET FOREIGN_KEY_CHECKS=1;
-```
-
 # Tickets
 ``` sql
 SET FOREIGN_KEY_CHECKS=0;
@@ -263,7 +234,7 @@ INSERT INTO `tickets` (
     `id`,
     `title`,
     `type`,
-    `category_id`,
+    `department`,
     `partner_id`,
     `user_id`,
     `state`,
@@ -275,7 +246,7 @@ SELECT
     `id`,
     `title`,
     'general' AS `type`,
-    `category_id`,
+    `category_id` as `department`,
     `partner_id`,
     `user_id`,
     `state`,
@@ -285,17 +256,22 @@ SELECT
 FROM
     `_tickets`;
 
-UPDATE tickets
-SET state = CASE state
-    WHEN 1 THEN 'new'
-    WHEN 2 THEN 'in_progress'
-    WHEN 3 THEN 'waiting'
-    WHEN 4 THEN 'success'
-    WHEN 5 THEN 'closed'
-    WHEN 6 THEN 'cancel'
-    ELSE state
-    END
-WHERE state IN (1,2,3,4,5,6);
+UPDATE tickets SET department = 'franchise'         WHERE department = '1';
+UPDATE tickets SET department = 'build'             WHERE department = '2';
+UPDATE tickets SET department = 'marketing'         WHERE department = '3';
+UPDATE tickets SET department = 'network_admin'     WHERE department = '4';
+UPDATE tickets SET department = 'network_barbering' WHERE department = '5';
+UPDATE tickets SET department = 'community'         WHERE department = '6';
+UPDATE tickets SET department = 'office_manager'    WHERE department = '7';
+UPDATE tickets SET department = 'it_department'     WHERE department = '8';
+UPDATE tickets SET department = 'accounting'        WHERE department = '9';
+
+UPDATE tickets SET state = 'new'         WHERE state = '1';
+UPDATE tickets SET state = 'in_progress' WHERE state = '2';
+UPDATE tickets SET state = 'waiting'     WHERE state = '3';
+UPDATE tickets SET state = 'success'     WHERE state = '4';
+UPDATE tickets SET state = 'closed'      WHERE state = '5';
+UPDATE tickets SET state = 'cancel'      WHERE state = '6';
 
 INSERT INTO `tickets_messages` (
     `id`,

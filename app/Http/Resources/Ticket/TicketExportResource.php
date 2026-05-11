@@ -15,10 +15,7 @@ class TicketExportResource extends JsonResource
             'type'          => $this->type,
             'state'         => $this->state,
             'created_at'    => $this->created_at?->format('Y-m-d H:i:s'),
-
-            'category' => $this->whenLoaded('category', function () {
-                return $this->category->title;
-            }),
+            'department'    => $this->department,
         ];
     }
 
