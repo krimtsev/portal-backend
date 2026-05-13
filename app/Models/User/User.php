@@ -2,7 +2,9 @@
 
 namespace App\Models\User;
 
+use App\Models\Department\Department;
 use App\Models\Partner\Partner;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -70,5 +72,15 @@ class User extends Authenticatable
     public function access(): HasOne
     {
         return $this->hasOne(UserAccess::class, 'user_id');
+    }
+
+    public function departments(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Department::class,
+            'user_departments',
+            'user_id',
+            'department_id'
+        )->using(UserDepartment::class);
     }
 }

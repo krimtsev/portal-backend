@@ -29,15 +29,6 @@ class TicketEventResource extends JsonResource
             unset($changes['partner_id']);
         }
 
-        // Category
-        if (isset($changes['category_id'])) {
-            $changes['category'] = [
-                'old' => $this->categories[$changes['category_id']['old']]?->title ?? null,
-                'new' => $this->categories[$changes['category_id']['new']]?->title ?? null,
-            ];
-            unset($changes['category_id']);
-        }
-
         return [
             'type'       => 'event',
             'id'         => $this->id,

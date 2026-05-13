@@ -14,10 +14,12 @@ class UserProfileController extends Controller
     public function show(Request $request): \Illuminate\Http\JsonResponse
     {
         $user = $request->user();
-        $partner = $user->partner;
+        $user->load(['departments', 'partner']);
 
-        $userArray = (new UserProfileResource($user))->toArray($request);
-        $partnerArray = $partner ? (new PartnerResource($partner))->toArray($request) : null;
+        $userArray = new UserProfileResource($user);
+        $partnerArray = $user->partner
+            ? new PartnerResource($user->partner)
+            : null;
 
         return JsonResponse::Send([
             'user'    => $userArray,

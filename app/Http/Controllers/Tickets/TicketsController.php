@@ -64,14 +64,13 @@ class TicketsController extends Controller
         }
 
         $query->with([
-            'category:id,title',
             'partner:id,name',
-            'user:id,name'
+            'user:id,login,name'
         ])
             ->select(
                 'id',
                 'title',
-                'category_id',
+                'department_id',
                 'partner_id',
                 'user_id',
                 'state',
@@ -92,7 +91,7 @@ class TicketsController extends Controller
             ['title'],
             ['id'],
             [
-                'columns'   => ['category_id', 'partner_id', 'state'],
+                'columns'   => ['department_id', 'partner_id', 'state'],
             ],
         );
 
@@ -136,7 +135,6 @@ class TicketsController extends Controller
         }
 
         $ticket->load([
-            'category:id,title',
             'partner:id,name',
             'user:id,name,login',
             'messages.user:id,name,login',
@@ -170,13 +168,13 @@ class TicketsController extends Controller
             $attributes = $this->prepareAttributes($data);
 
             $ticketPayload = [
-                'title' => $data['title'],
-                'attributes' => $attributes,
-                'type' => $data['type'],
-                'category_id' => $data['category_id'],
-                'partner_id' => $data['partner_id'],
-                'user_id' => $userId,
-                'state' => TicketState::New,
+                'title'         => $data['title'],
+                'attributes'    => $attributes,
+                'type'          => $data['type'],
+                'department_id' => $data['department_id'],
+                'partner_id'    => $data['partner_id'],
+                'user_id'       => $userId,
+                'state'         => TicketState::New,
             ];
 
             $ticket = Ticket::create($ticketPayload);
@@ -219,10 +217,10 @@ class TicketsController extends Controller
             $original = clone $ticket;
 
             $ticket->update([
-                'title'       => $data['title'],
-                'category_id' => $data['category_id'],
-                'partner_id'  => $data['partner_id'],
-                'state'       => $data['state'],
+                'title'         => $data['title'],
+                'department_id' => $data['department_id'],
+                'partner_id'    => $data['partner_id'],
+                'state'         => $data['state'],
             ]);
 
             if (!empty($data['message']) || $request->hasFile('files')) {
@@ -368,10 +366,9 @@ class TicketsController extends Controller
                 'title',
                 'type',
                 'state',
+                'department_id',
                 'created_at',
-                'category_id'
             )
-            ->with('category:id,title')
             ->latest()
             ->limit(500)
             ->get();

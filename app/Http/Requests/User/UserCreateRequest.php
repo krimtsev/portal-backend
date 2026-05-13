@@ -3,6 +3,7 @@
 namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\DB;
 
 class UserCreateRequest extends FormRequest
 {
@@ -57,6 +58,23 @@ class UserCreateRequest extends FormRequest
             ],
             'disabled' => [
                 'boolean',
+            ],
+            'departments' => [
+                'nullable',
+                'array',
+            ],
+            'departments.*' => [
+                'required',
+                'integer',
+                'exists:departments,id',
+            ],
+            'access' => [
+                'nullable',
+                'array'
+            ],
+            'access.location_map' => [
+                'nullable',
+                'boolean'
             ],
         ];
     }

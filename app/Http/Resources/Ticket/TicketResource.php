@@ -4,7 +4,6 @@ namespace App\Http\Resources\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\Partner\Partner;
-use App\Models\Ticket\TicketCategory;
 
 class TicketResource extends JsonResource
 {
@@ -13,10 +12,9 @@ class TicketResource extends JsonResource
         $messages = TicketMessageResource::collection($this->messages)->resolve();
 
         $partners = Partner::all()->keyBy('id');
-        $categories = TicketCategory::all()->keyBy('id');
 
-        $events = collect($this->events)->map(function ($event) use ($partners, $categories) {
-            return (new TicketEventResource($event, $partners, $categories))->resolve();
+        $events = collect($this->events)->map(function ($event) use ($partners) {
+            return (new TicketEventResource($event, $partners))->resolve();
         });
 
         $timeline = collect()
@@ -26,17 +24,12 @@ class TicketResource extends JsonResource
             ->values();
 
         return [
-            'id'    => $this->id,
-            'title' => $this->title,
-            'type'  => $this->type,
-            'state' => $this->state->value,
-
-            'attributes' => $this->attributes,
-
-            'category' => [
-                'id'    => $this->category?->id,
-                'title' => $this->category?->title,
-            ],
+            'id'            => $this->id,
+            'title'         => $this->title,
+            'type'          => $this->type,
+            'state'         => $this->state->value,
+            'attributes'    => $this->attributes,
+            'department_id' => $this->department_id,
 
             'partner' => [
                 'id'   => $this->partner?->id,

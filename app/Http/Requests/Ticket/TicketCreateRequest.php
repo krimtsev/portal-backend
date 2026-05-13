@@ -19,10 +19,10 @@ class TicketCreateRequest extends FormRequest
                 'required',
                 'string',
             ],
-            'category_id' => [
+            'department_id' => [
                 'required',
                 'integer',
-                'exists:tickets_categories,id',
+                'exists:departments,id',
             ],
             'partner_id' => [
                 'required',

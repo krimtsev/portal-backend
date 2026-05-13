@@ -15,7 +15,7 @@ class UserListResource extends JsonResource
             'role'          => $this->role,
             'disabled'      => (bool)$this->disabled,
             'last_activity' => $this->last_activity?->format('Y-m-d H:i:s'),
-            'access'   => $this->whenLoaded('access', function() {
+            'access'        => $this->whenLoaded('access', function() {
                 return [
                     'location_map' => (bool) ($this->access->location_map ?? false),
                 ];

@@ -3,6 +3,7 @@
 namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class UserUpdateRequest extends FormRequest
@@ -62,6 +63,15 @@ class UserUpdateRequest extends FormRequest
             'disabled' => [
                 'sometimes',
                 'boolean',
+            ],
+            'departments' => [
+                'nullable',
+                'array',
+            ],
+            'departments.*' => [
+                'required',
+                'integer',
+                'exists:departments,id',
             ],
             'access' => [
                 'nullable',

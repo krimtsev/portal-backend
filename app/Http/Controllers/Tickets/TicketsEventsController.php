@@ -15,7 +15,7 @@ class TicketsEventsController extends Controller
      */
     public function create(Ticket $original, Ticket $updated): void
     {
-        $fields = ['title', 'state', 'category_id', 'partner_id'];
+        $fields = ['title', 'state', 'department_id', 'partner_id'];
         $changes = [];
 
         foreach ($fields as $field) {
