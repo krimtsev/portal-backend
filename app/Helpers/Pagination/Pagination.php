@@ -31,16 +31,11 @@ class Pagination
 
         // Фильтры
         if (!empty($filters) && is_array($filters)) {
-            $filterableColumns = $filterable['columns'] ?? [];
-            $filterableRelations = $filterable['relations'] ?? [];
-
             foreach ($filters as $column => $value) {
-                if ($value === null || $value === '') continue;
+                if ($value === null || $value === '' || empty($value)) continue;
 
-                if (in_array($column, $filterableColumns)) {
+                if (in_array($column, $filterable)) {
                     self::applyFilter($query, $column, $value);
-                } elseif (in_array($column, $filterableRelations)) {
-                    self::applyRelationFilter($query, $column, $value);
                 }
             }
         }
@@ -74,31 +69,10 @@ class Pagination
     protected static function applyFilter(Builder $query, string $column, mixed $value): void
     {
         if (is_array($value)) {
-            $query->where(function($q) use ($column, $value) {
-                foreach ($value as $v) {
-                    $q->orWhere($column, $v);
-                }
-            });
+            $query->whereIn($column, $value);
         } else {
             $query->where($column, $value);
         }
-    }
-
-    protected static function applyRelationFilter(Builder $query, string $relation, mixed $value): void
-    {
-        $query->whereHas($relation, function ($q) use ($relation, $value) {
-            if (is_array($value)) {
-                foreach ($value as $key => $val) {
-                    if (!is_int($key)) {
-                        $q->where($key, $val);
-                    } else {
-                        $q->where($val, true);
-                    }
-                }
-            } else {
-                $q->where($relation, $value);
-            }
-        });
     }
 
     protected static function applySearch(Builder $query, string $search, array $columns): void

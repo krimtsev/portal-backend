@@ -90,9 +90,7 @@ class TicketsController extends Controller
             $request,
             ['title'],
             ['id'],
-            [
-                'columns'   => ['department_id', 'partner_id', 'state'],
-            ],
+            ['department_id', 'partner_id', 'state'],
         );
 
         $result['list'] = TicketListResource::collection($result['list']);

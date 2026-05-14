@@ -30,17 +30,29 @@ class UserController extends Controller
         )->with([
             'partner:id,name',
             'access',
+            'departments'
         ])->orderBy('id', 'desc');
+
+        $filters = $request->input('filters', []);
+
+        $query
+            ->when(!empty($filters['department_id']), function ($q) use ($filters) {
+                $q->whereHas('departments', function ($sq) use ($filters) {
+                    $sq->whereIn('department_id', (array)$filters['department_id']);
+                });
+            })
+            ->when(!empty($filters['access']), function ($q) use ($filters) {
+                $q->whereHas('access', function ($sq) use ($filters) {
+                    $sq->where($filters['access']);
+                });
+            });
 
         $result = Pagination::paginate(
             $query,
             $request,
             ['login', 'name'],
             ['name', 'id'],
-            [
-                'columns'   => ['partner_id', 'disabled', 'role'],
-                'relations' => ['access'],
-            ],
+            ['partner_id', 'disabled', 'role'],
         );
 
         $result['list'] = UserListResource::collection($result['list']);
@@ -111,11 +123,15 @@ class UserController extends Controller
                 'name',
                 'login',
                 'role',
+                'email',
                 'disabled',
                 'last_activity',
                 'partner_id'
             )
-            ->with('partner:id,name')
+            ->with([
+                'partner:id,name',
+                'departments'
+            ])
             ->orderBy('login')
             ->get();
 

@@ -26,6 +26,9 @@ class UserListResource extends JsonResource
                     'name' => $this->partner->name,
                 ];
             }),
+            'departments' => $this->whenLoaded('departments', function () {
+                return $this->departments->pluck('id');
+            }),
         ];
     }
 }
