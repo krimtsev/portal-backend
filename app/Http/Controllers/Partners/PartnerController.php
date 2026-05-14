@@ -172,6 +172,9 @@ class PartnerController extends Controller
                 'ogrnip',
                 'contract_number',
                 'address',
+                'email',
+                'yclients_id',
+                'mango_telnum',
                 'disabled',
                 'start_at'
             )

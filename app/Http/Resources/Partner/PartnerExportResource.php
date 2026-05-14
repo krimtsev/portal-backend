@@ -17,6 +17,9 @@ class PartnerExportResource extends JsonResource
             'ogrnip'          => $this->ogrnip,
             'contract_number' => $this->contract_number,
             'address'         => $this->address,
+            'email'           => $this->email,
+            'yclients_id'     => $this->yclients_id,
+            'mango_telnum'    => $this->mango_telnum,
             'disabled'        => (bool)$this->disabled,
             'start_at'        => $this->start_at?->format('Y-m-d'),
         ];
