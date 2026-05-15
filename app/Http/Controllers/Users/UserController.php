@@ -30,7 +30,7 @@ class UserController extends Controller
         )->with([
             'partner:id,name',
             'access',
-            'departments'
+            'departments:id'
         ])->orderBy('id', 'desc');
 
         $filters = $request->input('filters', []);

@@ -3,7 +3,20 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    // 1. Берем первый тикет и обязательно подгружаем автора (user)
+    $ticket = \App\Models\Ticket\Ticket::with('user')->first();
+
+    if (!$ticket) {
+        return "В базе данных пока нет ни одного тикета.";
+    }
+
+    // 2. Создаем экземпляр уведомления
+    $notification = new \App\Notifications\Ticket\TicketCreatedNotification($ticket);
+
+    // 3. Рендерим письмо для первого попавшегося пользователя
+    $user = \App\Models\User\User::first();
+
+    return $notification->toMail($user)->render();
 });
 
 /**

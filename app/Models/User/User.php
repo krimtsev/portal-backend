@@ -83,4 +83,13 @@ class User extends Authenticatable
             'department_id'
         )->using(UserDepartment::class);
     }
+
+    public function scopeActiveInDepartment($query, int $departmentId)
+    {
+        return $query->where('disabled', false)
+            ->whereNotNull('email')
+            ->whereHas('departments', function($q) use ($departmentId) {
+                $q->where('departments.id', $departmentId);
+            });
+    }
 }
