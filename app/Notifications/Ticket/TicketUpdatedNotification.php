@@ -9,7 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class TicketCreatedNotification extends Notification implements ShouldQueue
+class TicketUpdatedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -37,8 +37,8 @@ class TicketCreatedNotification extends Notification implements ShouldQueue
     public function toMail($notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject("Новая заявка #{$this->ticket->id}")
-            ->view('emails.tickets.new-ticket', [
+            ->subject("Новое сообщение в заявке #{$this->ticket->id}")
+            ->view('emails.tickets.new-comment', [
                 'ticket'        => $this->ticket,
                 'ticketMessage' => $this->ticketMessage,
                 'user'          => $notifiable,

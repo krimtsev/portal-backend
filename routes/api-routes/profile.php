@@ -8,15 +8,9 @@ Route::prefix('v1/profile')
     ->group(function () {
         Route::prefix('user-profile')->group(function () {
             Route::get('/', [Controllers\Users\UserProfileController::class, 'show']);
-            Route::put('/', [Controllers\Users\UserProfileController::class, 'update']);
         });
 
         Route::put('/change-password', [Controllers\Auth\ChangePasswordController::class, 'update']);
-
-        Route::prefix('ticket-categories')->group(function () {
-            Route::get('/list', [Controllers\Tickets\TicketsCategoriesController::class, 'list']);
-            Route::get('/slug/{category:slug}', [Controllers\Tickets\TicketsCategoriesController::class, 'getCategoryBySlug']);
-        });
 
         Route::prefix('tickets')->group(function () {
             Route::post('list', [Controllers\Tickets\TicketsController::class, 'list']);

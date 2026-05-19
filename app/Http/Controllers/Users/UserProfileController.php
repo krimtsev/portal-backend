@@ -26,12 +26,4 @@ class UserProfileController extends Controller
             'partner' => $partnerArray,
         ]);
     }
-
-    public function update(Request $request): \Illuminate\Http\JsonResponse
-    {
-        return JsonResponse::Send([
-            'user'    => [],
-            'partner' => []
-        ]);
-    }
 }

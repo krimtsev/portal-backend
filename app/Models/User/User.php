@@ -4,6 +4,7 @@ namespace App\Models\User;
 
 use App\Models\Department\Department;
 use App\Models\Partner\Partner;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -72,6 +73,13 @@ class User extends Authenticatable
     public function access(): HasOne
     {
         return $this->hasOne(UserAccess::class, 'user_id');
+    }
+
+    protected function userName(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->name ?: $this->login,
+        );
     }
 
     public function departments(): BelongsToMany

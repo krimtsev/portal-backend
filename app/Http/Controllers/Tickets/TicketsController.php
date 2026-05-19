@@ -14,11 +14,16 @@ use App\Http\Resources\Ticket\TicketResource;
 use App\Models\Partner\Partner;
 use App\Models\Ticket\Ticket;
 use App\Models\Ticket\TicketMessage;
+use App\Models\User\User;
+use App\Notifications\Ticket\TicketCreatedNotification;
+use App\Notifications\Ticket\TicketUpdatedNotification;
 use App\Responses\JsonResponse;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 
 class TicketsController extends Controller
 {
@@ -53,6 +58,25 @@ class TicketsController extends Controller
         }
 
         return true;
+    }
+
+    private function getStaffToNotify(int $departmentId): Collection
+    {
+        return User::activeInDepartment($departmentId)->get();
+    }
+
+    private function notifyMessageUpdate(Ticket $ticket, ?TicketMessage $ticketMessage, int $userId): void
+    {
+        if (!$ticketMessage) {
+            return;
+        }
+
+        $staff = $this->getStaffToNotify($ticket->department_id)
+            ->filter(fn($user) => $user->id !== $userId);
+
+        if ($staff->isNotEmpty()) {
+            Notification::send($staff, new TicketUpdatedNotification($ticket, $ticketMessage));
+        }
     }
 
     private function paginatedList(Builder $query, Request $request): \Illuminate\Http\JsonResponse
@@ -160,7 +184,7 @@ class TicketsController extends Controller
             }
         }
 
-           DB::transaction(function() use ($data, $request) {
+        [$ticket, $ticketMessage] = DB::transaction(function() use ($data, $request) {
             $userId = Auth::id();
 
             $attributes = $this->prepareAttributes($data);
@@ -185,12 +209,19 @@ class TicketsController extends Controller
 
             $ticketMessage = TicketMessage::create($ticketMessagePayload);
 
-            if ($request->hasFile('files')) {
-                foreach ($request->file('files') as $file) {
-                    TicketsFilesController::add($ticket->id, $ticketMessage->id, $file);
-                }
-            }
+            return [$ticket, $ticketMessage];
         });
+
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                TicketsFilesController::add($ticket->id, $ticketMessage->id, $file);
+            }
+        }
+
+        $staff = $this->getStaffToNotify($ticket->department_id);
+        if ($staff->isNotEmpty()) {
+            Notification::send($staff, new TicketCreatedNotification($ticket, $ticketMessage));
+        }
 
         return JsonResponse::Created();
     }
@@ -210,8 +241,10 @@ class TicketsController extends Controller
         }
 
         $data = $request->validated();
+        $userId = Auth::id();
+        $ticketMessage = null;
 
-        DB::transaction(function() use ($ticket, $data, $request) {
+        DB::transaction(function() use ($ticket, $data, $request, $userId, &$ticketMessage) {
             $original = clone $ticket;
 
             $ticket->update([
@@ -222,8 +255,6 @@ class TicketsController extends Controller
             ]);
 
             if (!empty($data['message']) || $request->hasFile('files')) {
-                $userId = Auth::id();
-
                 $ticketMessagePayload = [
                     'ticket_id' => $ticket->id,
                     'user_id'   => $userId,
@@ -242,6 +273,8 @@ class TicketsController extends Controller
             $eventsController = new TicketsEventsController();
             $eventsController->create($original, $ticket);
         });
+
+        $this->notifyMessageUpdate($ticket, $ticketMessage, $userId);
 
         $ticketsController = new TicketsController();
         return $ticketsController->get(new Request(), $ticket);
@@ -262,6 +295,7 @@ class TicketsController extends Controller
         }
 
         $data = $request->validated();
+        $userId = Auth::id();
 
         $ticketMessage = TicketMessage::create([
             'ticket_id' => $ticket->id,
@@ -275,13 +309,15 @@ class TicketsController extends Controller
             }
         }
 
+        $this->notifyMessageUpdate($ticket, $ticketMessage, $userId);
+
         $ticketsController = new TicketsController();
         return $ticketsController->get(new Request(), $ticket);
     }
 
     /**
      * Закрыть заявление
-     * Переволд в статус Closed, закрывается пользователем
+     * Перевод в статус Closed, закрывается пользователем
      */
     public function remove(Request $request, Ticket $ticket): \Illuminate\Http\JsonResponse
     {
