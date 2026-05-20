@@ -65,17 +65,20 @@ class TicketsController extends Controller
         return User::activeInDepartment($departmentId)->get();
     }
 
-    private function notifyMessageUpdate(Ticket $ticket, ?TicketMessage $ticketMessage, int $userId): void
+    private function sendTicketNotification(Ticket $ticket, mixed $notification): void
     {
-        if (!$ticketMessage) {
-            return;
+        $departmentUsers = User::activeInDepartment($ticket->department_id)->get();
+
+        $ticketCreator = User::find($ticket->user_id);
+
+        if ($ticketCreator) {
+            $users = $departmentUsers->push($ticketCreator)->unique('id');
+        } else {
+            $users  = $departmentUsers;
         }
 
-        $staff = $this->getStaffToNotify($ticket->department_id)
-            ->filter(fn($user) => $user->id !== $userId);
-
-        if ($staff->isNotEmpty()) {
-            Notification::send($staff, new TicketUpdatedNotification($ticket, $ticketMessage));
+        if ($users ->isNotEmpty()) {
+            Notification::send($users , $notification);
         }
     }
 
@@ -218,10 +221,7 @@ class TicketsController extends Controller
             }
         }
 
-        $staff = $this->getStaffToNotify($ticket->department_id);
-        if ($staff->isNotEmpty()) {
-            Notification::send($staff, new TicketCreatedNotification($ticket, $ticketMessage));
-        }
+        $this->sendTicketNotification($ticket, new TicketCreatedNotification($ticket, $ticketMessage));
 
         return JsonResponse::Created();
     }
@@ -274,7 +274,7 @@ class TicketsController extends Controller
             $eventsController->create($original, $ticket);
         });
 
-        $this->notifyMessageUpdate($ticket, $ticketMessage, $userId);
+        $this->sendTicketNotification($ticket, new TicketUpdatedNotification($ticket, $ticketMessage));
 
         $ticketsController = new TicketsController();
         return $ticketsController->get(new Request(), $ticket);
@@ -295,7 +295,6 @@ class TicketsController extends Controller
         }
 
         $data = $request->validated();
-        $userId = Auth::id();
 
         $ticketMessage = TicketMessage::create([
             'ticket_id' => $ticket->id,
@@ -309,7 +308,7 @@ class TicketsController extends Controller
             }
         }
 
-        $this->notifyMessageUpdate($ticket, $ticketMessage, $userId);
+        $this->sendTicketNotification($ticket, new TicketUpdatedNotification($ticket, $ticketMessage));
 
         $ticketsController = new TicketsController();
         return $ticketsController->get(new Request(), $ticket);
