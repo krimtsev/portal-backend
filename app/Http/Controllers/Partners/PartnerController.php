@@ -174,7 +174,8 @@ class PartnerController extends Controller
                 'yclients_id',
                 'mango_telnum',
                 'disabled',
-                'start_at'
+                'start_at',
+                'opened_at'
             )
             ->orderBy('name')
             ->get();

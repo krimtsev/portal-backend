@@ -22,6 +22,7 @@ class PartnerExportResource extends JsonResource
             'mango_telnum'    => $this->mango_telnum,
             'disabled'        => (bool)$this->disabled,
             'start_at'        => $this->start_at?->format('Y-m-d'),
+            'opened_at'       => $this->opened_at?->format('Y-m-d'),
         ];
     }
 

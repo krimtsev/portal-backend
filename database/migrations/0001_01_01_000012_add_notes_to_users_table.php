@@ -15,7 +15,9 @@ class AddNotesToUsersTable extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->text('notes')->nullable()->after('disabled');
+            $table->text('notes')
+                ->nullable()
+                ->after('disabled');
         });
     }
 

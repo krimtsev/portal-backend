@@ -64,6 +64,10 @@ class PartnerCreateRequest extends FormRequest
                 'nullable',
                 'date'
             ],
+            'opened_at' => [
+                'nullable',
+                'date'
+            ],
             'disabled' => [
                 'boolean'
             ],

@@ -28,6 +28,7 @@ class Partner extends Model
         'address'         => 'string',
         'pay_end'         => 'datetime:Y-m-d H:i:s',
         'start_at'        => 'date:Y-m-d',
+        'opened_at'       => 'date:Y-m-d',
         'disabled'        => 'boolean',
     ];
 
@@ -40,6 +41,7 @@ class Partner extends Model
         'email',
         'address',
         'start_at',
+        'opened_at',
         'yclients_id',
         'mango_telnum',
         'disabled',

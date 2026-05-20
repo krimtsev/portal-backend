@@ -19,6 +19,7 @@ class PartnerResource extends JsonResource
             'contract_number' => $this->contract_number,
             'email'           => $this->email,
             'start_at'        => $this->start_at?->format('Y-m-d'),
+            'opened_at'       => $this->opened_at?->format('Y-m-d'),
             'group_id'        => $this->group_id,
             'disabled'        => (bool) $this->disabled,
             'telnums'         => $this->whenLoaded('telnums', function() {

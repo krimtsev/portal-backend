@@ -16,7 +16,7 @@ class UserUpdateRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'notes' => $this->notes ? trim($this->notes) : "",
+            'notes' => $this->notes ? trim($this->notes) : null,
         ]);
     }
 

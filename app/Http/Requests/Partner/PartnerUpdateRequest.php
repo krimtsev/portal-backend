@@ -63,6 +63,10 @@ class PartnerUpdateRequest extends FormRequest
                 'nullable',
                 'date'
             ],
+            'opened_at' => [
+                'nullable',
+                'date'
+            ],
             'disabled' => [
                 'boolean'
             ],

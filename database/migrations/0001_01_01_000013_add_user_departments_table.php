@@ -3,9 +3,8 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB;
 
-class AddUserDepartmentsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -36,4 +35,4 @@ class AddUserDepartmentsTable extends Migration
     {
         Schema::dropIfExists('user_departments');
     }
-}
+};
