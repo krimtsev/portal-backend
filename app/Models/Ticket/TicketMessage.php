@@ -3,12 +3,10 @@
 namespace App\Models\Ticket;
 
 use App\Models\User\User;
-use App\Models\Ticket\TicketFile;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TicketMessage extends Model
 {

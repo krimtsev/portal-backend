@@ -4,14 +4,14 @@ namespace App\Models\User;
 
 use App\Models\Department\Department;
 use App\Models\Partner\Partner;
+use App\Observers\User\UserObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use App\Observers\User\UserObserver;
 
 #[ObservedBy([UserObserver::class])]
 class User extends Authenticatable

@@ -18,17 +18,17 @@ class CloudCreateRequest extends FormRequest
             'name' => [
                 'required',
                 'string',
-                'max:255'
+                'max:255',
             ],
             'slug' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('cloud_folders', 'slug')
+                Rule::unique('cloud_folders', 'slug'),
             ],
             'category_id' => [
                 'integer',
-                Rule::exists('cloud_folders', 'id')
+                Rule::exists('cloud_folders', 'id'),
             ],
         ];
     }

@@ -3,7 +3,6 @@
 namespace App\Http\Resources\User;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Http\Resources\Partner\PartnerResource;
 
 class UserProfileResource extends JsonResource
 {
@@ -15,7 +14,7 @@ class UserProfileResource extends JsonResource
             'role'        => $this->role,
             'email'       => $this->email,
             'avatar'      => $this->avatar,
-            'departments' => $this->whenLoaded('departments', function() {
+            'departments' => $this->whenLoaded('departments', function () {
                 return $this->departments->pluck('id')->toArray();
             }),
         ];

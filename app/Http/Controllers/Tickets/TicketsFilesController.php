@@ -54,12 +54,12 @@ class TicketsFilesController extends Controller
         $ext = $file->guessExtension() ?? $file->getClientOriginalExtension();
 
         TicketFile::create([
-            'title' => $title,
-            'name' => basename($path),
-            'origin' => $originalName,
-            'path' => $path,
-            'type' => $file->getMimeType(),
-            'ext' => Str::lower($ext),
+            'title'             => $title,
+            'name'              => basename($path),
+            'origin'            => $originalName,
+            'path'              => $path,
+            'type'              => $file->getMimeType(),
+            'ext'               => Str::lower($ext),
             'ticket_message_id' => $ticketMessageId,
         ]);
     }

@@ -15,8 +15,7 @@ class Pagination
         array $searchColumns = [],
         array $sortable = [],
         array $filterable = [],
-    ): array
-    {
+    ): array {
         [
             $sortBy,
             $sortOrder,

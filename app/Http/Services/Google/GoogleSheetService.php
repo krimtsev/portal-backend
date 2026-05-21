@@ -8,6 +8,7 @@ use Google\Service\Sheets;
 class GoogleSheetService
 {
     public $client;
+
     public $service;
 
     public function __construct()
@@ -28,8 +29,8 @@ class GoogleSheetService
 
     public function readSheet($sheet)
     {
-        $range = sprintf("%s!%s", $sheet->spreadsheet_name, $sheet->spreadsheet_range);
-        $result = $this->service->spreadsheets_values->get($sheet->spreadsheet_id, $range );
+        $range = sprintf('%s!%s', $sheet->spreadsheet_name, $sheet->spreadsheet_range);
+        $result = $this->service->spreadsheets_values->get($sheet->spreadsheet_id, $range);
 
         return $result->getValues();
     }

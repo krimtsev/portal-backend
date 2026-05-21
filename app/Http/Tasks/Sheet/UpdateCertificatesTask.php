@@ -10,7 +10,6 @@ class UpdateCertificatesTask
 {
     /**
      * Обновить базу сертификатов
-     * @return void
      */
     public function update(): void
     {
@@ -18,7 +17,7 @@ class UpdateCertificatesTask
         $duplicates = $this->duplicateId($rows);
 
         $rows = collect($rows)
-            ->reject(fn($row) => in_array($row['identifier'], $duplicates))
+            ->reject(fn ($row) => in_array($row['identifier'], $duplicates))
             ->values()
             ->all();
 
@@ -36,7 +35,6 @@ class UpdateCertificatesTask
 
     /**
      * Получить список строк из Google таблицы
-     * @return array
      */
     public function getRows(): array
     {
@@ -44,7 +42,7 @@ class UpdateCertificatesTask
         $sheet = json_decode(file_get_contents($path));
 
         try {
-            $table = (new GoogleSheetService)->readSheet($sheet);
+            $table = (new GoogleSheetService())->readSheet($sheet);
         } catch (\Throwable $e) {
             logger()->error('Certificates get rows failed', [
                 'message' => $e->getMessage(),
@@ -57,7 +55,9 @@ class UpdateCertificatesTask
         $rows = [];
 
         foreach ($table as $line => $value) {
-            if(count($value) < 3) continue;
+            if (count($value) < 3) {
+                continue;
+            }
 
             [$priceRaw, $idRaw, $partnerRaw] = array_map('trim', array_slice($value, 0, 3));
 
@@ -76,8 +76,6 @@ class UpdateCertificatesTask
 
     /**
      * Получить список значений дукликатов identifier
-     * @param $rows
-     * @return array
      */
     public function duplicateRows($rows): array
     {
@@ -85,15 +83,13 @@ class UpdateCertificatesTask
 
         $collection = collect($rows);
         $grouped = $collection->groupBy('identifier');
-        $duplicates = $grouped->filter(fn($items) => $items->count() > 1);
+        $duplicates = $grouped->filter(fn ($items) => $items->count() > 1);
 
         return $duplicates->flatten(1)->all();
     }
 
     /**
      * Получить список Id дубликатов identifier
-     * @param $rows
-     * @return array
      */
     public function duplicateId($rows): array
     {
@@ -101,10 +97,8 @@ class UpdateCertificatesTask
 
         $collection = collect($rows);
         $grouped = $collection->groupBy('identifier');
-        $duplicates = $grouped->filter(fn($items) => $items->count() > 1);
+        $duplicates = $grouped->filter(fn ($items) => $items->count() > 1);
 
         return $duplicates->keys()->all();
     }
 }
-
-

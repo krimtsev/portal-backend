@@ -21,14 +21,14 @@ class CloudUpdateRequest extends FormRequest
             'name' => [
                 'required',
                 'string',
-                'max:255'
+                'max:255',
             ],
 
             'slug' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('cloud_folders', 'slug')->ignore($folderId)
+                Rule::unique('cloud_folders', 'slug')->ignore($folderId),
             ],
 
             'category_id' => [
@@ -36,7 +36,9 @@ class CloudUpdateRequest extends FormRequest
                 'integer',
                 Rule::exists('cloud_folders', 'id'),
                 function ($attribute, $value, $fail) use ($folder) {
-                    if (!$folder) return;
+                    if (!$folder) {
+                        return;
+                    }
 
                     if (is_null($folder->category_id) && !is_null($value)) {
                         $fail(trans('cloud.validation.root_cannot_have_parent'));

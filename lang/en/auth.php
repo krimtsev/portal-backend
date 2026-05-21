@@ -6,5 +6,5 @@ return [
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
     'blocked' => 'Your account has been blocked.',
     'invalid_key' => 'Invalid or missing API key',
-    'logout' => 'Logged out'
+    'logout' => 'Logged out',
 ];

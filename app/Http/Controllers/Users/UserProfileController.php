@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Users;
 
-
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Partner\PartnerResource;
 use App\Http\Resources\User\UserProfileResource;
@@ -31,7 +30,7 @@ class UserProfileController extends Controller
     {
         return JsonResponse::Send([
             'user'    => [],
-            'partner' => []
+            'partner' => [],
         ]);
     }
 }

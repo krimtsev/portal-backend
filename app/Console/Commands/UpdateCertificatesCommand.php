@@ -2,12 +2,13 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Jobs\UpdateCertificatesJob;
+use Illuminate\Console\Command;
 
 class UpdateCertificatesCommand extends Command
 {
     protected $signature = 'certificates:update {--sync}';
+
     protected $description = 'Обновление сертификатов из Google Sheets';
 
     public function handle(): void

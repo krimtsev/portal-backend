@@ -22,12 +22,12 @@ class PartnerResource extends JsonResource
             'opened_at'       => $this->opened_at?->format('Y-m-d'),
             'group_id'        => $this->group_id,
             'disabled'        => (bool) $this->disabled,
-            'telnums'         => $this->whenLoaded('telnums', function() {
-                return $this->telnums->map(function($telnum) {
+            'telnums'         => $this->whenLoaded('telnums', function () {
+                return $this->telnums->map(function ($telnum) {
                     return [
-                        'id'         => $telnum->id,
-                        'name'       => $telnum->name,
-                        'number'     => $telnum->number,
+                        'id'     => $telnum->id,
+                        'name'   => $telnum->name,
+                        'number' => $telnum->number,
                     ];
                 });
             }),

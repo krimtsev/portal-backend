@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Resources\User;
 
 use Illuminate\Http\Request;
@@ -13,9 +14,9 @@ class UserListResource extends JsonResource
             'login'         => $this->login,
             'name'          => $this->name,
             'role'          => $this->role,
-            'disabled'      => (bool)$this->disabled,
+            'disabled'      => (bool) $this->disabled,
             'last_activity' => $this->last_activity?->format('Y-m-d H:i:s'),
-            'access'        => $this->whenLoaded('access', function() {
+            'access'        => $this->whenLoaded('access', function () {
                 return [
                     'location_map' => (bool) ($this->access->location_map ?? false),
                 ];

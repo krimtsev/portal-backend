@@ -25,9 +25,9 @@ class CloudTreeResource extends JsonResource
     private function folderToArray(): array
     {
         return [
-            'key'      => "folder-{$this->id}",
-            'label'    => $this->name,
-            'data'     => [
+            'key'   => "folder-{$this->id}",
+            'label' => $this->name,
+            'data'  => [
                 'id'        => $this->id,
                 'name'      => $this->name,
                 'type'      => CloudType::FOLDER->value,
@@ -47,9 +47,9 @@ class CloudTreeResource extends JsonResource
     private function fileToArray(): array
     {
         return [
-            'key'      => "file-{$this->id}",
-            'label'    => $this->title,
-            'data'     => [
+            'key'   => "file-{$this->id}",
+            'label' => $this->title,
+            'data'  => [
                 'id'        => $this->id,
                 'name'      => $this->title,
                 'type'      => CloudType::FILE->value,

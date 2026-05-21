@@ -9,7 +9,7 @@ class JsonResponse
     /**
      * Метод для отправки данных
      */
-    static function Send(?array $data, string $message = 'Ok', int $code = Response::HTTP_OK): \Illuminate\Http\JsonResponse
+    public static function Send(?array $data, string $message = 'Ok', int $code = Response::HTTP_OK): \Illuminate\Http\JsonResponse
     {
         $content = [
             'message' => $message,
@@ -22,65 +22,65 @@ class JsonResponse
         return response()->json($content, $code);
     }
 
-    static function Created(): \Illuminate\Http\JsonResponse
+    public static function Created(): \Illuminate\Http\JsonResponse
     {
         return response()->json([
-            'message' => 'Created'
+            'message' => 'Created',
         ], Response::HTTP_CREATED);
     }
 
-    static function Updated(): \Illuminate\Http\JsonResponse
+    public static function Updated(): \Illuminate\Http\JsonResponse
     {
         return response()->json([
-            'message' => 'Updated'
+            'message' => 'Updated',
         ], Response::HTTP_OK);
     }
 
-    static function Removed(): \Illuminate\Http\JsonResponse
+    public static function Removed(): \Illuminate\Http\JsonResponse
     {
         return response()->json([
-            'message' => 'Removed'
+            'message' => 'Removed',
         ], Response::HTTP_OK);
     }
 
     /**
      * Методы для отправки ошибок
      */
-    static function Forbidden(string $message = 'Forbidden'): \Illuminate\Http\JsonResponse
+    public static function Forbidden(string $message = 'Forbidden'): \Illuminate\Http\JsonResponse
     {
         return response()->json([
-            'message' => $message
+            'message' => $message,
         ], Response::HTTP_FORBIDDEN);
     }
 
-    static function BadRequest(?array $data): \Illuminate\Http\JsonResponse
+    public static function BadRequest(?array $data): \Illuminate\Http\JsonResponse
     {
         $content = [
             'message' => 'Bad Request',
-            'data' => array_merge([], $data)
+            'data'    => array_merge([], $data),
         ];
 
         return response()->json($content, Response::HTTP_BAD_REQUEST);
     }
 
-    static function FileNotFound(string $message = 'File not found'): \Illuminate\Http\JsonResponse
+    public static function FileNotFound(string $message = 'File not found'): \Illuminate\Http\JsonResponse
     {
         return response()->json([
-            'message' => $message
+            'message' => $message,
         ], Response::HTTP_NOT_FOUND);
     }
 
-    static function UserNotFound(string $message = 'User Not Found'): \Illuminate\Http\JsonResponse
+    public static function UserNotFound(string $message = 'User Not Found'): \Illuminate\Http\JsonResponse
     {
         return response()->json([
-            'message' => $message
+            'message' => $message,
         ], Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
-    static function InvalidCredentials(): \Illuminate\Http\JsonResponse
+    public static function InvalidCredentials(): \Illuminate\Http\JsonResponse
     {
         return response()->json([
-            'message' => 'Invalid credentials'
+            'message' => 'Invalid credentials',
         ], Response::HTTP_UNAUTHORIZED);
     }
 }

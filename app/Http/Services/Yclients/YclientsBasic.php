@@ -1,6 +1,7 @@
 <?php
 
-class YclientsBasic {
+class YclientsBasic
+{
     /** Фиксированный токен приложения */
     private string $app_token;
 
@@ -12,5 +13,4 @@ class YclientsBasic {
         $this->app_token = config('services.yclients.app_token', '');
         $this->partner_token = config('services.yclients.partner_token', '');
     }
-
 }

@@ -23,7 +23,7 @@ class Message extends Model
 
     protected $casts = [
         'disabled' => 'boolean',
-        'days' => 'array',
+        'days'     => 'array',
     ];
 
     public function user(): BelongsTo

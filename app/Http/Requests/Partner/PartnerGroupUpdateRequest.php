@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Partner;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class PartnerGroupUpdateRequest extends FormRequest
 {
@@ -15,7 +14,7 @@ class PartnerGroupUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title'  => [
+            'title' => [
                 'required',
                 'string',
                 'max:255',
@@ -25,7 +24,7 @@ class PartnerGroupUpdateRequest extends FormRequest
                 'array',
             ],
             'partners.*' => [
-                'exists:partners,id'
+                'exists:partners,id',
             ],
         ];
     }

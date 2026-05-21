@@ -17,7 +17,7 @@ class CloudFileUpdateRequest extends FormRequest
             'title' => [
                 'required',
                 'string',
-                'max:255'
+                'max:255',
             ],
         ];
     }

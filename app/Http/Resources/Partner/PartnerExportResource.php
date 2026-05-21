@@ -1,9 +1,9 @@
 <?php
+
 namespace App\Http\Resources\Partner;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-
 
 class PartnerExportResource extends JsonResource
 {
@@ -20,10 +20,9 @@ class PartnerExportResource extends JsonResource
             'email'           => $this->email,
             'yclients_id'     => $this->yclients_id,
             'mango_telnum'    => $this->mango_telnum,
-            'disabled'        => (bool)$this->disabled,
+            'disabled'        => (bool) $this->disabled,
             'start_at'        => $this->start_at?->format('Y-m-d'),
             'opened_at'       => $this->opened_at?->format('Y-m-d'),
         ];
     }
-
 }

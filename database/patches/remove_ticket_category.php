@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * php artisan tinker database/patches/remove_ticket_category.php
@@ -52,4 +52,4 @@ DB::transaction(function () {
     }
 });
 
-echo "Патч успешно выполнен!";
+echo 'Патч успешно выполнен!';

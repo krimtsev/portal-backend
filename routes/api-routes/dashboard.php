@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1/dashboard')
     ->middleware([
         'auth:sanctum',
-        'dashboard.context'
+        'dashboard.context',
     ])
     ->group(function () {
         Route::prefix('partners')
@@ -78,4 +78,4 @@ Route::prefix('v1/dashboard')
                 Route::delete('folder/{folder}/file/{file}', [Controllers\Cloud\CloudFilesController::class, 'remove']);
                 Route::get('folder/{folder}/download/{fileName}', [Controllers\Cloud\CloudFilesController::class, 'download']);
             });
-});
+    });

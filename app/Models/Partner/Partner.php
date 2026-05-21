@@ -3,11 +3,10 @@
 namespace App\Models\Partner;
 
 use App\Models\User\User;
-use App\Models\Partner\PartnerTelnum;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Partner extends Model
@@ -45,7 +44,7 @@ class Partner extends Model
         'yclients_id',
         'mango_telnum',
         'disabled',
-        'group_id'
+        'group_id',
     ];
 
     public function telnums(): HasMany
@@ -61,9 +60,8 @@ class Partner extends Model
     /**
      * Получение активных партнеров с выборкой динамических полей
      *
-     * @param Builder $query
-     * @param array $fields - какие поля вернуть
-     * @return Builder
+     * @param  Builder  $query
+     * @param  array  $fields  - какие поля вернуть
      */
     public function scopeActiveWhere($query, array $fields = ['id', 'name']): Builder
     {
@@ -71,7 +69,7 @@ class Partner extends Model
 
         $selectFields = array_filter(
             $fields,
-            fn($field) => in_array($field, $this->fillable) || $field === 'id'
+            fn ($field) => in_array($field, $this->fillable) || $field === 'id'
         );
 
         return $query->select($selectFields);

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Resources\Cloud;
 
 use Illuminate\Http\Request;
@@ -14,8 +15,8 @@ class CloudResource extends JsonResource
             'slug'        => $this->slug,
             'category_id' => $this->category_id,
 
-            'files'       => $this->whenLoaded('files', function() {
-                return $this->files->map(function($file) {
+            'files' => $this->whenLoaded('files', function () {
+                return $this->files->map(function ($file) {
                     return [
                         'id'        => $file->id,
                         'title'     => $file->title,

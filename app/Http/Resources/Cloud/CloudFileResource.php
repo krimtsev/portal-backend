@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Resources\Cloud;
 
 use Illuminate\Http\Request;

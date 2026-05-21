@@ -27,15 +27,15 @@ class TicketCreateRequest extends FormRequest
             'partner_id' => [
                 'required',
                 'integer',
-                'exists:partners,id'
+                'exists:partners,id',
             ],
             'attributes' => [
                 'nullable',
-                'array'
+                'array',
             ],
             'type' => [
                 'required',
-                'string'
+                'string',
             ],
             'message' => [
                 'nullable',
@@ -43,7 +43,7 @@ class TicketCreateRequest extends FormRequest
             ],
             'files' => [
                 'nullable',
-                'array'
+                'array',
             ],
             'files.*' => FileSettings::getRules(200),
         ];

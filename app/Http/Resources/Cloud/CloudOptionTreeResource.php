@@ -13,8 +13,8 @@ class CloudOptionTreeResource extends JsonResource
     public function toArray(Request $request): array
     {
         $node = [
-            'key'    => (int) $this['id'],
-            'label'  => $this['name'],
+            'key'   => (int) $this['id'],
+            'label' => $this['name'],
         ];
 
         if (!empty($this['children'])) {

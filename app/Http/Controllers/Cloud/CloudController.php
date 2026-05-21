@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Cloud;
 
-
 use App\Helpers\Cache\Cache;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Cloud\CloudCreateRequest;
@@ -26,7 +25,8 @@ class CloudController extends Controller
 
     private function getCacheKey(?string $slug, ?string $search): string
     {
-        $prefix = $slug ? "cloud_{$slug}" : "cloud_root";
+        $prefix = $slug ? "cloud_{$slug}" : 'cloud_root';
+
         return $search ? "{$prefix}_" . md5($search) : $prefix;
     }
 
@@ -76,11 +76,10 @@ class CloudController extends Controller
 
     /**
      * Дерево папок и файлов
-     * @return \Illuminate\Http\JsonResponse
      */
     public function tree(): \Illuminate\Http\JsonResponse
     {
-        $cacheKey = $this->getCacheKey("tree", null);
+        $cacheKey = $this->getCacheKey('tree', null);
 
         $rootNodes = Cache::remember($cacheKey, CloudFolder::CACHE_TTL, function () {
             $allFolders = $this->repository->getFullTreeData();
@@ -90,7 +89,7 @@ class CloudController extends Controller
         }, CloudFolder::CACHE_TAG);
 
         return JsonResponse::Send([
-            'list' => CloudTreeResource::collection($rootNodes)
+            'list' => CloudTreeResource::collection($rootNodes),
         ]);
     }
 
@@ -107,7 +106,7 @@ class CloudController extends Controller
         );
 
         return JsonResponse::Send([
-            'list' => $list
+            'list' => $list,
         ]);
     }
 
@@ -123,7 +122,7 @@ class CloudController extends Controller
         );
 
         return JsonResponse::Send([
-            'list' => CloudOptionTreeResource::collection($tree)
+            'list' => CloudOptionTreeResource::collection($tree),
         ]);
     }
 
