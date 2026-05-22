@@ -13,7 +13,7 @@
                 </x-emails::p>
 
                 <x-emails::p>
-                    Пользователь <strong>{{ $ticketMessage->user->userName }}</strong> добавил сообщение.
+                    Пользователь <strong>{{ $ticketMessage->user->userName }}</strong> добавил(а) сообщение.
                 </x-emails::p>
 
                 @if(trim($ticketMessage->text))

@@ -60,11 +60,6 @@ class TicketsController extends Controller
         return true;
     }
 
-    private function getStaffToNotify(int $departmentId): Collection
-    {
-        return User::activeInDepartment($departmentId)->get();
-    }
-
     private function sendTicketNotification(Ticket $ticket, mixed $notification): void
     {
         $departmentUsers = User::activeInDepartment($ticket->department_id)->get();
@@ -77,7 +72,7 @@ class TicketsController extends Controller
             $users  = $departmentUsers;
         }
 
-        if ($users ->isNotEmpty()) {
+        if ($users->isNotEmpty()) {
             Notification::send($users , $notification);
         }
     }
