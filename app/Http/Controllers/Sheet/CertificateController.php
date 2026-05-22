@@ -12,15 +12,13 @@ class CertificateController extends Controller
 {
     /**
      * Получить список сертификатов
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
      */
     public function list(Request $request): \Illuminate\Http\JsonResponse
     {
         $query = Certificate::select(
-            "price",
-            "identifier",
-            "partner",
+            'price',
+            'identifier',
+            'partner',
         );
 
         return JsonResponse::Send(Pagination::paginate(
@@ -31,5 +29,3 @@ class CertificateController extends Controller
         ));
     }
 }
-
-

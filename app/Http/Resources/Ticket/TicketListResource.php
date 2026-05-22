@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Resources\Ticket;
 
 use Illuminate\Http\Request;

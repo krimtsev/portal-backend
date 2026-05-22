@@ -3,7 +3,6 @@
 namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class UserUpdateRequest extends FormRequest
@@ -16,7 +15,7 @@ class UserUpdateRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'notes' => $this->notes ? trim($this->notes) : "",
+            'notes' => $this->notes ? trim($this->notes) : null,
         ]);
     }
 
@@ -75,11 +74,11 @@ class UserUpdateRequest extends FormRequest
             ],
             'access' => [
                 'nullable',
-                'array'
+                'array',
             ],
             'access.location_map' => [
                 'nullable',
-                'boolean'
+                'boolean',
             ],
         ];
     }

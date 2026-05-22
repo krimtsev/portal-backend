@@ -87,7 +87,7 @@ class TicketsController extends Controller
 
         $query->with([
             'partner:id,name',
-            'user:id,login,name'
+            'user:id,login,name',
         ])
             ->select(
                 'id',
@@ -272,6 +272,7 @@ class TicketsController extends Controller
         $this->sendTicketNotification($ticket, new TicketUpdatedNotification($ticket, $ticketMessage));
 
         $ticketsController = new TicketsController();
+
         return $ticketsController->get(new Request(), $ticket);
     }
 
@@ -306,6 +307,7 @@ class TicketsController extends Controller
         $this->sendTicketNotification($ticket, new TicketUpdatedNotification($ticket, $ticketMessage));
 
         $ticketsController = new TicketsController();
+
         return $ticketsController->get(new Request(), $ticket);
     }
 
@@ -323,7 +325,7 @@ class TicketsController extends Controller
             return JsonResponse::Forbidden(trans('ticket.not_modifiable'));
         }
 
-        DB::transaction(function() use ($ticket, $request) {
+        DB::transaction(function () use ($ticket) {
             $original = clone $ticket;
 
             $ticket->state = TicketState::Closed->value;
@@ -349,6 +351,7 @@ class TicketsController extends Controller
             if (is_array($value)) {
                 return !empty($value);
             }
+
             return $value !== null && $value !== '';
         });
 

@@ -19,12 +19,12 @@ class ChangePasswordRequest extends FormRequest
                 'string',
                 'min:8',
                 'regex:' . config('validation.password'),
-                'same:confirmPassword'
+                'same:confirmPassword',
             ],
             'confirmPassword' => [
                 'required',
-                'string'
-            ]
+                'string',
+            ],
         ];
     }
 
@@ -32,7 +32,7 @@ class ChangePasswordRequest extends FormRequest
     {
         return [
             'password.regex' => 'Password must contain letters and numbers and have no spaces.',
-            'password.same' => 'Password and confirmation do not match.'
+            'password.same'  => 'Password and confirmation do not match.',
         ];
     }
 }

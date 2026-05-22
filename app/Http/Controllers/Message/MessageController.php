@@ -17,9 +17,8 @@ class MessageController extends Controller
             ->select('id', 'title', 'description')
             ->get();
 
-
         return JsonResponse::Send([
-            'list' => $messages
+            'list' => $messages,
         ]);
     }
 }

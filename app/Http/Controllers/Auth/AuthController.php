@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Models\Partner\Partner;
+use App\Models\User\User;
 use App\Responses\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,7 +31,7 @@ class AuthController extends Controller
 
     public function userData(): \Illuminate\Http\JsonResponse
     {
-        /** @var \App\Models\User\User $user */
+        /** @var User $user */
         $user = Auth::user();
 
         if (!$user) {
@@ -55,9 +56,9 @@ class AuthController extends Controller
                     'name'    => $user->name,
                     'avatar'  => $user->avatar,
                     'email'   => $user->email,
-                    'partner' => $partner
+                    'partner' => $partner,
                 ],
-                'access'  => [
+                'access' => [
                     'location_map' => $user->access->location_map,
                 ],
             ]

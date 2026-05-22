@@ -2,20 +2,17 @@
 
 namespace App\Models\User;
 
-use App\Models\User\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UserAccess extends Model
 {
     /**
-     *
      * @var string
      */
     protected $table = 'user_access';
 
     /**
-     *
      * @var list<string>
      */
     protected $fillable = [
@@ -24,7 +21,6 @@ class UserAccess extends Model
     ];
 
     /**
-     *
      * @return array<string, string>
      */
     protected function casts(): array

@@ -7,9 +7,9 @@ use App\Models\Department\Department;
 use App\Models\Partner\Partner;
 use App\Models\User\User;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Ticket extends Model
 {
@@ -22,7 +22,7 @@ class Ticket extends Model
         'department_id',
         'partner_id',
         'user_id',
-        'state'
+        'state',
     ];
 
     protected $table = 'tickets';
@@ -32,7 +32,7 @@ class Ticket extends Model
         'department_id' => 'integer',
         'created_at'    => 'date:Y-m-d',
         'state'         => TicketState::class,
-        'attributes'    => 'array'
+        'attributes'    => 'array',
     ];
 
     public function department(): BelongsTo

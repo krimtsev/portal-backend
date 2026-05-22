@@ -3,9 +3,9 @@
 namespace App\Http\Requests\Ticket;
 
 use App\Constants\File\FileSettings;
+use App\Enums\Ticket\TicketState;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
-use App\Enums\Ticket\TicketState;
 
 class TicketUpdateRequest extends FormRequest
 {
@@ -29,7 +29,7 @@ class TicketUpdateRequest extends FormRequest
             'partner_id' => [
                 'required',
                 'integer',
-                'exists:partners,id'
+                'exists:partners,id',
             ],
             'state' => [
                 'required',
@@ -41,7 +41,7 @@ class TicketUpdateRequest extends FormRequest
             ],
             'files' => [
                 'nullable',
-                'array'
+                'array',
             ],
             'files.*' => FileSettings::getRules(200),
         ];

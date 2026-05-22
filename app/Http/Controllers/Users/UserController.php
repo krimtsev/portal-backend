@@ -40,7 +40,7 @@ class UserController extends Controller
         $query
             ->when(!empty($filters['department_id']), function ($q) use ($filters) {
                 $q->whereHas('departments', function ($sq) use ($filters) {
-                    $sq->whereIn('department_id', (array)$filters['department_id']);
+                    $sq->whereIn('department_id', (array) $filters['department_id']);
                 });
             })
             ->when(!empty($filters['access']), function ($q) use ($filters) {
@@ -67,7 +67,7 @@ class UserController extends Controller
         $user->load([
             'partner:id,name',
             'access',
-            'departments'
+            'departments',
         ]);
 
         return JsonResponse::Send([
@@ -138,7 +138,7 @@ class UserController extends Controller
             )
             ->with([
                 'partner:id,name',
-                'departments'
+                'departments',
             ])
             ->orderBy('login')
             ->get();

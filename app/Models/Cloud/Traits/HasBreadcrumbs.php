@@ -10,7 +10,7 @@ trait HasBreadcrumbs
     protected function breadcrumb(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->generateBreadcrumb()
+            get: fn () => $this->generateBreadcrumb()
         );
     }
 

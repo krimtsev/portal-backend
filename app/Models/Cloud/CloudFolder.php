@@ -3,17 +3,18 @@
 namespace App\Models\Cloud;
 
 use App\Models\Cloud\Traits\HasBreadcrumbs;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CloudFolder extends Model
 {
     use HasBreadcrumbs;
 
     public const CACHE_TTL = 7200; // 2 часа
-    public const CACHE_TAG = "cloud";
+
+    public const CACHE_TAG = 'cloud';
 
     protected $table = 'cloud_folders';
 
@@ -25,7 +26,7 @@ class CloudFolder extends Model
     ];
 
     protected $casts = [
-        'created_at'  => 'date:Y-m-d',
+        'created_at' => 'date:Y-m-d',
     ];
 
     /**
@@ -44,7 +45,6 @@ class CloudFolder extends Model
         return $this->belongsTo(CloudFolder::class, 'category_id');
     }
 
-
     /**
      * Рекурсивная загрузка всех детей
      */
@@ -55,7 +55,7 @@ class CloudFolder extends Model
 
     public function withFilesRecursive(): HasMany
     {
-        return $this->children()->with(['withFilesRecursive', 'files' => function($q) {
+        return $this->children()->with(['withFilesRecursive', 'files' => function ($q) {
             $q->select('id', 'title', 'ext', 'cloud_folders_id');
         }]);
     }

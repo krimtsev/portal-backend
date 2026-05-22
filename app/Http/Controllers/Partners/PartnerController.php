@@ -28,7 +28,7 @@ class PartnerController extends Controller
         if (!$partnerId) {
             return JsonResponse::Send([
                 'partner_id' => null,
-                'partners' => []
+                'partners'   => [],
             ]);
         }
 
@@ -40,21 +40,21 @@ class PartnerController extends Controller
             $partners = $partner->group->partners->map(function ($partner) {
                 return [
                     'partner_id' => $partner->id,
-                    'name' => $partner->name
+                    'name'       => $partner->name,
                 ];
             });
         } else {
             $partners = collect([
                 [
                     'partner_id' => $partner->id,
-                    'name' => $partner->name,
-                ]
+                    'name'       => $partner->name,
+                ],
             ]);
         }
 
         return JsonResponse::Send([
             'partner_id' => $partnerId,
-            'partners' => $partners,
+            'partners'   => $partners,
         ]);
     }
 
@@ -65,7 +65,7 @@ class PartnerController extends Controller
             ->get();
 
         return JsonResponse::Send([
-            'list' => $list
+            'list' => $list,
         ]);
     }
 
@@ -149,7 +149,7 @@ class PartnerController extends Controller
                         ['id' => $telnumItem['id'] ?? null],
                         [
                             'name'   => $telnumItem['name'] ?? null,
-                            'number' => $telnumItem['number']
+                            'number' => $telnumItem['number'],
                         ]
                     );
                 }
@@ -174,7 +174,8 @@ class PartnerController extends Controller
                 'yclients_id',
                 'mango_telnum',
                 'disabled',
-                'start_at'
+                'start_at',
+                'opened_at'
             )
             ->orderBy('name')
             ->get();

@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Tickets;
 
 use App\Http\Controllers\Controller;
-use App\Models\Ticket\TicketEvent;
-use Illuminate\Http\Request;
 use App\Models\Ticket\Ticket;
+use App\Models\Ticket\TicketEvent;
 use Illuminate\Support\Facades\Auth;
 
 class TicketsEventsController extends Controller

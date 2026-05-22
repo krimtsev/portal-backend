@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * php artisan tinker database/patches/create_departments.php
@@ -29,8 +29,7 @@ if (!Schema::hasTable('departments')) {
         ['id' => 9, 'slug' => 'accounting', 'title' => 'Accounting'],
     ]);
 
-    echo "Таблица departments создана.";
+    echo 'Таблица departments создана.';
 } else {
-    echo "Таблица departments уже существует.";
+    echo 'Таблица departments уже существует.';
 }
-

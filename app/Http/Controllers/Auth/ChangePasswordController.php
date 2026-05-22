@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ChangePassword\ChangePasswordRequest;
+use App\Models\User\User;
 use App\Notifications\User\PasswordChangedNotification;
 use App\Responses\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -12,9 +13,9 @@ use Illuminate\Support\Facades\Notification;
 
 class ChangePasswordController extends Controller
 {
-    function update(ChangePasswordRequest $request): \Illuminate\Http\JsonResponse
+    public function update(ChangePasswordRequest $request): \Illuminate\Http\JsonResponse
     {
-        /** @var \App\Models\User\User $user */
+        /** @var User $user */
         $user = Auth::user();
 
         $user->password = Hash::make($request->password);

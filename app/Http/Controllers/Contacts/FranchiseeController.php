@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Http\Controllers\Contacts;
 
 use App\Helpers\Pagination\Pagination;
@@ -13,13 +12,11 @@ class FranchiseeController extends Controller
 {
     /**
      * Получить список контактов
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
      */
     public function list(Request $request): \Illuminate\Http\JsonResponse
     {
         $query = Partner::with('telnums')
-                    ->activeWhere(['id', 'name']);
+            ->activeWhere(['id', 'name']);
 
         return JsonResponse::Send(Pagination::paginate(
             $query,
@@ -29,5 +26,3 @@ class FranchiseeController extends Controller
         ));
     }
 }
-
-

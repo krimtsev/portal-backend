@@ -22,13 +22,13 @@ class PartnerGroupController extends Controller
             ->get();
 
         return JsonResponse::Send([
-            'list' => $list
+            'list' => $list,
         ]);
     }
 
     public function list(Request $request): \Illuminate\Http\JsonResponse
     {
-        $query= PartnerGroup::select(['id', 'title'])
+        $query = PartnerGroup::select(['id', 'title'])
             ->withCount('partners')
             ->orderBy('title');
 
@@ -60,7 +60,7 @@ class PartnerGroupController extends Controller
 
         DB::transaction(function () use ($data) {
             $group = PartnerGroup::create([
-                'title' => $data['title']
+                'title' => $data['title'],
             ]);
 
             if (!empty($data['partners'])) {
@@ -78,7 +78,7 @@ class PartnerGroupController extends Controller
 
         DB::transaction(function () use ($data, $partnerGroup) {
             $partnerGroup->update([
-                'title' => $data['title']
+                'title' => $data['title'],
             ]);
 
             $newPartnerIds = $data['partners'] ?? [];

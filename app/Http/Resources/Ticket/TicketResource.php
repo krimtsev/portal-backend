@@ -1,9 +1,10 @@
 <?php
+
 namespace App\Http\Resources\Ticket;
 
+use App\Models\Partner\Partner;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Models\Partner\Partner;
 
 class TicketResource extends JsonResource
 {

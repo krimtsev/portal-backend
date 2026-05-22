@@ -1,9 +1,9 @@
 <?php
+
 namespace App\Http\Resources\User;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-
 
 class UserExportResource extends JsonResource
 {
@@ -15,7 +15,7 @@ class UserExportResource extends JsonResource
             'login'         => $this->login,
             'role'          => $this->role,
             'email'         => $this->email,
-            'disabled'      => (bool)$this->disabled,
+            'disabled'      => (bool) $this->disabled,
             'last_activity' => $this->last_activity?->format('Y-m-d H:i:s'),
             'partner'       => $this->whenLoaded('partner', function () {
                 return $this->partner->name ?? '-';
@@ -25,5 +25,4 @@ class UserExportResource extends JsonResource
             }),
         ];
     }
-
 }

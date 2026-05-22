@@ -8,10 +8,11 @@ use App\Responses\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class TicketsFilesController extends Controller {
-
+class TicketsFilesController extends Controller
+{
     /**
      * Скачать файл тикета
      */
@@ -45,16 +46,21 @@ class TicketsFilesController extends Controller {
     public static function add(int $ticketId, int $ticketMessageId, UploadedFile $file): void
     {
         $path = Storage::disk('tickets')->putFile($ticketId, $file);
-        $origin = $file->getClientOriginalName();
+        $originalName = $file->getClientOriginalName();
+
+        $rawFilename = pathinfo($originalName, PATHINFO_FILENAME);
+        $title = Str::limit(strip_tags($rawFilename), 150, '');
+
+        $ext = $file->guessExtension() ?? $file->getClientOriginalExtension();
 
         TicketFile::create([
-            "title"             => pathinfo($origin, PATHINFO_FILENAME),
-            "name"              => basename($path),
-            "origin"            => $file->getClientOriginalName(),
-            "path"              => $path,
-            "type"              => $file->getMimeType(),
-            "ext"               => $file->getClientOriginalExtension(),
-            "ticket_message_id" => $ticketMessageId,
+            'title'             => $title,
+            'name'              => basename($path),
+            'origin'            => $originalName,
+            'path'              => $path,
+            'type'              => $file->getMimeType(),
+            'ext'               => Str::lower($ext),
+            'ticket_message_id' => $ticketMessageId,
         ]);
     }
 }

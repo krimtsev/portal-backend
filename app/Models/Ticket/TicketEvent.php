@@ -4,8 +4,8 @@ namespace App\Models\Ticket;
 
 use App\Models\User\User;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TicketEvent extends Model
 {
@@ -21,7 +21,7 @@ class TicketEvent extends Model
 
     protected $casts = [
         'created_at' => 'datetime',
-        'changes' => 'array',
+        'changes'    => 'array',
     ];
 
     public function user(): BelongsTo

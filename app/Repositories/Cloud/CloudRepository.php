@@ -77,7 +77,7 @@ class CloudRepository
      */
     public function getFullTreeData(): Collection
     {
-        $sql = "
+        $sql = '
             WITH RECURSIVE folder_tree AS (
                 SELECT id, name, slug, category_id
                 FROM cloud_folders
@@ -87,11 +87,11 @@ class CloudRepository
                 FROM cloud_folders f
                 INNER JOIN folder_tree ft ON f.category_id = ft.id
             ) SELECT * FROM folder_tree
-        ";
+        ';
 
         $allFolders = CloudFolder::hydrate(DB::select($sql));
 
-        $allFolders->load(['files' => function($query) {
+        $allFolders->load(['files' => function ($query) {
             $query->select('id', 'title', 'ext', 'downloads', 'cloud_folders_id');
         }]);
 
@@ -125,7 +125,7 @@ class CloudRepository
     public function getOptionsTree(?int $excludeId = null): array
     {
         if ($excludeId) {
-            $sql = "
+            $sql = '
                 WITH RECURSIVE descendants AS (
                     SELECT id FROM cloud_folders WHERE category_id = :exclude_id
                     UNION ALL
@@ -136,7 +136,7 @@ class CloudRepository
                 FROM cloud_folders
                 WHERE id NOT IN (SELECT id FROM descendants)
                 ORDER BY name
-            ";
+            ';
 
             $results = DB::select($sql, ['exclude_id' => $excludeId]);
             $folders = collect($results);
@@ -181,7 +181,7 @@ class CloudRepository
     public function getFlatOptions(?int $excludeId = null): Collection
     {
         if ($excludeId) {
-            $sql = "
+            $sql = '
             WITH RECURSIVE descendants AS (
                 SELECT id FROM cloud_folders WHERE id = :exclude_id
                 UNION ALL
@@ -192,7 +192,7 @@ class CloudRepository
             FROM cloud_folders
             WHERE id NOT IN (SELECT id FROM descendants)
             ORDER BY name
-        ";
+        ';
 
             return collect(DB::select($sql, ['exclude_id' => $excludeId]));
         }

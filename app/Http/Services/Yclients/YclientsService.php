@@ -1,5 +1,3 @@
 <?php
 
-class YclientsService {
-
-}
+class YclientsService {}

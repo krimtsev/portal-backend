@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Users;
 
-
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Partner\PartnerResource;
 use App\Http\Resources\User\UserProfileResource;
@@ -24,6 +23,14 @@ class UserProfileController extends Controller
         return JsonResponse::Send([
             'user'    => $userArray,
             'partner' => $partnerArray,
+        ]);
+    }
+
+    public function update(Request $request): \Illuminate\Http\JsonResponse
+    {
+        return JsonResponse::Send([
+            'user'    => [],
+            'partner' => [],
         ]);
     }
 }

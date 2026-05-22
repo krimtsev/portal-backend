@@ -1,19 +1,20 @@
 <?php
+
 namespace App\Http\Resources\Ticket;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-
 class TicketEventResource extends JsonResource
 {
     protected $partners;
+
     protected $categories;
 
     public function __construct($resource, $partners = null, $categories = null)
     {
         parent::__construct($resource);
-        $this->partners   = $partners;
+        $this->partners = $partners;
         $this->categories = $categories;
     }
 

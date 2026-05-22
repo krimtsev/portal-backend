@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Cloud;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Constants\File\FileSettings;
+use Illuminate\Foundation\Http\FormRequest;
 
 class CloudFileUploadRequest extends FormRequest
 {
@@ -17,7 +17,7 @@ class CloudFileUploadRequest extends FormRequest
         return [
             'files' => [
                 'required',
-                'array'
+                'array',
             ],
             'files.*' => FileSettings::getRules(200),
         ];

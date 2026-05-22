@@ -12,6 +12,7 @@ use App\Models\Cloud\CloudFolder;
 use App\Responses\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class CloudFilesController extends Controller
@@ -46,7 +47,7 @@ class CloudFilesController extends Controller
     public function list(CloudFolder $folder): \Illuminate\Http\JsonResponse
     {
         return JsonResponse::Send([
-            'data' => CloudFileResource::collection($folder->files)
+            'data' => CloudFileResource::collection($folder->files),
         ]);
     }
 
@@ -62,17 +63,22 @@ class CloudFilesController extends Controller
     private static function addFile($storagePath, $cloud_folders_id, $file)
     {
         $path = Storage::disk('cloud')->put($storagePath, $file);
-        $origin = $file->getClientOriginalName();
+        $originalName = $file->getClientOriginalName();
+
+        $rawFilename = pathinfo($originalName, PATHINFO_FILENAME);
+        $title = Str::limit(strip_tags($rawFilename), 150, '');
+
+        $ext = $file->guessExtension() ?? $file->getClientOriginalExtension();
 
         return CloudFile::create([
-            'title'            => pathinfo($origin, PATHINFO_FILENAME),
+            'title'            => $title,
             'name'             => basename($path),
-            'origin'           => $origin,
+            'origin'           => $originalName,
             'path'             => $path,
             'type'             => $file->getMimeType(),
-            'ext'              => pathinfo($origin, PATHINFO_EXTENSION),
+            'ext'              => Str::lower($ext),
             'cloud_folders_id' => $cloud_folders_id,
-            'downloads'        => 0
+            'downloads'        => 0,
         ]);
     }
 
@@ -109,7 +115,7 @@ class CloudFilesController extends Controller
         Cache::flush(CloudFolder::CACHE_TAG);
 
         return JsonResponse::Send([
-            'data' => CloudFileResource::collection($createdFiles)
+            'data' => CloudFileResource::collection($createdFiles),
         ]);
     }
 

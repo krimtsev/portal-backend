@@ -1,9 +1,11 @@
 <?php
+
 namespace App\Helpers\Pagination;
 
+use App\Enums\FilterType;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class Pagination
 {
@@ -13,8 +15,7 @@ class Pagination
         array $searchColumns = [],
         array $sortable = [],
         array $filterable = [],
-    ): array
-    {
+    ): array {
         [
             $sortBy,
             $sortOrder,
@@ -32,7 +33,9 @@ class Pagination
         // Фильтры
         if (!empty($filters) && is_array($filters)) {
             foreach ($filters as $column => $value) {
-                if ($value === null || $value === '' || empty($value)) continue;
+                if ($value === null || $value === '' || empty($value)) {
+                    continue;
+                }
 
                 if (in_array($column, $filterable)) {
                     self::applyFilter($query, $column, $value);
@@ -50,7 +53,7 @@ class Pagination
 
         return [
             'list' => $list->items(),
-            'page' => self::formatResponse($list)
+            'page' => self::formatResponse($list),
         ];
     }
 
@@ -68,11 +71,29 @@ class Pagination
 
     protected static function applyFilter(Builder $query, string $column, mixed $value): void
     {
-        if (is_array($value)) {
-            $query->whereIn($column, $value);
-        } else {
-            $query->where($column, $value);
-        }
+        $isArray = is_array($value);
+
+        $hasWithoutData = $isArray
+            ? in_array(FilterType::WITHOUT_DATA->value, $value, true)
+            : $value === FilterType::WITHOUT_DATA->value;
+
+        $value = $isArray ? array_diff($value, [FilterType::WITHOUT_DATA->value]) : $value;
+
+        $query->where(function ($q) use ($column, $value, $isArray, $hasWithoutData) {
+            if ($isArray) {
+                if (!empty($value)) {
+                    $q->whereIn($column, $value);
+                }
+            } else {
+                if (!$hasWithoutData) {
+                    $q->where($column, $value);
+                }
+            }
+
+            if ($hasWithoutData) {
+                $q->orWhereNull($column);
+            }
+        });
     }
 
     protected static function applySearch(Builder $query, string $search, array $columns): void
