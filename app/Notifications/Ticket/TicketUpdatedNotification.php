@@ -36,7 +36,7 @@ class TicketUpdatedNotification extends Notification implements ShouldQueue
      */
     public function toMail($notifiable): MailMessage
     {
-        return (new MailMessage)
+        return (new MailMessage())
             ->subject("Новое сообщение в заявке #{$this->ticket->id}")
             ->view('emails.tickets.new-comment', [
                 'ticket'        => $this->ticket,

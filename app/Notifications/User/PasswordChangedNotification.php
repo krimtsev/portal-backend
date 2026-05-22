@@ -29,7 +29,7 @@ class PasswordChangedNotification extends Notification implements ShouldQueue
      */
     public function toMail($notifiable): MailMessage
     {
-        return (new MailMessage)
+        return (new MailMessage())
             ->subject('Ваш пароль был изменен')
             ->view('emails.users.password-changed', [
                 'user' => $this->user,

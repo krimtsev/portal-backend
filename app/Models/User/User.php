@@ -4,9 +4,9 @@ namespace App\Models\User;
 
 use App\Models\Department\Department;
 use App\Models\Partner\Partner;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use App\Observers\User\UserObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -96,7 +96,7 @@ class User extends Authenticatable
     {
         return $query->where('disabled', false)
             ->whereNotNull('email')
-            ->whereHas('departments', function($q) use ($departmentId) {
+            ->whereHas('departments', function ($q) use ($departmentId) {
                 $q->where('departments.id', $departmentId);
             });
     }

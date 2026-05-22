@@ -22,7 +22,7 @@ class ChangePasswordController extends Controller
         $user->save();
 
         if (!empty($user->email)) {
-             Notification::send($user, new PasswordChangedNotification($user));
+            Notification::send($user, new PasswordChangedNotification($user));
         }
 
         return JsonResponse::Send([

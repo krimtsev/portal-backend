@@ -13,8 +13,8 @@ use App\Models\User\User;
 use App\Notifications\User\PasswordChangedNotification;
 use App\Responses\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 
 class UserController extends Controller
@@ -32,7 +32,7 @@ class UserController extends Controller
         )->with([
             'partner:id,name',
             'access',
-            'departments:id'
+            'departments:id',
         ])->orderBy('id', 'desc');
 
         $filters = $request->input('filters', []);

@@ -19,7 +19,6 @@ use App\Notifications\Ticket\TicketCreatedNotification;
 use App\Notifications\Ticket\TicketUpdatedNotification;
 use App\Responses\JsonResponse;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -69,11 +68,11 @@ class TicketsController extends Controller
         if ($ticketCreator) {
             $users = $departmentUsers->push($ticketCreator)->unique('id');
         } else {
-            $users  = $departmentUsers;
+            $users = $departmentUsers;
         }
 
         if ($users->isNotEmpty()) {
-            Notification::send($users , $notification);
+            Notification::send($users, $notification);
         }
     }
 
@@ -182,7 +181,7 @@ class TicketsController extends Controller
             }
         }
 
-        [$ticket, $ticketMessage] = DB::transaction(function() use ($data, $request) {
+        [$ticket, $ticketMessage] = DB::transaction(function () use ($data) {
             $userId = Auth::id();
 
             $attributes = $this->prepareAttributes($data);
@@ -239,7 +238,7 @@ class TicketsController extends Controller
         $userId = Auth::id();
         $ticketMessage = null;
 
-        DB::transaction(function() use ($ticket, $data, $request, $userId, &$ticketMessage) {
+        DB::transaction(function () use ($ticket, $data, $request, $userId, &$ticketMessage) {
             $original = clone $ticket;
 
             $ticket->update([
