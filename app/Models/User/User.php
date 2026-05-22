@@ -4,6 +4,7 @@ namespace App\Models\User;
 
 use App\Models\Department\Department;
 use App\Models\Partner\Partner;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use App\Observers\User\UserObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -74,6 +75,13 @@ class User extends Authenticatable
         return $this->hasOne(UserAccess::class, 'user_id');
     }
 
+    protected function userName(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->name ?: $this->login,
+        );
+    }
+
     public function departments(): BelongsToMany
     {
         return $this->belongsToMany(
@@ -82,5 +90,14 @@ class User extends Authenticatable
             'user_id',
             'department_id'
         )->using(UserDepartment::class);
+    }
+
+    public function scopeActiveInDepartment($query, int $departmentId)
+    {
+        return $query->where('disabled', false)
+            ->whereNotNull('email')
+            ->whereHas('departments', function($q) use ($departmentId) {
+                $q->where('departments.id', $departmentId);
+            });
     }
 }

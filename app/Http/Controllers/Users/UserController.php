@@ -10,10 +10,12 @@ use App\Http\Resources\User\UserExportResource;
 use App\Http\Resources\User\UserListResource;
 use App\Http\Resources\User\UserResource;
 use App\Models\User\User;
+use App\Notifications\User\PasswordChangedNotification;
 use App\Responses\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 
 class UserController extends Controller
 {
@@ -30,7 +32,7 @@ class UserController extends Controller
         )->with([
             'partner:id,name',
             'access',
-            'departments',
+            'departments:id'
         ])->orderBy('id', 'desc');
 
         $filters = $request->input('filters', []);
@@ -77,7 +79,9 @@ class UserController extends Controller
     {
         $data = $request->validated();
 
-        if (!empty($data['password'])) {
+        $isPasswordChanged = !empty($data['password']);
+
+        if ($isPasswordChanged) {
             $data['password'] = Hash::make($data['password']);
         } else {
             unset($data['password']);
@@ -94,6 +98,10 @@ class UserController extends Controller
                 $user->access()->update($data['access']);
             }
         });
+
+        if ($isPasswordChanged && !empty($user->email)) {
+            Notification::send($user, new PasswordChangedNotification($user));
+        }
 
         return JsonResponse::Updated();
     }

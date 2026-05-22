@@ -14,11 +14,16 @@ use App\Http\Resources\Ticket\TicketResource;
 use App\Models\Partner\Partner;
 use App\Models\Ticket\Ticket;
 use App\Models\Ticket\TicketMessage;
+use App\Models\User\User;
+use App\Notifications\Ticket\TicketCreatedNotification;
+use App\Notifications\Ticket\TicketUpdatedNotification;
 use App\Responses\JsonResponse;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 
 class TicketsController extends Controller
 {
@@ -53,6 +58,23 @@ class TicketsController extends Controller
         }
 
         return true;
+    }
+
+    private function sendTicketNotification(Ticket $ticket, mixed $notification): void
+    {
+        $departmentUsers = User::activeInDepartment($ticket->department_id)->get();
+
+        $ticketCreator = User::find($ticket->user_id);
+
+        if ($ticketCreator) {
+            $users = $departmentUsers->push($ticketCreator)->unique('id');
+        } else {
+            $users  = $departmentUsers;
+        }
+
+        if ($users->isNotEmpty()) {
+            Notification::send($users , $notification);
+        }
     }
 
     private function paginatedList(Builder $query, Request $request): \Illuminate\Http\JsonResponse
@@ -160,7 +182,7 @@ class TicketsController extends Controller
             }
         }
 
-        DB::transaction(function () use ($data, $request) {
+        [$ticket, $ticketMessage] = DB::transaction(function() use ($data, $request) {
             $userId = Auth::id();
 
             $attributes = $this->prepareAttributes($data);
@@ -185,12 +207,16 @@ class TicketsController extends Controller
 
             $ticketMessage = TicketMessage::create($ticketMessagePayload);
 
-            if ($request->hasFile('files')) {
-                foreach ($request->file('files') as $file) {
-                    TicketsFilesController::add($ticket->id, $ticketMessage->id, $file);
-                }
-            }
+            return [$ticket, $ticketMessage];
         });
+
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                TicketsFilesController::add($ticket->id, $ticketMessage->id, $file);
+            }
+        }
+
+        $this->sendTicketNotification($ticket, new TicketCreatedNotification($ticket, $ticketMessage));
 
         return JsonResponse::Created();
     }
@@ -210,8 +236,10 @@ class TicketsController extends Controller
         }
 
         $data = $request->validated();
+        $userId = Auth::id();
+        $ticketMessage = null;
 
-        DB::transaction(function () use ($ticket, $data, $request) {
+        DB::transaction(function() use ($ticket, $data, $request, $userId, &$ticketMessage) {
             $original = clone $ticket;
 
             $ticket->update([
@@ -222,8 +250,6 @@ class TicketsController extends Controller
             ]);
 
             if (!empty($data['message']) || $request->hasFile('files')) {
-                $userId = Auth::id();
-
                 $ticketMessagePayload = [
                     'ticket_id' => $ticket->id,
                     'user_id'   => $userId,
@@ -242,6 +268,8 @@ class TicketsController extends Controller
             $eventsController = new TicketsEventsController();
             $eventsController->create($original, $ticket);
         });
+
+        $this->sendTicketNotification($ticket, new TicketUpdatedNotification($ticket, $ticketMessage));
 
         $ticketsController = new TicketsController();
 
@@ -276,6 +304,8 @@ class TicketsController extends Controller
             }
         }
 
+        $this->sendTicketNotification($ticket, new TicketUpdatedNotification($ticket, $ticketMessage));
+
         $ticketsController = new TicketsController();
 
         return $ticketsController->get(new Request(), $ticket);
@@ -283,7 +313,7 @@ class TicketsController extends Controller
 
     /**
      * Закрыть заявление
-     * Переволд в статус Closed, закрывается пользователем
+     * Перевод в статус Closed, закрывается пользователем
      */
     public function remove(Request $request, Ticket $ticket): \Illuminate\Http\JsonResponse
     {
