@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Integrations\Yclients\YclientsApi;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -14,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(YclientsApi::class);
     }
 
     /**

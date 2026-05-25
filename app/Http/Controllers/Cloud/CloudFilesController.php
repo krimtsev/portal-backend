@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Cloud;
 
-use App\Helpers\Cache\Cache;
+use App\Helpers\Cache;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Cloud\CloudFileUpdateRequest;
 use App\Http\Requests\Cloud\CloudFileUploadRequest;

@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Http\Services\Google;
+namespace App\Integrations\Google;
 
 use Google\Client;
 use Google\Service\Sheets;
 
-class GoogleSheetService
+class GoogleSheet
 {
-    public $client;
+    private $client;
 
-    public $service;
+    private $service;
 
     public function __construct()
     {
