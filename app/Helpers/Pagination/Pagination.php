@@ -34,7 +34,7 @@ class Pagination
         if (!empty($filters) && is_array($filters)) {
             foreach ($filters as $column => $value) {
                 if (is_array($value)) {
-                    $value = array_filter($value, fn($item) => $item !== null && $item !== '');
+                    $value = array_filter($value, fn ($item) => $item !== null && $item !== '');
                 }
 
                 if ($value === null || $value === '' || $value === []) {

@@ -2,9 +2,9 @@
 
 return [
     'britva' => [
-        'name' => 'BRITVA Franchisee Portal'
+        'name' => 'BRITVA Franchisee Portal',
     ],
     'soda' => [
-        'name' => 'SODA Franchisee Portal'
-    ]
+        'name' => 'SODA Franchisee Portal',
+    ],
 ];
