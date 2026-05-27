@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('yc_company_daily_stats', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('company_id'); // ID компании в YClients
+            $table->unsignedBigInteger('company_id'); // ID компании в YClients
             $table->date('date');                  // Дата среза
 
             // Финансовые показатели

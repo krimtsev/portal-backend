@@ -38,15 +38,14 @@ class RoyaltyController extends Controller
         $endDate = Carbon::parse($monthInput)->endOfMonth()->format('Y-m-d');
 
         $query = Partner::withActiveYclients()
-            ->select('id', 'name', 'yclients_id', 'opened_at')
-            ->addSelect([
-                'income_total' => YcCompanyDailyStat::selectRaw('COALESCE(SUM(income_total), 0)')
-                    ->whereColumn('company_id', 'partners.yclients_id')
-                    ->whereBetween('date', [$startDate, $endDate]),
-                'days_count' => YcCompanyDailyStat::selectRaw('COUNT(DISTINCT date)')
-                    ->whereColumn('company_id', 'partners.yclients_id')
-                    ->whereBetween('date', [$startDate, $endDate]),
-            ]);
+            ->select('partners.id', 'partners.name', 'partners.yclients_id', 'partners.opened_at')
+            ->leftJoin('yc_company_daily_stats as stats', function ($join) use ($startDate, $endDate) {
+                $join->on('stats.company_id', '=', 'partners.yclients_id')
+                    ->whereBetween('stats.date', [$startDate, $endDate]);
+            })
+            ->selectRaw('COALESCE(SUM(stats.income_total), 0) as income_total')
+            ->selectRaw('COUNT(DISTINCT stats.date) as days_count')
+            ->groupBy('partners.id', 'partners.name', 'partners.yclients_id', 'partners.opened_at');
 
         $result = Pagination::paginate(
             $query,

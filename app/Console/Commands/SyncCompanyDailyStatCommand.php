@@ -13,7 +13,8 @@ class SyncCompanyDailyStatCommand extends Command
 {
     protected $signature = 'yclients:sync-company-stats
                             {--date= : Конкретный день в формате YYYY-MM-DD}
-                            {--month= : Полный месяц в формате YYYY-MM}';
+                            {--month= : Полный месяц в формате YYYY-MM}
+                            {--company_id= : Конкретный ID компании из YClients (yclients_id)}';
 
     protected $description = 'Синхронизация основных показателей компании из YClients';
 
@@ -31,7 +32,13 @@ class SyncCompanyDailyStatCommand extends Command
             return self::FAILURE;
         }
 
-        $partners = Partner::query()->withActiveYclients()->get(['id', 'yclients_id']);
+        $query = Partner::query()->withActiveYclients();
+
+        if ($companyId = $this->option('company_id')) {
+            $query->where('yclients_id', $companyId);
+        }
+
+        $partners = $query->get(['id', 'yclients_id']);
 
         if ($partners->isEmpty()) {
             $this->warn('Нет активных партнеров с привязанным yclients_id для обработки.');
