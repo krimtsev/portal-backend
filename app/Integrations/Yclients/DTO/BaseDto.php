@@ -8,6 +8,7 @@ abstract class BaseDto
 {
     /**
      * Автоматическая сборка DTO из массива с жесткой валидацией структуры
+     *
      * @throws YclientsException
      */
     public static function fromArray(array $response): static

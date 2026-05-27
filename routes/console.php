@@ -8,5 +8,5 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
  */
-Schedule::command('certificates:update')->dailyAt('03:00');
+Schedule::command('certificates:sync')->dailyAt('03:00');
 Schedule::command('yclients:sync-company-stats')->dailyAt('04:00');

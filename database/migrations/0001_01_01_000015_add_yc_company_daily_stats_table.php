@@ -6,8 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    protected $connection = 'mysql_analytics';
-
     public function up(): void
     {
         Schema::create('yc_company_daily_stats', function (Blueprint $table) {

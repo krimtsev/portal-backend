@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
+use App\Helpers\QueueThrottler;
+use App\Integrations\Yclients\Services\PeriodResolutionService;
 use App\Jobs\Yclients\SyncCompanyDailyStatJob;
 use App\Models\Partner\Partner;
-use App\Integrations\Yclients\Services\PeriodResolutionService;
-use App\Helpers\QueueThrottler;
 use Illuminate\Console\Command;
 use Throwable;
 
@@ -26,7 +26,8 @@ class SyncCompanyDailyStatCommand extends Command
                 month: $this->option('month')
             );
         } catch (Throwable $e) {
-            $this->error("Ошибка параметров: " . $e->getMessage());
+            $this->error('Ошибка параметров: ' . $e->getMessage());
+
             return self::FAILURE;
         }
 
@@ -34,11 +35,12 @@ class SyncCompanyDailyStatCommand extends Command
 
         if ($partners->isEmpty()) {
             $this->warn('Нет активных партнеров с привязанным yclients_id для обработки.');
+
             return self::SUCCESS;
         }
 
         $totalJobs = $partners->count() * count($dates);
-        $this->info("Период определен. Дней: " . count($dates) . ". Активных партнеров: " . $partners->count());
+        $this->info('Период определен. Дней: ' . count($dates) . '. Активных партнеров: ' . $partners->count());
         $this->info("Стартует отправка {$totalJobs} задач в очередь...");
 
         $bar = $this->output->createProgressBar($totalJobs);
@@ -47,9 +49,9 @@ class SyncCompanyDailyStatCommand extends Command
         foreach ($dates as $date) {
             $dateString = $date->toDateString();
 
-            foreach (QueueThrottler::chunkWithDelay($partners, 2) as $data) {
+            foreach (QueueThrottler::chunkWithDelay($partners, 3) as $data) {
                 $partner = $data['item'];
-                $delay   = $data['delay'];
+                $delay = $data['delay'];
 
                 SyncCompanyDailyStatJob::dispatch(
                     (int) $partner->yclients_id,

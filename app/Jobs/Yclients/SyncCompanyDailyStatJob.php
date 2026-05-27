@@ -7,15 +7,15 @@ use App\Integrations\Yclients\YclientsApi;
 use App\Integrations\Yclients\YclientsException;
 use App\Models\Yclient\YcCompanyDailyStat;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class SyncCompanyDailyStatJob implements ShouldQueue, ShouldBeUnique
+class SyncCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -90,10 +90,10 @@ class SyncCompanyDailyStatJob implements ShouldQueue, ShouldBeUnique
     public function failed(Throwable $exception): void
     {
         Log::channel('yclients')
-            ->critical("Синхронизация YClients завершилась.", [
+            ->critical('Синхронизация YClients завершилась.', [
                 'company_id' => $this->companyId,
                 'date'       => $this->date,
-                'error'      => $exception->getMessage()
+                'error'      => $exception->getMessage(),
             ]);
     }
 }

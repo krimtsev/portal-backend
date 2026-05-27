@@ -10,11 +10,6 @@ class YcCompanyDailyStat extends Model
     /**
      * @var string
      */
-    protected $connection = 'mysql_analytics';
-
-    /**
-     * @var string
-     */
     protected $table = 'yc_company_daily_stats';
 
     /**

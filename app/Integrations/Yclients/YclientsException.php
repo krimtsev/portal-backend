@@ -3,12 +3,12 @@
 namespace App\Integrations\Yclients;
 
 use Exception;
-use Throwable;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
-class YclientsException extends Exception {
-
-    public function __construct(string $message = "", int $code = 0, ?Throwable $previous = null)
+class YclientsException extends Exception
+{
+    public function __construct(string $message = '', int $code = 0, ?Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }
@@ -28,4 +28,3 @@ class YclientsException extends Exception {
         return false;
     }
 }
-

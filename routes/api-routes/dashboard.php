@@ -78,4 +78,10 @@ Route::prefix('v1/dashboard')
                 Route::delete('folder/{folder}/file/{file}', [Controllers\Cloud\CloudFilesController::class, 'remove']);
                 Route::get('folder/{folder}/download/{fileName}', [Controllers\Cloud\CloudFilesController::class, 'download']);
             });
+
+        Route::prefix('royalty')
+            ->middleware(['role:admin,sysadmin'])
+            ->group(function () {
+                Route::post('list', [Controllers\Royalty\RoyaltyController::class, 'list']);
+            });
     });

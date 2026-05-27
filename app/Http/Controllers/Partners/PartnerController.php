@@ -82,7 +82,7 @@ class PartnerController extends Controller
             'contract_number',
             'start_at',
             'disabled'
-        )->orderBy('name', 'asc');
+        );
 
         $result = Pagination::paginate(
             $query,

@@ -20,8 +20,10 @@ class YclientsApi
 
     /**
      * Создает объект ресурса только 1 раз при первом обращении.
+     *
      * @template T
-     * @param class-string<T> $class
+     *
+     * @param  class-string<T>  $class
      * @return T
      */
     protected function resolveResource(string $class)

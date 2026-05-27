@@ -8,6 +8,7 @@ class AnalyticsResource extends ApiResource
 {
     /**
      * Получить основные показатели компании
+     *
      * @throws YclientsException
      */
     public function getCompanyStats(

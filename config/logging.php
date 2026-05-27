@@ -136,8 +136,8 @@ return [
 
         'yclients' => [
             'driver' => 'single',
-            'path' => storage_path('logs/yclients.log'),
-            'level' => 'debug',
+            'path'   => storage_path('logs/yclients.log'),
+            'level'  => 'debug',
         ],
     ],
 

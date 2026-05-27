@@ -22,7 +22,7 @@ class PeriodResolutionService
             }
 
             $startOfMonth = Carbon::parse($month)->startOfMonth();
-            $endOfMonth   = Carbon::parse($month)->endOfMonth();
+            $endOfMonth = Carbon::parse($month)->endOfMonth();
 
             // Если месяц текущий, не идем дальше вчерашнего дня
             if ($endOfMonth->isFuture()) {
@@ -40,6 +40,7 @@ class PeriodResolutionService
             if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
                 throw new InvalidArgumentException('Дата должна быть в формате YYYY-MM-DD');
             }
+
             return [Carbon::parse($date)];
         }
 

@@ -4,8 +4,8 @@ namespace App\Integrations\Yclients;
 
 use App\Enums\HttpMethod;
 use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Http\Client\Response;
 use Illuminate\Http\Client\Request;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -38,16 +38,16 @@ class YclientsClient
     {
         $http = Http::baseUrl($this->baseUrl)
             ->withHeaders([
-                'Accept'          => 'application/vnd.yclients.v2+json',
-                'Content-Type'    => 'application/json',
-                'Authorization'   => sprintf('Bearer %s, User %s', $this->partnerToken, $this->appToken),
-                'Connection'      => 'close'
+                'Accept'        => 'application/vnd.yclients.v2+json',
+                'Content-Type'  => 'application/json',
+                'Authorization' => sprintf('Bearer %s, User %s', $this->partnerToken, $this->appToken),
+                'Connection'    => 'close',
             ])->withOptions([
                 'verify'          => config('yclients.http.verify'),
                 'timeout'         => config('yclients.http.timeout'),
                 'connect_timeout' => config('yclients.http.connect_timeout'),
-                'curl'   => [
-                    CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4
+                'curl'            => [
+                    CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
                 ],
             ]);
 
@@ -78,6 +78,7 @@ class YclientsClient
 
     /**
      * Единый метод для отправки всех запросов с обработкой ошибок
+     *
      * @throws YclientsException
      */
     private function sendRequest(string $method, string $uri, array $data = []): array
@@ -99,7 +100,7 @@ class YclientsClient
 
     protected function cleanParams(array $params): array
     {
-        return array_filter($params, fn($value) => $value !== null);
+        return array_filter($params, fn ($value) => $value !== null);
     }
 
     /**
@@ -108,6 +109,7 @@ class YclientsClient
     public function get(string $uri, array $query = []): array
     {
         $query = $this->cleanParams($query);
+
         return $this->sendRequest(HttpMethod::GET->value, $uri, $query);
     }
 

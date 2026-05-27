@@ -25,19 +25,19 @@ class CompanyStatsDto extends BaseDto
     protected static function getInputMapping(): array
     {
         return [
-            'income_total'      => 'data.income_total_stats.current_sum',
-            'income_services'   => 'data.income_services_stats.current_sum',
-            'income_goods'      => 'data.income_goods_stats.current_sum',
-            'fullness_percent'  => 'data.fullness_stats.current_percent',
-            'record_completed'  => 'data.record_stats.current_completed_count',
-            'record_pending'    => 'data.record_stats.current_pending_count',
-            'record_canceled'   => 'data.record_stats.current_canceled_count',
-            'record_total'      => 'data.record_stats.current_total_count',
-            'client_total'      => 'data.client_stats.total_count',
-            'client_new'        => 'data.client_stats.new_count',
-            'client_return'     => 'data.client_stats.return_count',
-            'client_active'     => 'data.client_stats.active_count',
-            'client_lost'       => 'data.client_stats.lost_count',
+            'income_total'     => 'data.income_total_stats.current_sum',
+            'income_services'  => 'data.income_services_stats.current_sum',
+            'income_goods'     => 'data.income_goods_stats.current_sum',
+            'fullness_percent' => 'data.fullness_stats.current_percent',
+            'record_completed' => 'data.record_stats.current_completed_count',
+            'record_pending'   => 'data.record_stats.current_pending_count',
+            'record_canceled'  => 'data.record_stats.current_canceled_count',
+            'record_total'     => 'data.record_stats.current_total_count',
+            'client_total'     => 'data.client_stats.total_count',
+            'client_new'       => 'data.client_stats.new_count',
+            'client_return'    => 'data.client_stats.return_count',
+            'client_active'    => 'data.client_stats.active_count',
+            'client_lost'      => 'data.client_stats.lost_count',
         ];
     }
 }

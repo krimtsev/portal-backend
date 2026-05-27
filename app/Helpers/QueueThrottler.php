@@ -2,8 +2,8 @@
 
 namespace App\Helpers;
 
-use Illuminate\Support\Carbon;
 use Generator;
+use Illuminate\Support\Carbon;
 
 class QueueThrottler
 {
@@ -11,9 +11,8 @@ class QueueThrottler
      * Разрезает и распределяет поток элементов, генерируя для каждого нарастающую Carbon-задержку.
      * Полностью изолирует логику троттлинга очередей для защиты от ошибок HTTP 429.
      *
-     * @param iterable $items Исходная коллекция или массив (например, партнеры)
-     * @param int $stepSeconds Информационное окно/шаг задержки в секундах (минимум 1 секунда)
-     * @return Generator
+     * @param  iterable  $items  Исходная коллекция или массив (например, партнеры)
+     * @param  int  $stepSeconds  Информационное окно/шаг задержки в секундах (минимум 1 секунда)
      */
     public static function chunkWithDelay(iterable $items, int $stepSeconds = 1): Generator
     {
