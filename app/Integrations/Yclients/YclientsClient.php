@@ -142,38 +142,62 @@ class YclientsClient
      */
     protected function handleResponse(Response $response): array
     {
+        $responseBody = $response->body();
+        $responseStatus = $response->status();
+        $requestUrl = (string) $response->effectiveUri();
+
         if ($this->isHttpDebug) {
             $requestId = $response->header('X-Request-ID');
 
             Log::channel($this->logChannel)
                 ->info('Yclients HTTP Response', [
                     'request-id' => $requestId,
-                    'status'     => $response->status(),
-                    'body'       => $responseData ?? $response->body(),
+                    'status'     => $responseStatus,
+                    'body'       => $responseBody,
                 ]);
         }
 
         if ($response->failed()) {
             throw new YclientsException(
-                sprintf('HTTP request failed with status [%d]', $response->status()), 500
+                sprintf(
+                    'HTTP request to [%s] failed with status [%d]. Response: %s',
+                    $requestUrl,
+                    $response->status(),
+                    $responseBody
+                ),
+                $response->status()
             );
         }
 
         $responseData = $response->json();
 
         if (is_null($responseData)) {
-            throw new YclientsException('Failed to decode response as JSON.');
+            throw new YclientsException(
+                sprintf(
+                    'Failed to decode response as JSON from [%s]. Raw body: %s',
+                    $requestUrl,
+                    $responseBody
+                )
+            );
         }
 
         if (isset($responseData['errors'])) {
             throw new YclientsException(
-                'Returned internal errors: ' . json_encode($responseData['errors'], JSON_UNESCAPED_UNICODE)
+                sprintf(
+                    'URL [%s] returned internal errors: %s',
+                    $requestUrl,
+                    json_encode($responseData['errors'], JSON_UNESCAPED_UNICODE)
+                )
             );
         }
 
         if (array_key_exists('success', $responseData) && !$responseData['success']) {
             throw new YclientsException(
-                'Business transaction failed (success = false). Response: ' . json_encode($responseData, JSON_UNESCAPED_UNICODE)
+                sprintf(
+                    'Business transaction failed (success = false) for [%s]. Response: %s',
+                    $requestUrl,
+                    json_encode($responseData, JSON_UNESCAPED_UNICODE)
+                )
             );
         }
 
