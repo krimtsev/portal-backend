@@ -86,7 +86,7 @@ class Partner extends Model
     public function scopeWithActiveYclients(Builder $query): Builder
     {
         return $query->whereNotNull('yclients_id')
-            ->whereNotNull('opened_at')
+            ->whereNotNull('start_at')
             ->where('disabled', false);
     }
 }

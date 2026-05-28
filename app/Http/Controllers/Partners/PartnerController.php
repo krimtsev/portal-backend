@@ -18,7 +18,7 @@ class PartnerController extends Controller
 {
     /**
      * Получение списка партнеров доступных пользователю
-     * Учиитываем partner_id и partner_groups
+     * Учитываем partner_id и partner_groups
      */
     public function getUserPartners(Request $request): \Illuminate\Http\JsonResponse
     {

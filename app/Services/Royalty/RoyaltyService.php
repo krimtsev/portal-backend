@@ -24,7 +24,7 @@ class RoyaltyService
                 $grossRevenue = round((float) $partner->income_total, 2);
 
                 $royaltyPercent = $this->calculateRoyaltyPercent(
-                    $partner->opened_at,
+                    $partner->start_at,
                     $monthInput
                 );
 
@@ -45,7 +45,7 @@ class RoyaltyService
                     'vat_amount'       => $vatAmount,
                     'royalty_with_vat' => round($royaltyAmount + $vatAmount, 2),
                     'days_count'       => (int) $partner->days_count,
-                    'opened_at'        => $partner->opened_at,
+                    'start_at'         => $partner->start_at,
                 ];
             }
         );
