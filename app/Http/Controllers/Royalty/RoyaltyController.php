@@ -27,7 +27,7 @@ class RoyaltyController extends Controller
         $filters = $request->filters();
 
         if (!empty($filters['partner_id'])) {
-            $filters['id'] = $filters['partner_id'];
+            $filters['partners.id'] = $filters['partner_id'];
             unset($filters['partner_id']);
         }
 
@@ -52,7 +52,7 @@ class RoyaltyController extends Controller
             $request,
             [],
             ['name'],
-            ['id'],
+            ['partners.id'],
         );
 
         $processedCollection = $this->royaltyService->transform(
