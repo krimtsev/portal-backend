@@ -1,21 +1,22 @@
 <?php
 
-use App\Integrations\Yclients\DTO\Analytics\CompanyStatsDto;
-use App\Integrations\Yclients\YclientsApi;
-use Illuminate\Http\Request;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () { return 'Hello World'; });
 
-Route::get('/test/{id}', function (string $id, YclientsApi $yclients, Request $request) {
-    $rawData = $yclients->analytics()->getCompanyStats(
-        companyId: $id,
-        dateFrom: $request->query('date_from'),
-        dateTo: $request->query('date_to'),
-        staffId: $request->query('staff_id')
-    );
-
-    $dto = CompanyStatsDto::fromArray($rawData);
-
-    return response()->json($dto->toArray());
+Route::prefix('debug')->group(function () {
+    Route::get('/timezone', function () {
+        return response()->json([
+            'config' => [
+                'config_app_timezone' => config('app.timezone'),
+            ],
+            'php_and_carbon' => [
+                'carbon_now'           => Carbon::now()->toIso8601String(),
+                'php_date_now'         => date('Y-m-d H:i:s P'),
+                'php_default_timezone' => date_default_timezone_get(),
+            ],
+        ]);
+    });
 });
+

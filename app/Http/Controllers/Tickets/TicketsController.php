@@ -268,7 +268,9 @@ class TicketsController extends Controller
             $eventsController->create($original, $ticket);
         });
 
-        $this->sendTicketNotification($ticket, new TicketUpdatedNotification($ticket, $ticketMessage));
+        if ($ticketMessage) {
+            $this->sendTicketNotification($ticket, new TicketUpdatedNotification($ticket, $ticketMessage));
+        }
 
         $ticketsController = new TicketsController();
 
