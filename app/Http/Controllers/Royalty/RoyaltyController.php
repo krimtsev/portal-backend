@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Royalty\RoyaltyListRequest;
 use App\Http\Resources\Royalty\RoyaltyListResource;
 use App\Models\Partner\Partner;
-use App\Models\Yclient\YcCompanyDailyStat;
 use App\Responses\JsonResponse;
 use App\Services\Royalty\RoyaltyService;
 use Carbon\Carbon;
