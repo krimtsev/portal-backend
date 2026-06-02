@@ -38,7 +38,7 @@ class SyncCompanyDailyStatCommand extends Command
             return self::FAILURE;
         }
 
-        $query = Partner::query()->withRoyalty();
+        $query = Partner::query()->withActiveYclients();
 
         if ($companyId = $this->option('company_id')) {
             $query->where('yclients_id', $companyId);

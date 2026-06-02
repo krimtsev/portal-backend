@@ -90,4 +90,11 @@ class Partner extends Model
             ->where('start_at', '>=', '2026-01-01')
             ->where('disabled', false);
     }
+
+    public function scopeWithActiveYclients(Builder $query): Builder
+    {
+        return $query->whereNotNull('yclients_id')
+            ->whereNotNull('start_at')
+            ->where('disabled', false);
+    }
 }
