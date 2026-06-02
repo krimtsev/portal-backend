@@ -11,12 +11,20 @@ class SyncCertificatesCommand extends Command
 
     protected $description = 'Обновление сертификатов из Google Sheets';
 
-    public function handle(): void
+    public function handle(): int
     {
+        if (!config('jobs.certificates')) {
+            $this->warn('Синхронизация отключена в конфигурации.');
+
+            return self::SUCCESS;
+        }
+
         match ($this->option('now')) {
             true  => $this->runSynchronously(),
             false => $this->runInQueue(),
         };
+
+        return self::SUCCESS;
     }
 
     private function runSynchronously(): void

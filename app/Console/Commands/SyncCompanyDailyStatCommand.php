@@ -20,6 +20,12 @@ class SyncCompanyDailyStatCommand extends Command
 
     public function handle(PeriodResolutionService $periodService): int
     {
+        if (!config('jobs.royalty')) {
+            $this->warn('Синхронизация отключена в конфигурации.');
+
+            return self::SUCCESS;
+        }
+
         try {
             // Разрешаем период дат через выделенный сервис
             $dates = $periodService->resolveFromParams(
@@ -32,7 +38,7 @@ class SyncCompanyDailyStatCommand extends Command
             return self::FAILURE;
         }
 
-        $query = Partner::query()->withActiveYclients();
+        $query = Partner::query()->withRoyalty();
 
         if ($companyId = $this->option('company_id')) {
             $query->where('yclients_id', $companyId);

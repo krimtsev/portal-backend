@@ -14,4 +14,13 @@ class NumberHelper
             ''
         );
     }
+
+    public static function formatPrice(float|int|string|null $value): string
+    {
+        $floatValue = (float) $value;
+
+        $truncated = floor($floatValue * 100) / 100;
+
+        return number_format($truncated, 2, ',', "\u{00A0}");
+    }
 }

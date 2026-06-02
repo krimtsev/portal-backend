@@ -19,4 +19,3 @@ Route::prefix('debug')->group(function () {
         ]);
     });
 });
-

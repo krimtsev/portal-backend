@@ -16,11 +16,11 @@ class RoyaltyListResource extends JsonResource
         return [
             'partner_id'       => $this['partner_id'],
             'partner_name'     => $this['partner_name'],
-            'gross_revenue'    => NumberHelper::money($this['gross_revenue']),
+            'gross_revenue'    => NumberHelper::formatPrice($this['gross_revenue']),
             'royalty_percent'  => $this['royalty_percent'],
-            'royalty_amount'   => NumberHelper::money($this['royalty_amount']),
-            'vat_amount'       => NumberHelper::money($this['vat_amount']),
-            'royalty_with_vat' => NumberHelper::money($this['royalty_with_vat']),
+            'royalty_amount'   => NumberHelper::formatPrice($this['royalty_amount']),
+            'vat_amount'       => NumberHelper::formatPrice($this['vat_amount']),
+            'royalty_with_vat' => NumberHelper::formatPrice($this['royalty_with_vat']),
             'days_count'       => $this['days_count'],
             'start_at'         => $this['start_at'],
         ];

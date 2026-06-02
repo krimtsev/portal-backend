@@ -83,10 +83,11 @@ class Partner extends Model
     /**
      * Scope для получения только активных партнеров, готовых к синхронизации с YClients
      */
-    public function scopeWithActiveYclients(Builder $query): Builder
+    public function scopeWithRoyalty(Builder $query): Builder
     {
         return $query->whereNotNull('yclients_id')
             ->whereNotNull('start_at')
+            ->where('start_at', '>=', '2026-01-01')
             ->where('disabled', false);
     }
 }

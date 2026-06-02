@@ -12,6 +12,8 @@ class RoyaltyService
 
     private const ROYALTY_STEP = 0.25;
 
+    private const MIN_ROYALTY_PERCENT = 2.5;
+
     private const MAX_ROYALTY_PERCENT = 5;
 
     public function transform(
@@ -23,8 +25,12 @@ class RoyaltyService
 
                 $grossRevenue = round((float) $partner->income_total, 2);
 
+                $openedAt = $partner->opened_at ? Carbon::parse($partner->opened_at) : null;
+                $startAt = $partner->start_at ? Carbon::parse($partner->start_at) : null;
+
                 $royaltyPercent = $this->calculateRoyaltyPercent(
-                    $partner->start_at,
+                    $openedAt,
+                    $startAt,
                     $monthInput
                 );
 
@@ -51,36 +57,43 @@ class RoyaltyService
         );
     }
 
-    public function calculateRoyaltyPercent(?Carbon $openedAt, Carbon $targetDate): float
+    public function calculateRoyaltyPercent(?Carbon $openedAt, ?Carbon $startAt, Carbon $targetDate): float
     {
         if (!$openedAt) {
             return 0;
         }
 
-        /**
-         * Первые 2 месяца бесплатно
-         */
-        $royaltyStart = $openedAt
-            ->copy()
-            ->startOfMonth()
-            ->addMonths(2);
-
         $targetMonth = $targetDate
             ->copy()
             ->startOfMonth();
 
-        if ($targetMonth->lt($royaltyStart)) {
+        $openedMonth = $openedAt
+            ->copy()
+            ->startOfMonth();
+
+        $freePeriodEnd = $openedMonth->copy()->addMonth(2);
+
+        /**
+         * Первые 2 месяца бесплатно
+         */
+        if ($targetMonth->lt($freePeriodEnd)) {
             return 0;
         }
+
+        $percent = self::MIN_ROYALTY_PERCENT;
 
         /**
          * Каждые 12 месяцев +0.25%
          */
-        $months = $royaltyStart->diffInMonths($targetMonth);
+        if ($startAt) {
+            $startMonth = $startAt->copy()->startOfMonth();
 
-        $steps = intdiv($months, 12) + 1;
-
-        $percent = $steps * self::ROYALTY_STEP;
+            if ($targetMonth->gt($startMonth)) {
+                $start = $startMonth->diffInMonths($targetMonth);
+                $yearsPassed = intdiv($start, 12);
+                $percent += $yearsPassed * self::ROYALTY_STEP;
+            }
+        }
 
         return min($percent, self::MAX_ROYALTY_PERCENT);
     }
