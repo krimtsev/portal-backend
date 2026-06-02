@@ -45,7 +45,9 @@ class UserController extends Controller
             })
             ->when(!empty($filters['access']), function ($q) use ($filters) {
                 $q->whereHas('access', function ($sq) use ($filters) {
-                    $sq->where($filters['access']);
+                    foreach ((array) $filters['access'] as $key => $value) {
+                        $sq->where($value, true);
+                    }
                 });
             });
 

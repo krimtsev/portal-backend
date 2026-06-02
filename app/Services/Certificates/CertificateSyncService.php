@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Tasks\Sheet;
+namespace App\Services\Certificates;
 
-use App\Http\Services\Google\GoogleSheetService;
+use App\Integrations\Google\GoogleSheet;
 use App\Models\Certificate\Certificate;
 use Illuminate\Support\Str;
 
-class UpdateCertificatesTask
+class CertificateSyncService
 {
     /**
      * Обновить базу сертификатов
@@ -42,7 +42,7 @@ class UpdateCertificatesTask
         $sheet = json_decode(file_get_contents($path));
 
         try {
-            $table = (new GoogleSheetService())->readSheet($sheet);
+            $table = (new GoogleSheet())->readSheet($sheet);
         } catch (\Throwable $e) {
             logger()->error('Certificates get rows failed', [
                 'message' => $e->getMessage(),
@@ -75,7 +75,7 @@ class UpdateCertificatesTask
     }
 
     /**
-     * Получить список значений дукликатов identifier
+     * Получить список значений дубликатов identifier
      */
     public function duplicateRows($rows): array
     {

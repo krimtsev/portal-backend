@@ -57,6 +57,11 @@ class Partner extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function group(): BelongsTo
+    {
+        return $this->belongsTo(PartnerGroup::class, 'group_id');
+    }
+
     /**
      * Получение активных партнеров с выборкой динамических полей
      *
@@ -75,8 +80,14 @@ class Partner extends Model
         return $query->select($selectFields);
     }
 
-    public function group(): BelongsTo
+    /**
+     * Scope для получения только активных партнеров, готовых к синхронизации с YClients
+     */
+    public function scopeWithRoyalty(Builder $query): Builder
     {
-        return $this->belongsTo(PartnerGroup::class, 'group_id');
+        return $query->whereNotNull('yclients_id')
+            ->whereNotNull('start_at')
+            ->where('start_at', '>=', '2026-01-01')
+            ->where('disabled', false);
     }
 }

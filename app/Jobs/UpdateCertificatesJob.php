@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Http\Tasks\Sheet\UpdateCertificatesTask;
+use App\Services\Certificates\CertificateSyncService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -14,9 +14,8 @@ class UpdateCertificatesJob implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public function handle(): void
+    public function handle(CertificateSyncService $service): void
     {
-        $service = app(UpdateCertificatesTask::class);
         $service->update();
     }
 

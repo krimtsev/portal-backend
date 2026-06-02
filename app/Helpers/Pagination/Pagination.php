@@ -41,6 +41,8 @@ class Pagination
                     continue;
                 }
 
+                $dbColumn = null;
+
                 if (in_array($column, $filterable)) {
                     self::applyFilter($query, $column, $value);
                 }

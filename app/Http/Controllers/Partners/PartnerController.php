@@ -18,7 +18,7 @@ class PartnerController extends Controller
 {
     /**
      * Получение списка партнеров доступных пользователю
-     * Учиитываем partner_id и partner_groups
+     * Учитываем partner_id и partner_groups
      */
     public function getUserPartners(Request $request): \Illuminate\Http\JsonResponse
     {
@@ -82,7 +82,7 @@ class PartnerController extends Controller
             'contract_number',
             'start_at',
             'disabled'
-        )->orderBy('name', 'asc');
+        );
 
         $result = Pagination::paginate(
             $query,

@@ -133,6 +133,12 @@ return [
             'level'                => 'debug',
             'replace_placeholders' => true,
         ],
+
+        'yclients' => [
+            'driver' => 'single',
+            'path'   => storage_path('logs/yclients.log'),
+            'level'  => 'debug',
+        ],
     ],
 
 ];
