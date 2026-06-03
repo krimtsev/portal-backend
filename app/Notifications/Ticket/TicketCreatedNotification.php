@@ -36,8 +36,10 @@ class TicketCreatedNotification extends Notification implements ShouldQueue
      */
     public function toMail($notifiable): MailMessage
     {
+        $subject = trans('emails.ticket.subject.created', ['id' => $this->ticket->id]);
+
         return (new MailMessage())
-            ->subject("Новая заявка #{$this->ticket->id}")
+            ->subject($subject)
             ->view('emails.tickets.new-ticket', [
                 'ticket'        => $this->ticket,
                 'ticketMessage' => $this->ticketMessage,

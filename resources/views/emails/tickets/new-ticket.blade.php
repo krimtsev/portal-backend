@@ -1,19 +1,19 @@
-@extends('emails.layouts.hybrid', ['title' => 'Создана новая заявка.'])
+@extends('emails.layouts.hybrid', ['title' => __('emails.ticket.description.created_body', ['id' => $ticket->id])])
 
 @section('content')
     <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
         <tr>
             <td style="padding: 20px;">
                 <x-emails::h1>
-                    Здравствуйте, {{ $user->userName }}.
+                    {{ __('emails.ticket.description.greeting', ['name' => $user->userName]) }}
                 </x-emails::h1>
 
                 <x-emails::p>
-                    Создана новая заявка #{{ $ticket->id }}
+                    {{ __('emails.ticket.description.created_body', ['id' => $ticket->id]) }}
                 </x-emails::p>
 
                 <x-emails::p>
-                    Тема: "{{ $ticket->title }}"
+                    {{ __('emails.ticket.description.subject_title', ['title' => $ticket->title]) }}
                 </x-emails::p>
 
                 @if(trim($ticketMessage->text))
@@ -25,7 +25,7 @@
                 <x-emails::hr />
 
                 <x-emails::p>
-                    Вы получили это письмо, так как являетесь сотрудником ответственного отдела.
+                    {{ __('emails.ticket.description.footer_text') }}
                 </x-emails::p>
             </td>
         </tr>

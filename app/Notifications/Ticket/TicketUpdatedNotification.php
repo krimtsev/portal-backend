@@ -18,7 +18,8 @@ class TicketUpdatedNotification extends Notification implements ShouldQueue
      */
     public function __construct(
         public Ticket $ticket,
-        public TicketMessage $ticketMessage
+        public ?TicketMessage $ticketMessage,
+        public bool $isStatusChanged = false,
     ) {}
 
     /**
@@ -36,12 +37,19 @@ class TicketUpdatedNotification extends Notification implements ShouldQueue
      */
     public function toMail($notifiable): MailMessage
     {
+        $subjectKey = $this->getSubjectKey();
+        $subject = trans($subjectKey, ['id' => $this->ticket->id]);
+
+        $status = trans("common.status.{$this->ticket->state->value}");
+
         return (new MailMessage())
-            ->subject("Новое сообщение в заявке #{$this->ticket->id}")
+            ->subject($subject)
             ->view('emails.tickets.new-comment', [
-                'ticket'        => $this->ticket,
-                'ticketMessage' => $this->ticketMessage,
-                'user'          => $notifiable,
+                'ticket'          => $this->ticket,
+                'ticketMessage'   => $this->ticketMessage,
+                'isStatusChanged' => $this->isStatusChanged,
+                'status'          => $status,
+                'user'            => $notifiable,
             ]);
     }
 
@@ -55,5 +63,18 @@ class TicketUpdatedNotification extends Notification implements ShouldQueue
         return [
             //
         ];
+    }
+
+    private function getSubjectKey(): string
+    {
+        if ($this->ticketMessage && $this->isStatusChanged) {
+            return 'emails.ticket.subject.all_changed';
+        }
+
+        if ($this->isStatusChanged) {
+            return 'emails.ticket.subject.status_changed';
+        }
+
+        return 'emails.ticket.subject.text_changed';
     }
 }

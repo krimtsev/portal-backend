@@ -268,8 +268,17 @@ class TicketsController extends Controller
             $eventsController->create($original, $ticket);
         });
 
-        if ($ticketMessage) {
-            $this->sendTicketNotification($ticket, new TicketUpdatedNotification($ticket, $ticketMessage));
+        $isStatusChanged = $ticket->wasChanged('state');
+
+        if ($ticketMessage || $isStatusChanged) {
+            $this->sendTicketNotification(
+                $ticket,
+                new TicketUpdatedNotification(
+                    $ticket,
+                    $ticketMessage,
+                    $isStatusChanged,
+                )
+            );
         }
 
         $ticketsController = new TicketsController();
@@ -305,7 +314,10 @@ class TicketsController extends Controller
             }
         }
 
-        $this->sendTicketNotification($ticket, new TicketUpdatedNotification($ticket, $ticketMessage));
+        $this->sendTicketNotification(
+            $ticket,
+            new TicketUpdatedNotification($ticket, $ticketMessage, false)
+        );
 
         $ticketsController = new TicketsController();
 
