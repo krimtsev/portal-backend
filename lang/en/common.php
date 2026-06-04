@@ -1,12 +1,12 @@
 <?php
 
 return [
-    'status' => array(
+    'status' => [
         'new' => 'New',
         'in_progress' => 'In Progress',
         'waiting' => 'Pending',
         'success' => 'Resolved',
         'closed' => 'Closed',
         'cancel' => 'Rejected',
-    ),
+    ],
 ];

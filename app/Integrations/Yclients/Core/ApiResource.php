@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Integrations\Yclients\Resources;
+namespace App\Integrations\Yclients\Core;
 
 use App\Integrations\Yclients\YclientsClient;
 

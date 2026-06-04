@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Integrations\Yclients\DTO;
+namespace App\Integrations\Yclients\Core;
 
 use App\Integrations\Yclients\YclientsException;
 
-abstract class BaseDto
+abstract class BaseResponse
 {
     /**
      * Автоматическая сборка DTO из массива с жесткой валидацией структуры

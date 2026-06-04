@@ -2,7 +2,8 @@
 
 namespace App\Jobs\Yclients;
 
-use App\Integrations\Yclients\DTO\Analytics\CompanyStatsDto;
+use App\Integrations\Yclients\Resources\Analytics\DTO\CompanyStatsFilters;
+use App\Integrations\Yclients\Resources\Analytics\DTO\CompanyStatsResponse;
 use App\Integrations\Yclients\YclientsApi;
 use App\Integrations\Yclients\YclientsException;
 use App\Models\Yclient\YcCompanyDailyStat;
@@ -54,12 +55,14 @@ class SyncCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
     {
         // Вызываем метод с передачей строк, как заложено в AnalyticsResource
         $rawData = $yclients->analytics()->getCompanyStats(
-            companyId: $this->companyId,
-            dateFrom: $this->date,
-            dateTo: $this->date
+            $this->companyId,
+            new CompanyStatsFilters(
+                date_from: $this->date,
+                date_to: $this->date
+            )
         );
 
-        $dto = CompanyStatsDto::fromArray($rawData);
+        $dto = CompanyStatsResponse::fromArray($rawData);
 
         YcCompanyDailyStat::updateOrCreate(
             [

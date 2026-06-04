@@ -16,7 +16,7 @@ return [
             'status_changed_to' => 'Current ticket status changed to: :status',
             'comment_added' => 'User :name added a message:',
             'footer_text' => 'You received this email because you are an employee of the responsible department.',
-        ]
+        ],
     ],
     'user' => [
         'subject' => [
@@ -27,6 +27,6 @@ return [
             'greeting' => 'Hello, :name.',
             'password_changed_body' => 'This is to notify you that your account password has been successfully changed.',
             'warning_text' => 'If you did not perform this action, please contact your system administrator immediately.',
-        ]
+        ],
     ],
 ];

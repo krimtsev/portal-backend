@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Integrations\Yclients\DTO\Analytics;
+namespace App\Integrations\Yclients\Resources\Analytics\DTO;
 
-use App\Integrations\Yclients\DTO\BaseDto;
+use App\Integrations\Yclients\Core\BaseResponse;
 
-class CompanyStatsDto extends BaseDto
+class CompanyStatsResponse extends BaseResponse
 {
     public function __construct(
         public float $income_total,
