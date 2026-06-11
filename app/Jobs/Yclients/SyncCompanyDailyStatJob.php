@@ -19,6 +19,8 @@ class SyncCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public $queue = 'yclients';
+
     /** Количество попыток выполнения */
     public int $tries = 3;
 
