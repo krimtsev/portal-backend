@@ -2,6 +2,7 @@
 
 namespace App\Jobs\Yclients;
 
+use App\Enums\QueueName;
 use App\Integrations\Yclients\DTO\Analytics\CompanyStatsDto;
 use App\Integrations\Yclients\YclientsApi;
 use App\Integrations\Yclients\YclientsException;
@@ -19,8 +20,6 @@ class SyncCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $queue = 'yclients';
-
     /** Количество попыток выполнения */
     public int $tries = 3;
 
@@ -30,7 +29,9 @@ class SyncCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
     public function __construct(
         public readonly int $companyId,
         public readonly string $date
-    ) {}
+    ) {
+        $this->onQueue(QueueName::YCLIENTS->value);
+    }
 
     /**
      * Уникальный ID задачи для предотвращения race conditions.
