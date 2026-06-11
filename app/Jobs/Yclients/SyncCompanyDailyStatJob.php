@@ -4,6 +4,8 @@ namespace App\Jobs\Yclients;
 
 use App\Integrations\Yclients\Resources\Analytics\DTO\CompanyStatsFilters;
 use App\Integrations\Yclients\Resources\Analytics\DTO\CompanyStatsResponse;
+use App\Enums\QueueName;
+use App\Integrations\Yclients\DTO\Analytics\CompanyStatsDto;
 use App\Integrations\Yclients\YclientsApi;
 use App\Integrations\Yclients\YclientsException;
 use App\Models\Yclient\YcCompanyDailyStat;
@@ -29,7 +31,9 @@ class SyncCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
     public function __construct(
         public readonly int $companyId,
         public readonly string $date
-    ) {}
+    ) {
+        $this->onQueue(QueueName::YCLIENTS->value);
+    }
 
     /**
      * Уникальный ID задачи для предотвращения race conditions.
