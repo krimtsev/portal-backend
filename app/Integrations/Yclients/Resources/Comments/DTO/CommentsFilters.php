@@ -11,7 +11,7 @@ class CommentsFilters extends BaseRequest
         public ?string $end_date = null,
         public ?int $staffId = null,
         public ?int $rating = null,
-        public ?int $page = null,
-        public ?int $count = null,
+        public ?int $page = 1,
+        public ?int $count = 1000,
     ) {}
 }

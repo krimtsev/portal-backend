@@ -3,7 +3,6 @@
 namespace App\Integrations\Yclients\Resources\Staff;
 
 use App\Integrations\Yclients\Core\ApiResource;
-use App\Integrations\Yclients\Resources\Transactions\DTO\TransactionsFilters;
 use App\Integrations\Yclients\YclientsException;
 
 class StaffResource extends ApiResource
@@ -14,7 +13,7 @@ class StaffResource extends ApiResource
      *
      * @throws YclientsException
      */
-    public function getStaff(int $companyId, ?int $staffId): array
+    public function getStaff(int $companyId): array
     {
         return $this->client->get("company/{$companyId}/staff");
     }

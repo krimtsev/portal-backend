@@ -2,11 +2,11 @@
 
 namespace App\Jobs\Yclients;
 
-use App\Integrations\Yclients\Resources\Analytics\DTO\CompanyStatsFilters;
-use App\Integrations\Yclients\Resources\Analytics\DTO\CompanyStatsResponse;
+use App\Integrations\Yclients\Resources\Comments\DTO\CommentsFilters;
+use App\Integrations\Yclients\Resources\Comments\DTO\CommentsResponse;
 use App\Integrations\Yclients\YclientsApi;
 use App\Integrations\Yclients\YclientsException;
-use App\Models\Yclient\YcCompanyDailyStat;
+use App\Models\Yclient\YcComment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -16,7 +16,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class SyncCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
+class SyncCommentsJob implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -36,7 +36,7 @@ class SyncCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
      */
     public function uniqueId(): string
     {
-        return "yc_company_stats_{$this->companyId}_{$this->date}";
+        return "yc_comments_{$this->companyId}_{$this->date}";
     }
 
     /**
@@ -53,37 +53,33 @@ class SyncCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
      */
     public function handle(YclientsApi $yclients): void
     {
-        $rawData = $yclients->analytics()->getCompanyStats(
+        $rawData = $yclients->comments()->getComments(
             $this->companyId,
-            new CompanyStatsFilters(
-                date_from: $this->date,
-                date_to: $this->date
+            new CommentsFilters(
+                start_date: $this->date,
+                end_date: $this->date
             )
         );
 
-        $dto = CompanyStatsResponse::fromArray($rawData);
+        foreach ($rawData as $item) {
+            $dto = CommentsResponse::fromArray($item);
 
-        YcCompanyDailyStat::updateOrCreate(
-            [
-                'company_id' => $this->companyId,
-                'date'       => $this->date,
-            ],
-            [
-                'income_total'     => $dto->income_total,
-                'income_goods'     => $dto->income_goods,
-                'income_services'  => $dto->income_services,
-                'fullness_percent' => $dto->fullness_percent,
-                'record_completed' => $dto->record_completed,
-                'record_pending'   => $dto->record_pending,
-                'record_canceled'  => $dto->record_canceled,
-                'record_total'     => $dto->record_total,
-                'client_new'       => $dto->client_new,
-                'client_return'    => $dto->client_return,
-                'client_active'    => $dto->client_active,
-                'client_lost'      => $dto->client_lost,
-                'client_total'     => $dto->client_total,
-            ]
-        );
+            YcComment::updateOrCreate(
+                [
+                    'company_id' => $this->companyId,
+                    'comment_id' => $dto->id,
+                ],
+                [
+                    'company_id' => $this->companyId,
+                    'comment_id' => $dto->id,
+                    'salon_id'   => $dto->salon_id,
+                    'staff_id'   => $dto->master_id,
+                    'rating'     => $dto->rating,
+                    'type'       => $dto->type,
+                    'date'       => $dto->date,
+                ]
+            );
+        }
     }
 
     /**

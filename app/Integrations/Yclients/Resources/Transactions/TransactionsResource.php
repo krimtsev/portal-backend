@@ -10,7 +10,7 @@ class TransactionsResource extends ApiResource
 {
     /**
      * Получить транзакции
- *
+     *
      * $filters:
      * $page - Номер страницы
      * $count - Количество клиентов на странице

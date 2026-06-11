@@ -2,21 +2,21 @@
 
 namespace App\Jobs\Yclients;
 
-use App\Integrations\Yclients\Resources\Analytics\DTO\CompanyStatsFilters;
-use App\Integrations\Yclients\Resources\Analytics\DTO\CompanyStatsResponse;
+use App\Integrations\Yclients\Resources\Staff\DTO\StaffResponse;
 use App\Integrations\Yclients\YclientsApi;
 use App\Integrations\Yclients\YclientsException;
-use App\Models\Yclient\YcCompanyDailyStat;
+use App\Models\Yclient\YcCompanyStaff;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class SyncCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
+class SyncCompanyStaffJob implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -28,7 +28,6 @@ class SyncCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
 
     public function __construct(
         public readonly int $companyId,
-        public readonly string $date
     ) {}
 
     /**
@@ -36,7 +35,7 @@ class SyncCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
      */
     public function uniqueId(): string
     {
-        return "yc_company_stats_{$this->companyId}_{$this->date}";
+        return "yc_company_staff_{$this->companyId}";
     }
 
     /**
@@ -49,41 +48,35 @@ class SyncCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
     }
 
     /**
-     * @throws YclientsException
+     * @throws YclientsException|Throwable
      */
     public function handle(YclientsApi $yclients): void
     {
-        $rawData = $yclients->analytics()->getCompanyStats(
-            $this->companyId,
-            new CompanyStatsFilters(
-                date_from: $this->date,
-                date_to: $this->date
-            )
-        );
+        $raw = $yclients->staff()->getStaff($this->companyId);
 
-        $dto = CompanyStatsResponse::fromArray($rawData);
+        $items = $raw['data'] ?? [];
+        Log::info('Memory usage before loop: ' . (memory_get_usage() / 1024 / 1024) . ' MB');
+        Log::info('Items count: ' . count($items));
 
-        YcCompanyDailyStat::updateOrCreate(
-            [
-                'company_id' => $this->companyId,
-                'date'       => $this->date,
-            ],
-            [
-                'income_total'     => $dto->income_total,
-                'income_goods'     => $dto->income_goods,
-                'income_services'  => $dto->income_services,
-                'fullness_percent' => $dto->fullness_percent,
-                'record_completed' => $dto->record_completed,
-                'record_pending'   => $dto->record_pending,
-                'record_canceled'  => $dto->record_canceled,
-                'record_total'     => $dto->record_total,
-                'client_new'       => $dto->client_new,
-                'client_return'    => $dto->client_return,
-                'client_active'    => $dto->client_active,
-                'client_lost'      => $dto->client_lost,
-                'client_total'     => $dto->client_total,
-            ]
-        );
+        foreach ($items as $item) {
+            $dto = StaffResponse::from($item);
+
+            /*YcCompanyStaff::updateOrCreate(
+                [
+                    'company_id' => $dto->company_id,
+                    'staff_id'   => $dto->id,
+                ],
+                [
+                    'name'           => $dto->name,
+                    'firstname'      => $dto->employee?->firstname,
+                    'surname'        => $dto->employee?->surname,
+                    'specialization' => $dto->specialization,
+                    'is_fired'       => (bool) $dto->is_fired,
+                    'dismissal_date' => $dto->dismissal_date,
+                    'rating'         => $dto->rating,
+                ]
+            );*/
+        }
     }
 
     /**
@@ -94,7 +87,6 @@ class SyncCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
         Log::channel('yclients')
             ->critical('Синхронизация YClients завершилась.', [
                 'company_id' => $this->companyId,
-                'date'       => $this->date,
                 'error'      => $exception->getMessage(),
             ]);
     }

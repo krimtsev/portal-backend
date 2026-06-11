@@ -7,5 +7,5 @@ return [
     |--------------------------------------------------------------------------
     */
     'certificates' => (bool) env('JOB_CERTIFICATES', false),
-    'royalty'      => (bool) env('JOB_ROYALTY', false),
+    'yclients'     => (bool) env('JOB_YCLIENTS', false),
 ];

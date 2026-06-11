@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('yc_company_daily_stats', function (Blueprint $table) {
             $table->id();
+
             $table->unsignedInteger('company_id'); // ID компании в YClients
             $table->date('date');                  // Дата среза
 
@@ -37,7 +38,7 @@ return new class extends Migration
             $table->timestamps();
 
             // Защита от дублей + быстрый поиск
-            $table->unique(['company_id', 'date']);
+            $table->unique(['company_id', 'date'], 'yc_company_daily_unique');
         });
     }
 

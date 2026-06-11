@@ -2,11 +2,11 @@
 
 namespace App\Jobs\Yclients;
 
-use App\Integrations\Yclients\Resources\Analytics\DTO\CompanyStatsFilters;
-use App\Integrations\Yclients\Resources\Analytics\DTO\CompanyStatsResponse;
+use App\Integrations\Yclients\Resources\Transactions\DTO\TransactionsFilters;
+use App\Integrations\Yclients\Resources\Transactions\DTO\TransactionsResponse;
 use App\Integrations\Yclients\YclientsApi;
 use App\Integrations\Yclients\YclientsException;
-use App\Models\Yclient\YcCompanyDailyStat;
+use App\Models\Yclient\YcTransaction;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -16,7 +16,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class SyncCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
+class SyncTransactionsJob implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -36,7 +36,7 @@ class SyncCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
      */
     public function uniqueId(): string
     {
-        return "yc_company_stats_{$this->companyId}_{$this->date}";
+        return "yc_comments_{$this->companyId}_{$this->date}";
     }
 
     /**
@@ -53,37 +53,38 @@ class SyncCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
      */
     public function handle(YclientsApi $yclients): void
     {
-        $rawData = $yclients->analytics()->getCompanyStats(
+        $rawData = $yclients->transactions()->getTransactions(
             $this->companyId,
-            new CompanyStatsFilters(
-                date_from: $this->date,
-                date_to: $this->date
+            new TransactionsFilters(
+                start_date: $this->date,
+                end_date: $this->date
             )
         );
 
-        $dto = CompanyStatsResponse::fromArray($rawData);
+        foreach ($rawData as $item) {
+            $dto = TransactionsResponse::fromArray($item);
 
-        YcCompanyDailyStat::updateOrCreate(
-            [
-                'company_id' => $this->companyId,
-                'date'       => $this->date,
-            ],
-            [
-                'income_total'     => $dto->income_total,
-                'income_goods'     => $dto->income_goods,
-                'income_services'  => $dto->income_services,
-                'fullness_percent' => $dto->fullness_percent,
-                'record_completed' => $dto->record_completed,
-                'record_pending'   => $dto->record_pending,
-                'record_canceled'  => $dto->record_canceled,
-                'record_total'     => $dto->record_total,
-                'client_new'       => $dto->client_new,
-                'client_return'    => $dto->client_return,
-                'client_active'    => $dto->client_active,
-                'client_lost'      => $dto->client_lost,
-                'client_total'     => $dto->client_total,
-            ]
-        );
+            YcTransaction::updateOrCreate(
+                [
+                    'company_id'     => $this->companyId,
+                    'transaction_id' => $dto->id,
+                ],
+                [
+                    'transaction_id' => $dto->id,
+                    'company_id'     => $this->companyId,
+                    'staff_id'       => $dto->getMasterId(),
+                    'record_id'      => $dto->record_id,
+                    'visit_id'       => $dto->visit_id,
+                    'document_id'    => $dto->document_id,
+                    'amount'         => $dto->amount,
+                    'sold_item_type' => $dto->sold_item_type,
+                    'expense_id'     => $dto->expense_id,
+                    'expense_title'  => $dto->expense_title,
+                    'expense_type'   => $dto->expense_type,
+                    'date'           => $dto->date,
+                ]
+            );
+        }
     }
 
     /**
