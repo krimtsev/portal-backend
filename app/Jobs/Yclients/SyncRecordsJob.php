@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Jobs\Yclients;
 
 use App\Enums\QueueName;
@@ -19,7 +21,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class SyncRecordsJob implements ShouldBeUnique, ShouldQueue
+final class SyncRecordsJob implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -58,7 +60,7 @@ class SyncRecordsJob implements ShouldBeUnique, ShouldQueue
      */
     public function handle(YclientsApi $yclients): void
     {
-        $raw = $yclients->records()->getRecords(
+        $rawResponse = $yclients->records()->getRecords(
             $this->companyId,
             new RecordsFilters(
                 start_date: $this->date,
@@ -66,13 +68,13 @@ class SyncRecordsJob implements ShouldBeUnique, ShouldQueue
             )
         );
 
-        $items = $raw['data'] ?? [];
+        $recordsData = $rawResponse['data'] ?? [];
 
-        if (empty($items)) {
+        if (empty($recordsData)) {
             return;
         }
 
-        foreach (array_chunk($items, 50) as $chunk) {
+        foreach (array_chunk($recordsData, 50) as $chunk) {
             $recordsToUpsert = [];
             $servicesToUpsert = [];
 
@@ -90,8 +92,8 @@ class SyncRecordsJob implements ShouldBeUnique, ShouldQueue
                     'client_success_visits' => $dto->client->success_visits_count ?? 0,
                     'client_fail_visits'    => $dto->client->fail_visits_count ?? 0,
                     'datetime'              => $dto->datetime,
-                    'total_cost'            => array_sum(array_map(fn($s) => $s->cost, $dto->services)),
-                    'total_manual_cost'     => array_sum(array_map(fn($s) => $s->manual_cost, $dto->services)),
+                    'total_cost'            => array_sum(array_map(fn ($s) => $s->cost, $dto->services)),
+                    'total_manual_cost'     => array_sum(array_map(fn ($s) => $s->manual_cost, $dto->services)),
                 ];
 
                 foreach ($dto->services as $serviceDto) {

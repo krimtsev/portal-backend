@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Jobs\Yclients;
 
 use App\Enums\QueueName;
@@ -17,7 +19,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class SyncTransactionsJob implements ShouldBeUnique, ShouldQueue
+final class SyncTransactionsJob implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -56,7 +58,7 @@ class SyncTransactionsJob implements ShouldBeUnique, ShouldQueue
      */
     public function handle(YclientsApi $yclients): void
     {
-        $raw = $yclients->transactions()->getTransactions(
+        $rawResponse = $yclients->transactions()->getTransactions(
             $this->companyId,
             new TransactionsFilters(
                 start_date: $this->date,
@@ -64,11 +66,15 @@ class SyncTransactionsJob implements ShouldBeUnique, ShouldQueue
             )
         );
 
-        $items = $raw['data'] ?? [];
+        $transactionsData = $rawResponse['data'] ?? [];
+
+        if (empty($transactionsData)) {
+            return;
+        }
 
         $upsertData = [];
 
-        foreach ($items as $item) {
+        foreach ($transactionsData as $item) {
             $dto = TransactionsResponse::from($item);
 
             $upsertData = [

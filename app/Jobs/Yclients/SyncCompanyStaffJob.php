@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Jobs\Yclients;
 
 use App\Enums\QueueName;
@@ -16,7 +18,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class SyncCompanyStaffJob implements ShouldBeUnique, ShouldQueue
+final class SyncCompanyStaffJob implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -54,16 +56,17 @@ class SyncCompanyStaffJob implements ShouldBeUnique, ShouldQueue
      */
     public function handle(YclientsApi $yclients): void
     {
-        $raw = $yclients->staff()->getStaff($this->companyId);
-        $items = $raw['data'] ?? [];
+        $rawResponse = $yclients->staff()->getStaff($this->companyId);
 
-        if (empty($items)) {
+        $companyStaffData = $rawResponse['data'] ?? [];
+
+        if (empty($companyStaffData)) {
             return;
         }
 
         $upsertData = [];
 
-        foreach ($items as $item) {
+        foreach ($companyStaffData as $item) {
             $dto = StaffResponse::from($item);
 
             $upsertData[] = [

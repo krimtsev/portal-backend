@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Jobs\Yclients;
 
 use App\Enums\QueueName;
@@ -17,7 +19,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class SyncCommentsJob implements ShouldBeUnique, ShouldQueue
+final class SyncCommentsJob implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -56,7 +58,7 @@ class SyncCommentsJob implements ShouldBeUnique, ShouldQueue
      */
     public function handle(YclientsApi $yclients): void
     {
-        $raw = $yclients->comments()->getComments(
+        $rawResponse = $yclients->comments()->getComments(
             $this->companyId,
             new CommentsFilters(
                 start_date: $this->date,
@@ -64,11 +66,15 @@ class SyncCommentsJob implements ShouldBeUnique, ShouldQueue
             )
         );
 
-        $items = $raw['data'] ?? [];
+        $commentsData = $rawResponse['data'] ?? [];
+
+        if (empty($commentsData)) {
+            return;
+        }
 
         $upsertData = [];
 
-        foreach ($items as $item) {
+        foreach ($commentsData as $item) {
             $dto = CommentsResponse::from($item);
 
             $upsertData[] = [

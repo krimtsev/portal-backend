@@ -6,7 +6,7 @@ use App\Jobs\Yclients\SyncCompanyStaffJob;
 use App\Models\Partner\Partner;
 use Illuminate\Console\Command;
 
-class SyncYcCompanyStaffCommand extends Command
+final class SyncYcCompanyStaffCommand extends Command
 {
     protected $signature = 'yclients:sync-company-staff
                             {--company_id= : Конкретный ID компании из YClients (yclients_id)}';

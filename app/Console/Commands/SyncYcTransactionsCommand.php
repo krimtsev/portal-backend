@@ -8,7 +8,7 @@ use App\Models\Partner\Partner;
 use Illuminate\Console\Command;
 use Throwable;
 
-class SyncYcTransactionsCommand extends Command
+final class SyncYcTransactionsCommand extends Command
 {
     protected $signature = 'yclients:sync-transactions
                             {--date= : Конкретный день в формате YYYY-MM-DD}

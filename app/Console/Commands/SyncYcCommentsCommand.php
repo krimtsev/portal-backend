@@ -8,7 +8,7 @@ use App\Models\Partner\Partner;
 use Illuminate\Console\Command;
 use Throwable;
 
-class SyncYcCommentsCommand extends Command
+final class SyncYcCommentsCommand extends Command
 {
     protected $signature = 'yclients:sync-comments
                             {--date= : Конкретный день в формате YYYY-MM-DD}

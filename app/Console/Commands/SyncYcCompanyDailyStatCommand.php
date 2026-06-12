@@ -8,7 +8,7 @@ use App\Models\Partner\Partner;
 use Illuminate\Console\Command;
 use Throwable;
 
-class SyncYcCompanyDailyStatCommand extends Command
+final class SyncYcCompanyDailyStatCommand extends Command
 {
     protected $signature = 'yclients:sync-company-stats
                             {--date= : Конкретный день в формате YYYY-MM-DD}

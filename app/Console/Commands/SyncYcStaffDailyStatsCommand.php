@@ -2,22 +2,27 @@
 
 namespace App\Console\Commands;
 
-use App\Integrations\Yclients\Resources\Records\RecordsResource; // Предполагаемый ресурс записей
-use App\Integrations\Yclients\Resources\Records\DTO\RecordsResponse;
+use App\Integrations\Yclients\Resources\Records\RecordsResource;
 use App\Integrations\Yclients\Services\PeriodResolutionService;
-use App\Jobs\Yclients\SyncStaffDailyStatJob;
+use App\Jobs\Yclients\ProcessPartnerStaffDailyStatsJob;
 use App\Models\Partner\Partner;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class SyncYcStaffDailyStatsCommand extends Command
+final class SyncYcStaffDailyStatsCommand extends Command
 {
     protected $signature = 'yclients:sync-staff-stats
                             {--date= : Конкретный день в формате YYYY-MM-DD}
+                            {--month= : Полный месяц в формате YYYY-MM}
                             {--company_id= : Конкретный ID компании из YClients}';
 
     protected $description = 'Парсинг работавших сотрудников и сбор их дневной статистики';
 
+    /**
+     * @throws Throwable
+     */
     public function handle(PeriodResolutionService $periodService, RecordsResource $recordsResource): int
     {
         if (!config('jobs.yclients')) {
@@ -44,50 +49,49 @@ class SyncYcStaffDailyStatsCommand extends Command
 
         $partners = $query->get(['id', 'yclients_id']);
 
+        if ($partners->isEmpty()) {
+            $this->warn('Нет активных партнеров с привязанным yclients_id для обработки.');
+
+            return self::SUCCESS;
+        }
+
+        $totalJobs = $partners->count() * count($dates);
+        $this->info('Период определен. Дней: ' . count($dates) . '. Активных партнеров: ' . $partners->count());
+        $this->info("Стартует отправка {$totalJobs} задач в очередь...");
+
+        $bar = $this->output->createProgressBar($totalJobs);
+        $bar->start();
+
         foreach ($dates as $date) {
             $dateString = $date->toDateString();
 
+            $batch = Bus::batch([])
+                ->name("Сбор статистика по сотрудникам за: {$date}")
+                ->allowFailures()
+                ->catch(function (Throwable $e) use ($date) {
+                    Log::error("Критический сбой пакета статистики сотрудников за {$date}: {$e->getMessage()}");
+                })
+                ->finally(function () use ($date) {
+                    Log::info("Пакет синхронизации статистики сотрудников за {$date} завершен.");
+                })
+                ->dispatch();
+
             foreach ($partners as $partner) {
-                try {
-                    // 1. Получаем записи напрямую из API за этот день
-                    // (Или используем локальный репозиторий, если уверены в нем, но API надежнее)
-                    $rawRecords = $recordsResource->getRecords($partner->yclients_id, ['date' => $dateString]);
+                $batch->add(
+                    new ProcessPartnerStaffDailyStatsJob(
+                        (int) $partner->yclients_id,
+                        $dateString
+                    )
+                );
 
-                    // Предполагаем, что получаем массив или коллекцию объектов RecordsResponse
-                    $records = collect($rawRecords)->map(fn($r) => RecordsResponse::fromArray($r));
-
-                    // 2. Фильтруем записи и получаем уникальные ID сотрудников
-                    $activeStaffIds = $records
-                        ->filter(function (RecordsResponse $record) {
-                            // Проверяем наличие сотрудника и что у записи есть услуги (массив services не пустой)
-                            return $record->staff_id > 0 && !empty($record->services);
-                        })
-                        ->pluck('staff_id')
-                        ->unique();
-
-                    if ($activeStaffIds->isEmpty()) {
-                        $this->info("Нет активных мастеров с услугами для компании {$partner->yclients_id} на дату {$dateString}");
-                        continue;
-                    }
-
-                    // 3. Распределяем задачи по каждому сотруднику в очередь
-                    foreach ($activeStaffIds as $staffId) {
-                        SyncStaffDailyStatJob::dispatch(
-                            (int) $partner->yclients_id,
-                            (int) $staffId,
-                            $dateString
-                        );
-                    }
-
-                } catch (Throwable $e) {
-                    $this->error("Ошибка обработки компании {$partner->yclients_id}: " . $e->getMessage());
-                    // Продолжаем обработку остальных партнеров, не падаем целиком
-                    continue;
-                }
+                $bar->advance();
             }
         }
 
-        $this->info('Все задачи для сотрудников успешно отправлены в очередь.');
+        $bar->finish();
+        $this->newLine(2);
+        $this->info('Все задачи успешно распределены.');
+
         return self::SUCCESS;
     }
 }

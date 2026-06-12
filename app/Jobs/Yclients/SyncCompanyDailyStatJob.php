@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Jobs\Yclients;
 
 use App\Enums\QueueName;
@@ -17,7 +19,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class SyncCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
+final class SyncCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -56,7 +58,7 @@ class SyncCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
      */
     public function handle(YclientsApi $yclients): void
     {
-        $raw = $yclients->analytics()->getCompanyStats(
+        $rawResponse = $yclients->analytics()->getCompanyStats(
             $this->companyId,
             new CompanyStatsFilters(
                 date_from: $this->date,
@@ -64,9 +66,13 @@ class SyncCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
             )
         );
 
-        $item = $raw['data'] ?? [];
+        $companyStatsData = $rawResponse['data'] ?? [];
 
-        $dto = CompanyStatsResponse::from($item);
+        if (empty($companyStatsData)) {
+            return;
+        }
+
+        $dto = CompanyStatsResponse::from($companyStatsData);
 
         YcCompanyDailyStat::updateOrCreate(
             [

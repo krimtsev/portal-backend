@@ -11,10 +11,7 @@ use App\Integrations\Yclients\Resources\Transactions\DTO\TransactionsFilters;
 use App\Integrations\Yclients\Resources\Transactions\DTO\TransactionsResponse;
 use App\Integrations\Yclients\YclientsApi;
 use App\Integrations\Yclients\YclientsClient;
-use App\Models\Yclient\YcRecord;
-use App\Models\Yclient\YcRecordService;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () { return 'Hello World'; });
@@ -184,26 +181,26 @@ Route::prefix('test')
 
                 // Услуги в комплексе основная сеть 44011
 
-                5855572 => 2100, // МУЖСКАЯ СТРИЖКА + BLACK MASK/VOLCANO/ACUMEN + ВОСК
-                5855566 => 600, // МУЖСКАЯ СТРИЖКА + МОДЕЛИРОВАНИЕ БОРОДЫ + ВОСК
+                5855572  => 2100, // МУЖСКАЯ СТРИЖКА + BLACK MASK/VOLCANO/ACUMEN + ВОСК
+                5855566  => 600, // МУЖСКАЯ СТРИЖКА + МОДЕЛИРОВАНИЕ БОРОДЫ + ВОСК
                 13458944 => 3500, // МУЖСКАЯ СТРИЖКА + МОДЕЛИРОВАНИЕ БОРОДЫ + DEPOT
                 13458949 => 4100, // МУЖСКАЯ СТРИЖКА + МОДЕЛИРОВАНИЕ БОРОДЫ + DEPOT + ВОСК
-                5855583 => 2100, // МУЖСКАЯ СТРИЖКА + МОДЕЛИРОВАНИЕ БОРОДЫ + BLACK MASK/VOLCANO/ACUMEN + ВОСК
-                5855560 => 1500, // МОДЕЛИРОВАНИЕ БОРОДЫ + BLACK MASK/VOLCANO/ACUMEN
+                5855583  => 2100, // МУЖСКАЯ СТРИЖКА + МОДЕЛИРОВАНИЕ БОРОДЫ + BLACK MASK/VOLCANO/ACUMEN + ВОСК
+                5855560  => 1500, // МОДЕЛИРОВАНИЕ БОРОДЫ + BLACK MASK/VOLCANO/ACUMEN
 
-                7043251 => 1500, // МОДЕЛИРОВАНИЕ БОРОДЫ + BLACK MASK/VOLCANO/ACUMEN // ТОП-БАРБЕР
-                7043266 => 2100, // МУЖСКАЯ СТРИЖКА + BLACK MASK/VOLCANO/ACUMEN + ВОСК // ТОП-БАРБЕР
-                7043330 => 2100, // МУЖСКАЯ СТРИЖКА + МОДЕЛИРОВАНИЕ БОРОДЫ + BLACK MASK/VOLCANO/ACUMEN + ВОСК // ТОП-БАРБЕР
+                7043251  => 1500, // МОДЕЛИРОВАНИЕ БОРОДЫ + BLACK MASK/VOLCANO/ACUMEN // ТОП-БАРБЕР
+                7043266  => 2100, // МУЖСКАЯ СТРИЖКА + BLACK MASK/VOLCANO/ACUMEN + ВОСК // ТОП-БАРБЕР
+                7043330  => 2100, // МУЖСКАЯ СТРИЖКА + МОДЕЛИРОВАНИЕ БОРОДЫ + BLACK MASK/VOLCANO/ACUMEN + ВОСК // ТОП-БАРБЕР
                 13458978 => 4100, // МУЖСКАЯ СТРИЖКА + МОДЕЛИРОВАНИЕ БОРОДЫ + DEPOT + ВОСК // ТОП-БАРБЕР
                 13458971 => 3500, // МУЖСКАЯ СТРИЖКА + МОДЕЛИРОВАНИЕ БОРОДЫ + DEPOT // ТОП-БАРБЕР
-                7043262 => 600, // МУЖСКАЯ СТРИЖКА + МОДЕЛИРОВАНИЕ БОРОДЫ + ВОСК // ТОП-БАРБЕР
+                7043262  => 600, // МУЖСКАЯ СТРИЖКА + МОДЕЛИРОВАНИЕ БОРОДЫ + ВОСК // ТОП-БАРБЕР
 
-                8337664 => 1500, // МОДЕЛИРОВАНИЕ БОРОДЫ + BLACK MASK/VOLCANO/ACUMEN // БРЕНД-БАРБЕР
-                8337665 => 2100, // МУЖСКАЯ СТРИЖКА + BLACK MASK/VOLCANO/ACUMEN + ВОСК // БРЕНД-БАРБЕР
-                8337669 => 2100, // МУЖСКАЯ СТРИЖКА + МОДЕЛИРОВАНИЕ БОРОДЫ + BLACK MASK/VOLCANO/ACUMEN + ВОСК // БРЕНД-БАРБЕР
+                8337664  => 1500, // МОДЕЛИРОВАНИЕ БОРОДЫ + BLACK MASK/VOLCANO/ACUMEN // БРЕНД-БАРБЕР
+                8337665  => 2100, // МУЖСКАЯ СТРИЖКА + BLACK MASK/VOLCANO/ACUMEN + ВОСК // БРЕНД-БАРБЕР
+                8337669  => 2100, // МУЖСКАЯ СТРИЖКА + МОДЕЛИРОВАНИЕ БОРОДЫ + BLACK MASK/VOLCANO/ACUMEN + ВОСК // БРЕНД-БАРБЕР
                 13458996 => 4100, // МУЖСКАЯ СТРИЖКА + МОДЕЛИРОВАНИЕ БОРОДЫ + DEPOT + ВОСК // БРЕНД-БАРБЕР
                 13458994 => 3500, // МУЖСКАЯ СТРИЖКА + МОДЕЛИРОВАНИЕ БОРОДЫ + DEPOT // БРЕНД-БАРБЕР
-                8337666 => 600, // МУЖСКАЯ СТРИЖКА + МОДЕЛИРОВАНИЕ БОРОДЫ + ВОСК // БРЕНД-БАРБЕР
+                8337666  => 600, // МУЖСКАЯ СТРИЖКА + МОДЕЛИРОВАНИЕ БОРОДЫ + ВОСК // БРЕНД-БАРБЕР
 
                 14514601 => 1500, // МОДЕЛИРОВАНИЕ БОРОДЫ + BLACK MASK/VOLCANO/ACUMEN // БРЕНД-БАРБЕР+
                 14514599 => 2100, // МУЖСКАЯ СТРИЖКА + BLACK MASK/VOLCANO/ACUMEN + ВОСК // БРЕНД-БАРБЕР+
@@ -241,23 +238,23 @@ Route::prefix('test')
                 foreach ($chunk as $item) {
                     $dto = RecordsResponse::from($item);
 
-                    if (!in_array($dto->id, ["1691701188", "1737557769"])) {
+                    if (!in_array($dto->id, ['1691701188', '1737557769'])) {
                         continue;
                     }
 
                     $records[$dto->id] = [
-                        'record_id' => $dto->id,
-                        'staff_id' => $dto->staff_id,
-                        'visit_id' => $dto->visit_id,
-                        'client_id' => $dto->client?->id,
-                        'client_name' => $dto->client?->name,
-                        'client_phone' => $dto->client?->phone,
+                        'record_id'             => $dto->id,
+                        'staff_id'              => $dto->staff_id,
+                        'visit_id'              => $dto->visit_id,
+                        'client_id'             => $dto->client?->id,
+                        'client_name'           => $dto->client?->name,
+                        'client_phone'          => $dto->client?->phone,
                         'client_success_visits' => $dto->client?->success_visits_count ?? 0,
-                        'client_fail_visits' => $dto->client?->fail_visits_count ?? 0,
-                        'datetime' => $dto->datetime,
+                        'client_fail_visits'    => $dto->client?->fail_visits_count ?? 0,
+                        'datetime'              => $dto->datetime,
 
-                        'total_cost'        => array_sum(array_map(fn($s) => $s->cost, $dto->services)),
-                        'total_manual_cost' => array_sum(array_map(fn($s) => $s->manual_cost, $dto->services)),
+                        'total_cost'        => array_sum(array_map(fn ($s) => $s->cost, $dto->services)),
+                        'total_manual_cost' => array_sum(array_map(fn ($s) => $s->manual_cost, $dto->services)),
                     ];
 
                     foreach ($dto->services as $serviceDto) {
@@ -265,14 +262,14 @@ Route::prefix('test')
                             continue;
                         }
 
-                        $records[$dto->id]["services"][$serviceDto->id] = [
-                            'record_id' => $dto->id,
-                            'service_id' => $serviceDto->id,
-                            'title' => $serviceDto->title,
-                            'cost' => $serviceDto->cost,
+                        $records[$dto->id]['services'][$serviceDto->id] = [
+                            'record_id'   => $dto->id,
+                            'service_id'  => $serviceDto->id,
+                            'title'       => $serviceDto->title,
+                            'cost'        => $serviceDto->cost,
                             'manual_cost' => $serviceDto->manual_cost,
-                            'discount' => $serviceDto->discount,
-                            'amount' => $serviceDto->amount,
+                            'discount'    => $serviceDto->discount,
+                            'amount'      => $serviceDto->amount,
                         ];
                     }
                 }
