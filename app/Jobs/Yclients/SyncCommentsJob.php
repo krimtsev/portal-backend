@@ -96,8 +96,6 @@ final class SyncCommentsJob implements ShouldBeUnique, ShouldQueue
                     'comment_id',
                 ],
                 [
-                    'company_id',
-                    'comment_id',
                     'salon_id',
                     'staff_id',
                     'type',

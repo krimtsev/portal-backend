@@ -145,9 +145,6 @@ final class SyncRecordsJob implements ShouldBeUnique, ShouldQueue
                                 'service_id',
                             ],
                             [
-                                'company_id',
-                                'record_id',
-                                'service_id',
                                 'title',
                                 'cost',
                                 'manual_cost',

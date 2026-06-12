@@ -89,7 +89,6 @@ final class SyncStaffDailyStatsJob implements ShouldQueue
                     'date'       => $this->date,
                 ],
                 [
-                    'staff_id'         => $this->staffId,
                     'income_total'     => $dto->income_total_stats->current_sum,
                     'income_goods'     => $dto->income_goods_stats->current_sum,
                     'income_services'  => $dto->income_services_stats->current_sum,

@@ -101,8 +101,6 @@ final class SyncTransactionsJob implements ShouldBeUnique, ShouldQueue
                     'transaction_id',
                 ],
                 [
-                    'transaction_id',
-                    'company_id',
                     'staff_id',
                     'record_id',
                     'visit_id',
