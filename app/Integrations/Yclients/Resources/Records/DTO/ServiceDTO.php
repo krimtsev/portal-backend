@@ -2,14 +2,33 @@
 
 namespace App\Integrations\Yclients\Resources\Records\DTO;
 
-class ServiceDTO
+use App\Integrations\Yclients\Core\ValidateResponse;
+
+final class ServiceDTO extends ValidateResponse
 {
     public function __construct(
-        public int $id,
-        public string $title,
-        public float $cost,
-        public float $manual_cost,
-        public int $discount,
-        public int $amount,
+        public readonly ?int $id = null,
+        public readonly ?string $title = null,
+        public readonly ?float $cost = null,
+        public readonly ?float $manual_cost = null,
+        public readonly ?int $discount = null,
+        public readonly ?int $amount = null,
     ) {}
+
+    protected static function rules(): array
+    {
+        return [
+            'id'          => ['nullable', 'integer'],
+            'title'       => ['nullable', 'string'],
+            'cost'        => ['nullable', 'numeric'],
+            'manual_cost' => ['nullable', 'numeric'],
+            'discount'    => ['nullable', 'integer'],
+            'amount'      => ['nullable', 'integer'],
+        ];
+    }
+
+    protected static function build(array $validated): static
+    {
+        return new self(...$validated);
+    }
 }

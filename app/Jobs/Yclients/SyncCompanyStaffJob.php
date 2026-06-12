@@ -2,6 +2,7 @@
 
 namespace App\Jobs\Yclients;
 
+use App\Enums\QueueName;
 use App\Integrations\Yclients\Resources\Staff\DTO\StaffResponse;
 use App\Integrations\Yclients\YclientsApi;
 use App\Integrations\Yclients\YclientsException;
@@ -12,7 +13,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -28,7 +28,9 @@ class SyncCompanyStaffJob implements ShouldBeUnique, ShouldQueue
 
     public function __construct(
         public readonly int $companyId,
-    ) {}
+    ) {
+        $this->onQueue(QueueName::YCLIENTS->value);
+    }
 
     /**
      * Уникальный ID задачи для предотвращения race conditions.
@@ -53,29 +55,47 @@ class SyncCompanyStaffJob implements ShouldBeUnique, ShouldQueue
     public function handle(YclientsApi $yclients): void
     {
         $raw = $yclients->staff()->getStaff($this->companyId);
-
         $items = $raw['data'] ?? [];
-        Log::info('Memory usage before loop: ' . (memory_get_usage() / 1024 / 1024) . ' MB');
-        Log::info('Items count: ' . count($items));
+
+        if (empty($items)) {
+            return;
+        }
+
+        $upsertData = [];
 
         foreach ($items as $item) {
             $dto = StaffResponse::from($item);
 
-            /*YcCompanyStaff::updateOrCreate(
+            $upsertData[] = [
+                'company_id'     => $dto->company_id,
+                'staff_id'       => $dto->id,
+                'name'           => $dto->name,
+                'firstname'      => $dto->employee?->firstname,
+                'surname'        => $dto->employee?->surname,
+                'specialization' => $dto->specialization,
+                'fired'          => $dto->fired,
+                'dismissal_date' => $dto->dismissal_date,
+                'rating'         => $dto->rating,
+            ];
+        }
+
+        if (!empty($upsertData)) {
+            YcCompanyStaff::upsert(
+                $upsertData,
                 [
-                    'company_id' => $dto->company_id,
-                    'staff_id'   => $dto->id,
+                    'company_id',
+                    'staff_id',
                 ],
                 [
-                    'name'           => $dto->name,
-                    'firstname'      => $dto->employee?->firstname,
-                    'surname'        => $dto->employee?->surname,
-                    'specialization' => $dto->specialization,
-                    'is_fired'       => (bool) $dto->is_fired,
-                    'dismissal_date' => $dto->dismissal_date,
-                    'rating'         => $dto->rating,
+                    'name',
+                    'firstname',
+                    'surname',
+                    'specialization',
+                    'is_fired',
+                    'dismissal_date',
+                    'rating',
                 ]
-            );*/
+            );
         }
     }
 

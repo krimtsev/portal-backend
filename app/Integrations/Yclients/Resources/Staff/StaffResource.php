@@ -10,7 +10,6 @@ class StaffResource extends ApiResource
     /**
      * Получить список сотрудников
      *
-     *
      * @throws YclientsException
      */
     public function getStaff(int $companyId): array
@@ -20,7 +19,6 @@ class StaffResource extends ApiResource
 
     /**
      * Получить список сотрудников
-     *
      *
      * @throws YclientsException
      */

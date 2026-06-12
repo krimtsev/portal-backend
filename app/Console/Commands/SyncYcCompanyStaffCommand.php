@@ -45,7 +45,7 @@ class SyncYcCompanyStaffCommand extends Command
         foreach ($partners as $partner) {
             SyncCompanyStaffJob::dispatch(
                 (int) $partner->yclients_id,
-            )->delay(3);
+            );
 
             $bar->advance();
         }

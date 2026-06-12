@@ -2,84 +2,55 @@
 
 namespace App\Integrations\Yclients\Resources\Transactions\DTO;
 
-use App\Integrations\Yclients\Core\BaseResponse;
+use App\Integrations\Yclients\Core\ValidateResponse;
 
-class TransactionsResponse extends BaseResponse
+final class TransactionsResponse extends ValidateResponse
 {
-    /** @var ExpenseDTO|null */
-    private ?ExpenseDTO $_expense = null;
-
-    /** @var MasterDTO|null */
-    private ?MasterDTO $_master = null;
-
-    /** @var AccountDTO|null */
-    private ?AccountDTO $_account = null;
-
-    /** @var ClientDTO|null */
-    private ?ClientDTO $_client = null;
-
     public function __construct(
-        public int $id,
-        public int $record_id,
-        public int $visit_id,
-        public int $document_id,
-        public float $amount,
-        public int $sold_item_id,
-        public ?string $sold_item_type,
-        public string $date,
-        public array $expense,
-        public array $master,
-        public array $account,
-        public array $client,
+        public readonly int $id,
+        public readonly int $record_id,
+        public readonly int $visit_id,
+        public readonly int $document_id,
+        public readonly float $amount,
+        public readonly ?int $sold_item_id,
+        public readonly ?string $sold_item_type,
+        public readonly string $date,
+        public readonly ExpenseDTO $expense,
+        public readonly ?MasterDTO $master,
+        public readonly ?AccountDTO $account,
+        public readonly ?ClientDTO $client,
     ) {}
 
-    public function expense(): ExpenseDTO
-    {
-        if ($this->_expense === null) {
-            $this->_expense = new ExpenseDTO(...$this->expense);
-        }
-        return $this->_expense;
-    }
-
-    public function master(): MasterDTO
-    {
-        if ($this->_master === null) {
-            $this->_master = new MasterDTO(...$this->master);
-        }
-        return $this->_master;
-    }
-
-    public function account(): AccountDTO
-    {
-        if ($this->_account === null) {
-            $this->_account = new AccountDTO(...$this->account);
-        }
-        return $this->_account;
-    }
-
-    public function client(): ClientDTO
-    {
-        if ($this->_client === null) {
-            $this->_client = new ClientDTO(...$this->client);
-        }
-        return $this->_client;
-    }
-
-    protected static function getInputMapping(): array
+    protected static function rules(): array
     {
         return [
-            'id'             => 'data.id',
-            'record_id'      => 'data.record_id',
-            'visit_id'       => 'data.visit_id',
-            'document_id'    => 'data.document_id',
-            'amount'         => 'data.amount',
-            'sold_item_id'   => 'data.sold_item_id',
-            'sold_item_type' => 'data.sold_item_type',
-            'date'           => 'data.date',
-            'expense'        => 'data.expense',
-            'master'         => 'data.master',
-            'account'        => 'data.account',
-            'client'         => 'data.client',
+            'id'             => ['required', 'integer'],
+            'record_id'      => ['required', 'integer'],
+            'visit_id'       => ['required', 'integer'],
+            'document_id'    => ['required', 'integer'],
+            'amount'         => ['required', 'numeric'],
+            'sold_item_id'   => ['nullable', 'integer'],
+            'sold_item_type' => ['nullable', 'string'],
+            'date'           => ['required', 'string'],
+            'expense'        => ['nullable', 'array'],
+            'master'         => ['nullable', 'array'],
+            'account'        => ['nullable', 'array'],
+            'client'         => ['nullable', 'array'],
         ];
+    }
+
+    protected static function casts(): array
+    {
+        return [
+            'expense' => ExpenseDTO::class,
+            'master'  => MasterDTO::class,
+            'account' => AccountDTO::class,
+            'client'  => ClientDTO::class,
+        ];
+    }
+
+    protected static function build(array $validated): static
+    {
+        return new self(...$validated);
     }
 }

@@ -2,10 +2,9 @@
 
 namespace App\Jobs\Yclients;
 
+use App\Enums\QueueName;
 use App\Integrations\Yclients\Resources\Analytics\DTO\CompanyStatsFilters;
 use App\Integrations\Yclients\Resources\Analytics\DTO\CompanyStatsResponse;
-use App\Enums\QueueName;
-use App\Integrations\Yclients\DTO\Analytics\CompanyStatsDto;
 use App\Integrations\Yclients\YclientsApi;
 use App\Integrations\Yclients\YclientsException;
 use App\Models\Yclient\YcCompanyDailyStat;
@@ -57,7 +56,7 @@ class SyncCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
      */
     public function handle(YclientsApi $yclients): void
     {
-        $rawData = $yclients->analytics()->getCompanyStats(
+        $raw = $yclients->analytics()->getCompanyStats(
             $this->companyId,
             new CompanyStatsFilters(
                 date_from: $this->date,
@@ -65,7 +64,9 @@ class SyncCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
             )
         );
 
-        $dto = CompanyStatsResponse::fromArray($rawData);
+        $item = $raw['data'] ?? [];
+
+        $dto = CompanyStatsResponse::from($item);
 
         YcCompanyDailyStat::updateOrCreate(
             [
@@ -73,19 +74,19 @@ class SyncCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
                 'date'       => $this->date,
             ],
             [
-                'income_total'     => $dto->income_total,
-                'income_goods'     => $dto->income_goods,
-                'income_services'  => $dto->income_services,
-                'fullness_percent' => $dto->fullness_percent,
-                'record_completed' => $dto->record_completed,
-                'record_pending'   => $dto->record_pending,
-                'record_canceled'  => $dto->record_canceled,
-                'record_total'     => $dto->record_total,
-                'client_new'       => $dto->client_new,
-                'client_return'    => $dto->client_return,
-                'client_active'    => $dto->client_active,
-                'client_lost'      => $dto->client_lost,
-                'client_total'     => $dto->client_total,
+                'income_total'     => $dto->income_total_stats->current_sum,
+                'income_goods'     => $dto->income_goods_stats->current_sum,
+                'income_services'  => $dto->income_services_stats->current_sum,
+                'fullness_percent' => $dto->fullness_stats->current_percent,
+                'record_completed' => $dto->record_stats->current_completed_count,
+                'record_pending'   => $dto->record_stats->current_pending_count,
+                'record_canceled'  => $dto->record_stats->current_canceled_count,
+                'record_total'     => $dto->record_stats->current_total_count,
+                'client_new'       => $dto->client_stats->new_count,
+                'client_return'    => $dto->client_stats->return_count,
+                'client_active'    => $dto->client_stats->active_count,
+                'client_lost'      => $dto->client_stats->lost_count,
+                'client_total'     => $dto->client_stats->total_count,
             ]
         );
     }

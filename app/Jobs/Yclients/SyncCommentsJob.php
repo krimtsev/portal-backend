@@ -2,11 +2,12 @@
 
 namespace App\Jobs\Yclients;
 
+use App\Enums\QueueName;
 use App\Integrations\Yclients\Resources\Comments\DTO\CommentsFilters;
 use App\Integrations\Yclients\Resources\Comments\DTO\CommentsResponse;
 use App\Integrations\Yclients\YclientsApi;
 use App\Integrations\Yclients\YclientsException;
-use App\Models\Yclient\YcComment;
+use App\Models\Yclient\YcCompanyStaff;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -29,7 +30,9 @@ class SyncCommentsJob implements ShouldBeUnique, ShouldQueue
     public function __construct(
         public readonly int $companyId,
         public readonly string $date
-    ) {}
+    ) {
+        $this->onQueue(QueueName::YCLIENTS->value);
+    }
 
     /**
      * Уникальный ID задачи для предотвращения race conditions.
@@ -53,7 +56,7 @@ class SyncCommentsJob implements ShouldBeUnique, ShouldQueue
      */
     public function handle(YclientsApi $yclients): void
     {
-        $rawData = $yclients->comments()->getComments(
+        $raw = $yclients->comments()->getComments(
             $this->companyId,
             new CommentsFilters(
                 start_date: $this->date,
@@ -61,22 +64,39 @@ class SyncCommentsJob implements ShouldBeUnique, ShouldQueue
             )
         );
 
-        foreach ($rawData as $item) {
-            $dto = CommentsResponse::fromArray($item);
+        $items = $raw['data'] ?? [];
 
-            YcComment::updateOrCreate(
+        $upsertData = [];
+
+        foreach ($items as $item) {
+            $dto = CommentsResponse::from($item);
+
+            $upsertData[] = [
+                'company_id' => $this->companyId,
+                'comment_id' => $dto->id,
+                'salon_id'   => $dto->salon_id,
+                'staff_id'   => $dto->master_id,
+                'type'       => $dto->type,
+                'rating'     => $dto->rating,
+                'date'       => $dto->date,
+            ];
+        }
+
+        if (!empty($upsertData)) {
+            YcCompanyStaff::upsert(
+                $upsertData,
                 [
-                    'company_id' => $this->companyId,
-                    'comment_id' => $dto->id,
+                    'company_id',
+                    'comment_id',
                 ],
                 [
-                    'company_id' => $this->companyId,
-                    'comment_id' => $dto->id,
-                    'salon_id'   => $dto->salon_id,
-                    'staff_id'   => $dto->master_id,
-                    'rating'     => $dto->rating,
-                    'type'       => $dto->type,
-                    'date'       => $dto->date,
+                    'company_id',
+                    'comment_id',
+                    'salon_id',
+                    'staff_id',
+                    'type',
+                    'rating',
+                    'date',
                 ]
             );
         }

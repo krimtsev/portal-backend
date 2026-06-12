@@ -31,7 +31,7 @@ return new class extends Migration
             $table->string('specialization');
 
             // Уволен или нет
-            $table->boolean('is_fired')->default(false);
+            $table->boolean('fired')->default(false);
 
             // Когда был уволен
             $table->date('dismissal_date')->nullable();

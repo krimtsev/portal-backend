@@ -34,7 +34,6 @@ return new class extends Migration
             $table->string('expense_title')->nullable(); // "Зарплата персонала", "Оказание услуг"
             $table->unsignedInteger('expense_type')->nullable();
 
-
             $table->timestamps();
 
             $table->index(['company_id', 'date'], 'yc_trans_company_date_idx');

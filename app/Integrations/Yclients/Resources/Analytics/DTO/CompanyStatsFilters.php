@@ -4,13 +4,13 @@ namespace App\Integrations\Yclients\Resources\Analytics\DTO;
 
 use App\Integrations\Yclients\Core\BaseRequest;
 
-class CompanyStatsFilters extends BaseRequest
+final class CompanyStatsFilters extends BaseRequest
 {
     public function __construct(
-        public string $date_from,
-        public string $date_to,
-        public ?int $staffId = null,
-        public ?int $position_id = null,
-        public ?int $user_id = null,
+        public readonly string $date_from,
+        public readonly string $date_to,
+        public readonly ?int $staffId = null,
+        public readonly ?int $position_id = null,
+        public readonly ?int $user_id = null,
     ) {}
 }

@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Helpers\QueueThrottler;
 use App\Integrations\Yclients\Services\PeriodResolutionService;
 use App\Jobs\Yclients\SyncTransactionsJob;
 use App\Models\Partner\Partner;
@@ -59,14 +58,11 @@ class SyncYcTransactionsCommand extends Command
         foreach ($dates as $date) {
             $dateString = $date->toDateString();
 
-            foreach (QueueThrottler::chunkWithDelay($partners, 3) as $data) {
-                $partner = $data['item'];
-                $delay = $data['delay'];
-
+            foreach ($partners as $partner) {
                 SyncTransactionsJob::dispatch(
                     (int) $partner->yclients_id,
                     $dateString
-                )->delay($delay);
+                );
 
                 $bar->advance();
             }

@@ -2,42 +2,45 @@
 
 namespace App\Integrations\Yclients\Resources\Analytics\DTO;
 
-use App\Integrations\Yclients\Core\BaseResponse;
+use App\Integrations\Yclients\Core\ValidateResponse;
 
-class CompanyStatsResponse extends BaseResponse
+final class CompanyStatsResponse extends ValidateResponse
 {
     public function __construct(
-        public float $income_total,
-        public float $income_services,
-        public float $income_goods,
-        public float $fullness_percent,
-        public int $record_completed,
-        public int $record_pending,
-        public int $record_canceled,
-        public int $record_total,
-        public int $client_total,
-        public int $client_new,
-        public int $client_return,
-        public int $client_active,
-        public int $client_lost
+        public readonly IncomeStatsDTO $income_total_stats,
+        public readonly IncomeStatsDTO $income_services_stats,
+        public readonly IncomeStatsDTO $income_goods_stats,
+        public readonly FullnessStatsDTO $fullness_stats,
+        public readonly RecordStatsDTO $record_stats,
+        public readonly ClientStatsDTO $client_stats,
     ) {}
 
-    protected static function getInputMapping(): array
+    protected static function rules(): array
     {
         return [
-            'income_total'     => 'data.income_total_stats.current_sum',
-            'income_services'  => 'data.income_services_stats.current_sum',
-            'income_goods'     => 'data.income_goods_stats.current_sum',
-            'fullness_percent' => 'data.fullness_stats.current_percent',
-            'record_completed' => 'data.record_stats.current_completed_count',
-            'record_pending'   => 'data.record_stats.current_pending_count',
-            'record_canceled'  => 'data.record_stats.current_canceled_count',
-            'record_total'     => 'data.record_stats.current_total_count',
-            'client_total'     => 'data.client_stats.total_count',
-            'client_new'       => 'data.client_stats.new_count',
-            'client_return'    => 'data.client_stats.return_count',
-            'client_active'    => 'data.client_stats.active_count',
-            'client_lost'      => 'data.client_stats.lost_count',
+            'income_total_stats'    => ['required', 'array'],
+            'income_services_stats' => ['required', 'array'],
+            'income_goods_stats'    => ['required', 'array'],
+            'fullness_stats'        => ['required', 'array'],
+            'record_stats'          => ['required', 'array'],
+            'client_stats'          => ['required', 'array'],
         ];
+    }
+
+    protected static function casts(): array
+    {
+        return [
+            'income_total_stats'    => IncomeStatsDTO::class,
+            'income_services_stats' => IncomeStatsDTO::class,
+            'income_goods_stats'    => IncomeStatsDTO::class,
+            'fullness_stats'        => FullnessStatsDTO::class,
+            'record_stats'          => RecordStatsDTO::class,
+            'client_stats'          => ClientStatsDTO::class,
+        ];
+    }
+
+    protected static function build(array $validated): static
+    {
+        return new self(...$validated);
     }
 }

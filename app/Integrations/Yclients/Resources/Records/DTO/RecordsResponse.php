@@ -2,61 +2,46 @@
 
 namespace App\Integrations\Yclients\Resources\Records\DTO;
 
-use App\Integrations\Yclients\Core\BaseResponse;
+use App\Integrations\Yclients\Core\ValidateResponse;
 
-class RecordsResponse extends BaseResponse
+final class RecordsResponse extends ValidateResponse
 {
-    /** @var ServiceDTO[]|null */
-    private ?array $_services = null;
-
-    /** @var ClientDTO|null */
-    private ?ClientDTO $_client = null;
-
+    /**
+     * @param  ServiceDTO[]  $services
+     */
     public function __construct(
-        public int $id,
-        public int $company_id,
-        public int $staff_id,
-        public int $visit_id,
-        protected array $services,
-        public array $staff,
-        public array $datetime,
-        protected array $client,
+        public readonly int $id,
+        public readonly int $company_id,
+        public readonly int $staff_id,
+        public readonly int $visit_id,
+        public readonly string $datetime,
+        public readonly array $services,
+        public readonly ?ClientDTO $client,
     ) {}
 
-    /**
-     * * @return ServiceDTO[]
-     */
-    public function services(): array
-    {
-        if ($this->_services === null) {
-            $this->_services = array_map(
-                fn(array $service) => new ServiceDTO(...$service),
-                $this->services
-            );
-        }
-        return $this->_services;
-    }
-
-    public function client(): ?ClientDTO
-    {
-        if ($this->_client === null) {
-            $this->_client = !empty($this->client)
-                ? new ClientDTO(...$this->client)
-                : null;
-        }
-        return $this->_client;
-    }
-
-    protected static function getInputMapping(): array
+    protected static function rules(): array
     {
         return [
-            'id'         => 'data.id',
-            'company_id' => 'data.company_id',
-            'staff_id'   => 'data.staff_id',
-            'services'   => 'data.services',
-            'staff'      => 'data.staff',
-            'datetime'   => 'data.datetime',
-            'client'     => 'data.client',
+            'id'         => ['required', 'integer'],
+            'company_id' => ['required', 'integer'],
+            'staff_id'   => ['required', 'integer'],
+            'visit_id'   => ['required', 'integer'],
+            'datetime'   => ['required', 'string'],
+            'services'   => ['nullable', 'array'],
+            'client'     => ['nullable', 'array'],
         ];
+    }
+
+    protected static function casts(): array
+    {
+        return [
+            'services' => [ServiceDTO::class],
+            'client'   => ClientDTO::class,
+        ];
+    }
+
+    protected static function build(array $validated): static
+    {
+        return new self(...$validated);
     }
 }

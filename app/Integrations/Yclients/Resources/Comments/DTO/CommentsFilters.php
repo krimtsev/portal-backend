@@ -4,14 +4,14 @@ namespace App\Integrations\Yclients\Resources\Comments\DTO;
 
 use App\Integrations\Yclients\Core\BaseRequest;
 
-class CommentsFilters extends BaseRequest
+final class CommentsFilters extends BaseRequest
 {
     public function __construct(
-        public ?string $start_date = null,
-        public ?string $end_date = null,
-        public ?int $staffId = null,
-        public ?int $rating = null,
-        public ?int $page = 1,
-        public ?int $count = 1000,
+        public readonly ?string $start_date = null,
+        public readonly ?string $end_date = null,
+        public readonly ?int $staffId = null,
+        public readonly ?int $rating = null,
+        public readonly ?int $page = 1,
+        public readonly ?int $count = 1000,
     ) {}
 }

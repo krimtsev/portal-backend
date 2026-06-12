@@ -2,13 +2,13 @@
 
 namespace App\Jobs\Yclients;
 
+use App\Enums\QueueName;
 use App\Integrations\Yclients\Resources\Records\DTO\RecordsFilters;
 use App\Integrations\Yclients\Resources\Records\DTO\RecordsResponse;
 use App\Integrations\Yclients\YclientsApi;
 use App\Integrations\Yclients\YclientsException;
 use App\Models\Yclient\YcRecord;
 use App\Models\Yclient\YcRecordService;
-use App\Models\Yclient\YcTransaction;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -32,7 +32,9 @@ class SyncRecordsJob implements ShouldBeUnique, ShouldQueue
     public function __construct(
         public readonly int $companyId,
         public readonly string $date
-    ) {}
+    ) {
+        $this->onQueue(QueueName::YCLIENTS->value);
+    }
 
     /**
      * Уникальный ID задачи для предотвращения race conditions.
@@ -56,7 +58,7 @@ class SyncRecordsJob implements ShouldBeUnique, ShouldQueue
      */
     public function handle(YclientsApi $yclients): void
     {
-        $rawData = $yclients->records()->getRecords(
+        $raw = $yclients->records()->getRecords(
             $this->companyId,
             new RecordsFilters(
                 start_date: $this->date,
@@ -64,72 +66,96 @@ class SyncRecordsJob implements ShouldBeUnique, ShouldQueue
             )
         );
 
-        $recordsToUpsert = [];
-        $servicesToUpsert = [];
+        $items = $raw['data'] ?? [];
 
-        foreach ($rawData as $item) {
-            $dto = RecordsResponse::fromArray($item);
+        if (empty($items)) {
+            return;
+        }
 
-            $recordsToUpsert[] = [
-                'record_id'             => $dto->id,
-                'company_id'            => $this->companyId,
-                'staff_id'              => $dto->staff_id,
-                'visit_id'              => $dto->visit_id,
-                'client_id'             => $dto->client->id,
-                'client_name'           => $dto->client->name,
-                'client_phone'          => $dto->client->phone,
-                'client_success_visits' => $dto->client->success_visits_count ?? 0,
-                'client_fail_visits'    => $dto->client->fail_visits_count ?? 0,
-                'datetime'              => $dto->datetime,
+        foreach (array_chunk($items, 50) as $chunk) {
+            $recordsToUpsert = [];
+            $servicesToUpsert = [];
 
-                'total_cost',
-                'total_manual_cost',
-            ];
+            foreach ($chunk as $item) {
+                $dto = RecordsResponse::from($item);
 
-            foreach ($dto->services as $service) {
-                $servicesToUpsert[] = [
-                    'company_id'     => $this->companyId,
-                    'record_id'      => $dto->id,
-                    'service_id'     => $service['id'],
-                    'title'          => $service['title'],
-                    'cost'           => $service['cost'] ?? 0,
-                    'manual_cost'    => $service['manual_cost'] ?? 0,
-                    'discount'       => $service['discount'] ?? 0,
-                    'amount'         => $service['amount'] ?? 1,
+                $recordsToUpsert[] = [
+                    'record_id'             => $dto->id,
+                    'company_id'            => $this->companyId,
+                    'staff_id'              => $dto->staff_id,
+                    'visit_id'              => $dto->visit_id,
+                    'client_id'             => $dto->client->id,
+                    'client_name'           => $dto->client->name,
+                    'client_phone'          => $dto->client->phone,
+                    'client_success_visits' => $dto->client->success_visits_count ?? 0,
+                    'client_fail_visits'    => $dto->client->fail_visits_count ?? 0,
+                    'datetime'              => $dto->datetime,
+                    'total_cost'            => array_sum(array_map(fn($s) => $s->cost, $dto->services)),
+                    'total_manual_cost'     => array_sum(array_map(fn($s) => $s->manual_cost, $dto->services)),
                 ];
+
+                foreach ($dto->services as $serviceDto) {
+                    if (!$serviceDto->id) {
+                        continue;
+                    }
+
+                    $servicesToUpsert[] = [
+                        'company_id'  => $this->companyId,
+                        'record_id'   => $dto->id,
+                        'service_id'  => $serviceDto->id,
+                        'title'       => $serviceDto->title,
+                        'cost'        => $serviceDto->cost,
+                        'manual_cost' => $serviceDto->manual_cost,
+                        'discount'    => $serviceDto->discount,
+                        'amount'      => $serviceDto->amount,
+                    ];
+                }
+
+                DB::transaction(function () use ($recordsToUpsert, $servicesToUpsert) {
+                    if (!empty($recordsToUpsert)) {
+                        YcRecord::upsert(
+                            $recordsToUpsert,
+                            [
+                                'company_id',
+                                'record_id',
+                            ],
+                            [
+                                'staff_id',
+                                'visit_id',
+                                'client_id',
+                                'client_name',
+                                'client_phone',
+                                'client_success_visits',
+                                'client_fail_visits',
+                                'datetime',
+                                'total_cost',
+                                'total_manual_cost',
+                            ]
+                        );
+                    }
+
+                    if (!empty($servicesToUpsert)) {
+                        YcRecordService::upsert(
+                            $servicesToUpsert,
+                            [
+                                'company_id',
+                                'record_id',
+                                'service_id',
+                            ],
+                            [
+                                'company_id',
+                                'record_id',
+                                'service_id',
+                                'title',
+                                'cost',
+                                'manual_cost',
+                                'discount',
+                                'amount',
+                            ]
+                        );
+                    }
+                });
             }
-
-            DB::transaction(function () use ($recordsToUpsert, $servicesToUpsert) {
-                if (!empty($recordsToUpsert)) {
-                    YcRecord::upsert(
-                        $recordsToUpsert,
-                        [
-                            'company_id',
-                            'record_id'
-                        ],
-                        [
-                            'staff_id',
-                            'visit_id',
-                            'client_id',
-                            'client_name',
-                            'client_phone',
-                            'client_success_visits',
-                            'client_fail_visits',
-                            'datetime',
-                            'total_cost',
-                            'total_manual_cost'
-                        ]
-                    );
-                }
-
-                if (!empty($servicesToUpsert)) {
-                    YcRecordService::upsert(
-                        $servicesToUpsert,
-                        ['company_id', 'record_id', 'service_id'], // Уникальный составной ключ для услуги
-                        ['title', 'cost', 'manual_cost', 'discount', 'amount']
-                    );
-                }
-            });
         }
     }
 

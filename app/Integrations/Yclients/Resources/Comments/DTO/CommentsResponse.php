@@ -2,31 +2,35 @@
 
 namespace App\Integrations\Yclients\Resources\Comments\DTO;
 
-use App\Integrations\Yclients\Core\BaseResponse;
+use App\Integrations\Yclients\Core\ValidateResponse;
 
-class CommentsResponse extends BaseResponse
+final class CommentsResponse extends ValidateResponse
 {
     public function __construct(
-        public int $id,
-        public int $salon_id,
-        public int $type,
-        public int $master_id,
-        public int $rating,
-        public string $text,
-        public string $date,
-
+        public readonly int $id,
+        public readonly int $salon_id,
+        public readonly int $master_id,
+        public readonly int $type,
+        public readonly int $rating,
+        public readonly string $text,
+        public readonly string $date,
     ) {}
 
-    protected static function getInputMapping(): array
+    protected static function rules(): array
     {
         return [
-            'id'        => 'data.id',
-            'salon_id'  => 'data.salon_id',
-            'type'      => 'data.type',
-            'master_id' => 'data.master_id',
-            'text'      => 'data.text',
-            'date'      => 'data.date',
-            'rating'    => 'data.rating',
+            'id'        => ['required', 'integer'],
+            'salon_id'  => ['required', 'integer'],
+            'master_id' => ['required', 'integer'],
+            'type'      => ['required', 'integer'],
+            'rating'    => ['required', 'integer'],
+            'text'      => ['nullable', 'string'],
+            'date'      => ['required', 'string'],
         ];
+    }
+
+    protected static function build(array $validated): static
+    {
+        return new self(...$validated);
     }
 }

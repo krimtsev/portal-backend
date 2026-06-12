@@ -2,6 +2,7 @@
 
 namespace App\Jobs\Yclients;
 
+use App\Enums\QueueName;
 use App\Integrations\Yclients\Resources\Transactions\DTO\TransactionsFilters;
 use App\Integrations\Yclients\Resources\Transactions\DTO\TransactionsResponse;
 use App\Integrations\Yclients\YclientsApi;
@@ -29,7 +30,9 @@ class SyncTransactionsJob implements ShouldBeUnique, ShouldQueue
     public function __construct(
         public readonly int $companyId,
         public readonly string $date
-    ) {}
+    ) {
+        $this->onQueue(QueueName::YCLIENTS->value);
+    }
 
     /**
      * Уникальный ID задачи для предотвращения race conditions.
@@ -53,7 +56,7 @@ class SyncTransactionsJob implements ShouldBeUnique, ShouldQueue
      */
     public function handle(YclientsApi $yclients): void
     {
-        $rawData = $yclients->transactions()->getTransactions(
+        $raw = $yclients->transactions()->getTransactions(
             $this->companyId,
             new TransactionsFilters(
                 start_date: $this->date,
@@ -61,27 +64,49 @@ class SyncTransactionsJob implements ShouldBeUnique, ShouldQueue
             )
         );
 
-        foreach ($rawData as $item) {
-            $dto = TransactionsResponse::fromArray($item);
+        $items = $raw['data'] ?? [];
 
-            YcTransaction::updateOrCreate(
+        $upsertData = [];
+
+        foreach ($items as $item) {
+            $dto = TransactionsResponse::from($item);
+
+            $upsertData = [
+                'transaction_id' => $dto->id,
+                'company_id'     => $this->companyId,
+                'staff_id'       => $dto->master?->id,
+                'record_id'      => $dto->record_id,
+                'visit_id'       => $dto->visit_id,
+                'document_id'    => $dto->document_id,
+                'amount'         => $dto->amount,
+                'sold_item_type' => $dto->sold_item_type,
+                'expense_id'     => $dto->expense?->id,
+                'expense_title'  => $dto->expense?->title,
+                'expense_type'   => $dto->expense?->type,
+                'date'           => $dto->date,
+            ];
+        }
+
+        if (!empty($upsertData)) {
+            YcTransaction::upsert(
+                $upsertData,
                 [
-                    'company_id'     => $this->companyId,
-                    'transaction_id' => $dto->id,
+                    'company_id',
+                    'transaction_id',
                 ],
                 [
-                    'transaction_id' => $dto->id,
-                    'company_id'     => $this->companyId,
-                    'staff_id'       => $dto->getMasterId(),
-                    'record_id'      => $dto->record_id,
-                    'visit_id'       => $dto->visit_id,
-                    'document_id'    => $dto->document_id,
-                    'amount'         => $dto->amount,
-                    'sold_item_type' => $dto->sold_item_type,
-                    'expense_id'     => $dto->expense_id,
-                    'expense_title'  => $dto->expense_title,
-                    'expense_type'   => $dto->expense_type,
-                    'date'           => $dto->date,
+                    'transaction_id',
+                    'company_id',
+                    'staff_id',
+                    'record_id',
+                    'visit_id',
+                    'document_id',
+                    'amount',
+                    'sold_item_type',
+                    'expense_id',
+                    'expense_title',
+                    'expense_type',
+                    'date',
                 ]
             );
         }

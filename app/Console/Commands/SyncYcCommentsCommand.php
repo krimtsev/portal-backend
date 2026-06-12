@@ -64,7 +64,7 @@ class SyncYcCommentsCommand extends Command
                 SyncCommentsJob::dispatch(
                     (int) $partner->yclients_id,
                     $dateString
-                )->delay(3);
+                );
 
                 $bar->advance();
             }

@@ -2,25 +2,44 @@
 
 namespace App\Integrations\Yclients\Resources\Staff\DTO;
 
-use App\Integrations\Yclients\Core\BaseResponse;
+use App\Integrations\Yclients\Core\ValidateResponse;
 
-class StaffResponse extends BaseResponse
+final class StaffResponse extends ValidateResponse
 {
     public function __construct(
-        public int $id,
-
-        public int $company_id,
-
-        public string $name,
-
-        public string $specialization,
-
-        public int $is_fired,
-
-        public ?string $dismissal_date,
-
-        public float $rating,
-
-        public ?EmployeeDTO $employee,
+        public readonly int $id,
+        public readonly int $company_id,
+        public readonly string $name,
+        public readonly string $specialization,
+        public readonly int $fired,
+        public readonly ?string $dismissal_date,
+        public readonly float $rating,
+        public readonly ?EmployeeDTO $employee,
     ) {}
+
+    protected static function rules(): array
+    {
+        return [
+            'id'             => ['required', 'integer'],
+            'company_id'     => ['required', 'integer'],
+            'name'           => ['required', 'string'],
+            'rating'         => ['required', 'numeric'],
+            'fired'          => ['required', 'boolean'],
+            'specialization' => ['required', 'string'],
+            'dismissal_date' => ['nullable', 'string'],
+            'employee'       => ['nullable', 'array'],
+        ];
+    }
+
+    protected static function casts(): array
+    {
+        return [
+            'employee' => EmployeeDTO::class,
+        ];
+    }
+
+    protected static function build(array $validated): static
+    {
+        return new self(...$validated);
+    }
 }
