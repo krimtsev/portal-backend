@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Jobs\Yclients;
 
 use App\Enums\QueueName;
-use App\Integrations\Yclients\Resources\Analytics\DTO\CompanyStatsFilters;
-use App\Integrations\Yclients\Resources\Analytics\DTO\CompanyStatsResponse;
+use App\Integrations\Yclients\Resources\Comments\DTO\CommentsFilters;
+use App\Integrations\Yclients\Resources\Comments\DTO\CommentsResponse;
 use App\Integrations\Yclients\YclientsApi;
 use App\Integrations\Yclients\YclientsException;
-use App\Models\Yclient\YcCompanyDailyStat;
+use App\Models\Yclient\YcComment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -19,7 +19,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-final class SyncCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
+final class SyncCommentsJob implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -41,7 +41,7 @@ final class SyncCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
      */
     public function uniqueId(): string
     {
-        return "yc_company_stats_{$this->companyId}_{$this->date}";
+        return "yc_comments_{$this->companyId}_{$this->date}";
     }
 
     /**
@@ -58,43 +58,52 @@ final class SyncCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
      */
     public function handle(YclientsApi $yclients): void
     {
-        $rawResponse = $yclients->analytics()->getCompanyStats(
+        $rawResponse = $yclients->comments()->getComments(
             $this->companyId,
-            new CompanyStatsFilters(
-                date_from: $this->date,
-                date_to: $this->date
+            new CommentsFilters(
+                start_date: $this->date,
+                end_date: $this->date
             )
         );
 
-        $companyStatsData = $rawResponse['data'] ?? [];
+        $commentsData = $rawResponse['data'] ?? [];
 
-        if (empty($companyStatsData)) {
+        if (empty($commentsData)) {
             return;
         }
 
-        $dto = CompanyStatsResponse::from($companyStatsData);
+        $upsertData = [];
 
-        YcCompanyDailyStat::updateOrCreate(
-            [
+        foreach ($commentsData as $item) {
+            $dto = CommentsResponse::from($item);
+
+            $upsertData[] = [
                 'company_id' => $this->companyId,
-                'date'       => $this->date,
-            ],
-            [
-                'income_total'     => $dto->income_total_stats->current_sum,
-                'income_goods'     => $dto->income_goods_stats->current_sum,
-                'income_services'  => $dto->income_services_stats->current_sum,
-                'fullness_percent' => $dto->fullness_stats->current_percent,
-                'record_completed' => $dto->record_stats->current_completed_count,
-                'record_pending'   => $dto->record_stats->current_pending_count,
-                'record_canceled'  => $dto->record_stats->current_canceled_count,
-                'record_total'     => $dto->record_stats->current_total_count,
-                'client_new'       => $dto->client_stats->new_count,
-                'client_return'    => $dto->client_stats->return_count,
-                'client_active'    => $dto->client_stats->active_count,
-                'client_lost'      => $dto->client_stats->lost_count,
-                'client_total'     => $dto->client_stats->total_count,
-            ]
-        );
+                'comment_id' => $dto->id,
+                'salon_id'   => $dto->salon_id,
+                'staff_id'   => $dto->master_id,
+                'type'       => $dto->type,
+                'rating'     => $dto->rating,
+                'date'       => $dto->date,
+            ];
+        }
+
+        if (!empty($upsertData)) {
+            YcComment::upsert(
+                $upsertData,
+                [
+                    'company_id',
+                    'comment_id',
+                ],
+                [
+                    'salon_id',
+                    'staff_id',
+                    'type',
+                    'rating',
+                    'date',
+                ]
+            );
+        }
     }
 
     /**

@@ -1,0 +1,126 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Jobs\Yclients;
+
+use App\Enums\QueueName;
+use App\Integrations\Yclients\Resources\Analytics\DTO\CompanyStatsFilters;
+use App\Integrations\Yclients\Resources\Analytics\DTO\CompanyStatsResponse;
+use App\Integrations\Yclients\YclientsApi;
+use App\Integrations\Yclients\YclientsException;
+use Illuminate\Bus\Batchable;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Throwable;
+
+final class SyncStaffDailyStatsJob implements ShouldQueue
+{
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    /** Количество попыток выполнения */
+    public int $tries = 3;
+
+    /** Таймаут выполнения */
+    public int $timeout = 60;
+
+    public function __construct(
+        public readonly int $companyId,
+        public readonly int $staffId,
+        public readonly string $date
+    ) {
+        $this->onQueue(QueueName::YCLIENTS->value);
+    }
+
+    /**
+     * Уникальный ID задачи для предотвращения race conditions.
+     */
+    public function uniqueId(): string
+    {
+        return "yc_staff_stats_{$this->companyId}_{$this->staffId}_{$this->date}";
+    }
+
+    /**
+     * Стратегия ожидания между повторами (Exponential/Step Backoff).
+     * Первая ошибка — ждем 10 сек, вторая — 60 сек, третья — 120 сек.
+     */
+    public function backoff(): array
+    {
+        return [10, 60, 120];
+    }
+
+    /**
+     * @throws Throwable
+     * @throws YclientsException
+     */
+    public function handle(YclientsApi $yclients): void
+    {
+        if ($this->batch()?->cancelled()) {
+            return;
+        }
+
+        try {
+            $rawResponse = $yclients->analytics()->getCompanyStats(
+                $this->companyId,
+                new CompanyStatsFilters(
+                    date_from: $this->date,
+                    date_to: $this->date,
+                    staff_id: $this->staffId,
+                )
+            );
+
+            $staffStatsData = $rawResponse['data'] ?? [];
+
+            if (empty($staffStatsData)) {
+                return;
+            }
+
+            $dto = CompanyStatsResponse::from($staffStatsData);
+
+            DB::table('yc_staff_daily_stats')->updateOrCreate(
+                [
+                    'company_id' => $this->companyId,
+                    'staff_id'   => $this->staffId,
+                    'date'       => $this->date,
+                ],
+                [
+                    'income_total'     => $dto->income_total_stats->current_sum,
+                    'income_goods'     => $dto->income_goods_stats->current_sum,
+                    'income_services'  => $dto->income_services_stats->current_sum,
+                    'fullness_percent' => $dto->fullness_stats->current_percent,
+                    'record_completed' => $dto->record_stats->current_completed_count,
+                    'record_pending'   => $dto->record_stats->current_pending_count,
+                    'record_canceled'  => $dto->record_stats->current_canceled_count,
+                    'record_total'     => $dto->record_stats->current_total_count,
+                    'client_new'       => $dto->client_stats->new_count,
+                    'client_return'    => $dto->client_stats->return_count,
+                    'client_active'    => $dto->client_stats->active_count,
+                    'client_lost'      => $dto->client_stats->lost_count,
+                    'client_total'     => $dto->client_stats->total_count,
+                ]
+            );
+
+        } catch (Throwable $e) {
+            Log::error("Сбой сбора статистики мастера {$this->staffId} в компании {$this->companyId}: {$e->getMessage()}");
+            throw $e;
+        }
+    }
+
+    /**
+     * Метод срабатывает, когда все попытки завершились неудачей
+     */
+    public function failed(Throwable $exception): void
+    {
+        Log::channel('yclients')
+            ->critical('Синхронизация YClients завершилась.', [
+                'company_id' => $this->companyId,
+                'date'       => $this->date,
+                'error'      => $exception->getMessage(),
+            ]);
+    }
+}

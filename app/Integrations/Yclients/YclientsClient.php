@@ -108,8 +108,6 @@ class YclientsClient
      */
     public function get(string $uri, array $query = []): array
     {
-        $query = $this->cleanParams($query);
-
         return $this->sendRequest(HttpMethod::GET->value, $uri, $query);
     }
 

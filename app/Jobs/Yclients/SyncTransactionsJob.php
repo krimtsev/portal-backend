@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Jobs\Yclients;
 
 use App\Enums\QueueName;
-use App\Integrations\Yclients\Resources\Analytics\DTO\CompanyStatsFilters;
-use App\Integrations\Yclients\Resources\Analytics\DTO\CompanyStatsResponse;
+use App\Integrations\Yclients\Resources\Transactions\DTO\TransactionsFilters;
+use App\Integrations\Yclients\Resources\Transactions\DTO\TransactionsResponse;
 use App\Integrations\Yclients\YclientsApi;
 use App\Integrations\Yclients\YclientsException;
-use App\Models\Yclient\YcCompanyDailyStat;
+use App\Models\Yclient\YcTransaction;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -19,7 +19,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-final class SyncCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
+final class SyncTransactionsJob implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -41,7 +41,7 @@ final class SyncCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
      */
     public function uniqueId(): string
     {
-        return "yc_company_stats_{$this->companyId}_{$this->date}";
+        return "yc_comments_{$this->companyId}_{$this->date}";
     }
 
     /**
@@ -58,43 +58,62 @@ final class SyncCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
      */
     public function handle(YclientsApi $yclients): void
     {
-        $rawResponse = $yclients->analytics()->getCompanyStats(
+        $rawResponse = $yclients->transactions()->getTransactions(
             $this->companyId,
-            new CompanyStatsFilters(
-                date_from: $this->date,
-                date_to: $this->date
+            new TransactionsFilters(
+                start_date: $this->date,
+                end_date: $this->date
             )
         );
 
-        $companyStatsData = $rawResponse['data'] ?? [];
+        $transactionsData = $rawResponse['data'] ?? [];
 
-        if (empty($companyStatsData)) {
+        if (empty($transactionsData)) {
             return;
         }
 
-        $dto = CompanyStatsResponse::from($companyStatsData);
+        $upsertData = [];
 
-        YcCompanyDailyStat::updateOrCreate(
-            [
-                'company_id' => $this->companyId,
-                'date'       => $this->date,
-            ],
-            [
-                'income_total'     => $dto->income_total_stats->current_sum,
-                'income_goods'     => $dto->income_goods_stats->current_sum,
-                'income_services'  => $dto->income_services_stats->current_sum,
-                'fullness_percent' => $dto->fullness_stats->current_percent,
-                'record_completed' => $dto->record_stats->current_completed_count,
-                'record_pending'   => $dto->record_stats->current_pending_count,
-                'record_canceled'  => $dto->record_stats->current_canceled_count,
-                'record_total'     => $dto->record_stats->current_total_count,
-                'client_new'       => $dto->client_stats->new_count,
-                'client_return'    => $dto->client_stats->return_count,
-                'client_active'    => $dto->client_stats->active_count,
-                'client_lost'      => $dto->client_stats->lost_count,
-                'client_total'     => $dto->client_stats->total_count,
-            ]
-        );
+        foreach ($transactionsData as $item) {
+            $dto = TransactionsResponse::from($item);
+
+            $upsertData = [
+                'transaction_id' => $dto->id,
+                'company_id'     => $this->companyId,
+                'staff_id'       => $dto->master?->id,
+                'record_id'      => $dto->record_id,
+                'visit_id'       => $dto->visit_id,
+                'document_id'    => $dto->document_id,
+                'amount'         => $dto->amount,
+                'sold_item_type' => $dto->sold_item_type,
+                'expense_id'     => $dto->expense?->id,
+                'expense_title'  => $dto->expense?->title,
+                'expense_type'   => $dto->expense?->type,
+                'date'           => $dto->date,
+            ];
+        }
+
+        if (!empty($upsertData)) {
+            YcTransaction::upsert(
+                $upsertData,
+                [
+                    'company_id',
+                    'transaction_id',
+                ],
+                [
+                    'staff_id',
+                    'record_id',
+                    'visit_id',
+                    'document_id',
+                    'amount',
+                    'sold_item_type',
+                    'expense_id',
+                    'expense_title',
+                    'expense_type',
+                    'date',
+                ]
+            );
+        }
     }
 
     /**

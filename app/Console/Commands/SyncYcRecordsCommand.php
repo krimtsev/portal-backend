@@ -2,35 +2,31 @@
 
 namespace App\Console\Commands;
 
-use App\Helpers\QueueThrottler;
 use App\Integrations\Yclients\Services\PeriodResolutionService;
-use App\Jobs\Yclients\SyncCompanyDailyStatJob;
+use App\Jobs\Yclients\SyncRecordsJob;
 use App\Models\Partner\Partner;
 use Illuminate\Console\Command;
 use Throwable;
 
-class SyncCompanyDailyStatCommand extends Command
+final class SyncYcRecordsCommand extends Command
 {
-    protected $signature = 'yclients:sync-company-stats
+    protected $signature = 'yclients:sync-transactions
                             {--date= : Конкретный день в формате YYYY-MM-DD}
-                            {--month= : Полный месяц в формате YYYY-MM}
                             {--company_id= : Конкретный ID компании из YClients (yclients_id)}';
 
-    protected $description = 'Синхронизация основных показателей компании из YClients';
+    protected $description = 'Синхронизация транзакций компании из YClients';
 
     public function handle(PeriodResolutionService $periodService): int
     {
-        if (!config('jobs.royalty')) {
+        if (!config('jobs.yclients')) {
             $this->warn('Синхронизация отключена в конфигурации.');
 
             return self::SUCCESS;
         }
 
         try {
-            // Разрешаем период дат через выделенный сервис
             $dates = $periodService->resolveFromParams(
                 date: $this->option('date'),
-                month: $this->option('month')
             );
         } catch (Throwable $e) {
             $this->error('Ошибка параметров: ' . $e->getMessage());
@@ -62,14 +58,11 @@ class SyncCompanyDailyStatCommand extends Command
         foreach ($dates as $date) {
             $dateString = $date->toDateString();
 
-            foreach (QueueThrottler::chunkWithDelay($partners, 3) as $data) {
-                $partner = $data['item'];
-                $delay = $data['delay'];
-
-                SyncCompanyDailyStatJob::dispatch(
+            foreach ($partners as $partner) {
+                SyncRecordsJob::dispatch(
                     (int) $partner->yclients_id,
                     $dateString
-                )->delay($delay);
+                );
 
                 $bar->advance();
             }
@@ -77,7 +70,7 @@ class SyncCompanyDailyStatCommand extends Command
 
         $bar->finish();
         $this->newLine(2);
-        $this->info('Все задачи успешно распределены по воркерам.');
+        $this->info('Все задачи успешно распределены.');
 
         return self::SUCCESS;
     }

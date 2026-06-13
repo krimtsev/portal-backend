@@ -1,0 +1,125 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Jobs\Yclients;
+
+use App\Enums\QueueName;
+use App\Integrations\Yclients\Resources\Staff\DTO\StaffResponse;
+use App\Integrations\Yclients\YclientsApi;
+use App\Integrations\Yclients\YclientsException;
+use App\Models\Yclient\YcCompanyStaff;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
+use Throwable;
+
+final class SyncCompanyStaffJob implements ShouldBeUnique, ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    /** Количество попыток выполнения */
+    public int $tries = 3;
+
+    /** Таймаут выполнения */
+    public int $timeout = 60;
+
+    public function __construct(
+        public readonly int $companyId,
+    ) {
+        $this->onQueue(QueueName::YCLIENTS->value);
+    }
+
+    /**
+     * Уникальный ID задачи для предотвращения race conditions.
+     */
+    public function uniqueId(): string
+    {
+        return "yc_company_staff_{$this->companyId}";
+    }
+
+    /**
+     * Стратегия ожидания между повторами (Exponential/Step Backoff).
+     * Первая ошибка — ждем 10 сек, вторая — 60 сек, третья — 120 сек.
+     */
+    public function backoff(): array
+    {
+        return [10, 60, 120];
+    }
+
+    /**
+     * @throws YclientsException|Throwable
+     */
+    public function handle(YclientsApi $yclients): void
+    {
+        $rawResponse = $yclients->staff()->getStaff($this->companyId);
+
+        $companyStaffData = $rawResponse['data'] ?? [];
+
+        if (empty($companyStaffData)) {
+            return;
+        }
+
+        $upsertData = [];
+
+        $format = function (?string $value) {
+            $value = trim((string)$value);
+            return ($value === '') ? null : $value;
+        };
+
+        foreach ($companyStaffData as $item) {
+            $dto = StaffResponse::from($item);
+
+            $upsertData[] = [
+                'company_id'     => $dto->company_id,
+                'staff_id'       => $dto->id,
+                'name'           => $dto->name,
+                'firstname'      => $dto->employee?->firstname ?: null,
+                'surname'        => $dto->employee?->surname ?: null,
+                'specialization' => $dto->specialization,
+                'fired'          => $dto->fired,
+                'dismissal_date' => $dto->dismissal_date,
+                'rating'         => $dto->rating,
+                'avatar'         => $dto->avatar,
+                'avatar_big'     => $dto->avatar_big,
+            ];
+        }
+
+        if (!empty($upsertData)) {
+            YcCompanyStaff::upsert(
+                $upsertData,
+                [
+                    'company_id',
+                    'staff_id',
+                ],
+                [
+                    'name',
+                    'firstname',
+                    'surname',
+                    'specialization',
+                    'fired',
+                    'dismissal_date',
+                    'rating',
+                    'avatar',
+                    'avatar_big',
+                ]
+            );
+        }
+    }
+
+    /**
+     * Метод срабатывает, когда все попытки завершились неудачей
+     */
+    public function failed(Throwable $exception): void
+    {
+        Log::channel('yclients')
+            ->critical('Синхронизация YClients завершилась.', [
+                'company_id' => $this->companyId,
+                'error'      => $exception->getMessage(),
+            ]);
+    }
+}
