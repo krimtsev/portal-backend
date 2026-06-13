@@ -9,10 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('yc_records', function (Blueprint $table) {
-            $table->id();
-
             // ID записи
-            $table->unsignedBigInteger('record_id');
+            $table->unsignedBigInteger('record_id')->primary();
 
             // ID компании в YClients
             $table->unsignedBigInteger('company_id');
@@ -24,11 +22,16 @@ return new class extends Migration
             $table->unsignedBigInteger('visit_id');
 
             /** Клиент */
-            $table->unsignedBigInteger('client_id')->nullable(); // ID клиента в YClients
+            // ID клиента в YClients
+            $table->unsignedBigInteger('client_id')->nullable();
+
             $table->string('client_name')->nullable();
+
             $table->string('client_phone', 30)->nullable();
+
             // Успешные визиты. Если 1, значит это был первый визит
             $table->integer('client_success_visits')->default(0);
+
             // Неуспешные визиты
             $table->integer('client_fail_visits')->default(0);
 
@@ -42,21 +45,18 @@ return new class extends Migration
             // Дата изменения чего-то
             // $table->dateTimeTz('last_change_date');
 
-            // Продолжительность сеанса
-            // $table->unsignedInteger('seance_length');
-
-            // Онлайн-запись или через админку
-            // $table->boolean('online')->default(false);
-
             // Финансовые итоги по записи (агрегируем из услуг для быстрой аналитики)
             // Собираем из сервисов
             $table->decimal('total_cost', 14, 2)->default(0.00);
+
             $table->decimal('total_manual_cost', 14, 2)->default(0.00);
+
+            $table->decimal('total_analytics_cost', 14, 2)->default(0.00);
 
             $table->timestamps();
 
             // Индексы
-            $table->unique(['company_id', 'record_id'], 'yc_records_company_record_unique');
+            $table->index('company_id');
             $table->index('staff_id');
             $table->index('visit_id');
             $table->index('client_id');
@@ -64,10 +64,10 @@ return new class extends Migration
         });
 
         Schema::create('yc_record_services', function (Blueprint $table) {
-            $table->id();
-
             // Связь с нашей локальной таблицей записей
-            $table->foreignId('record_id')->constrained('yc_records')->cascadeOnDelete();
+            $table->foreignId('record_id')
+                ->constrained('yc_records', 'record_id')
+                ->cascadeOnDelete();
 
             // ID самой услуги
             $table->unsignedBigInteger('service_id');
@@ -77,13 +77,18 @@ return new class extends Migration
 
             // Стоимости
             $table->decimal('cost', 14, 2);
+
             $table->decimal('manual_cost', 14, 2);
+
+            $table->decimal('analytics_cost', 14, 2);
+
             $table->decimal('discount', 14, 2)->default(0.00);
+
             $table->unsignedInteger('amount')->default(1);
 
             $table->timestamps();
 
-            $table->index('service_id');
+            $table->primary(['record_id', 'service_id']);
         });
     }
 

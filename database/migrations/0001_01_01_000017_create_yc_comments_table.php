@@ -12,10 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('yc_comments', function (Blueprint $table) {
-            $table->id();
-
             // ID комментария, для уникальности записи
-            $table->unsignedBigInteger('comment_id');
+            $table->unsignedBigInteger('comment_id')->primary();
 
             $table->unsignedBigInteger('company_id');
 

@@ -12,10 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('yc_company_staff', function (Blueprint $table) {
-            $table->id();
-
             // ID - сотрудника
-            $table->unsignedBigInteger('staff_id');
+            $table->unsignedBigInteger('staff_id')->primary();
 
             // company_id - ID филиала
             $table->unsignedBigInteger('company_id');
@@ -42,7 +40,6 @@ return new class extends Migration
             $table->timestamps();
 
             $table->unique(['company_id', 'staff_id'], 'yclients_staff_company_client_unique');
-            $table->index('staff_id');
         });
     }
 

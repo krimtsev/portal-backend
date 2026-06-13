@@ -9,15 +9,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('yc_transactions', function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('transaction_id')->primary();
 
-            $table->unsignedBigInteger('transaction_id');
             $table->unsignedBigInteger('company_id');
 
             $table->unsignedBigInteger('staff_id')->nullable();
 
             $table->unsignedBigInteger('document_id')->default(0);
+
             $table->unsignedBigInteger('record_id')->default(0);
+
             $table->unsignedBigInteger('visit_id')->default(0);
 
             $table->decimal('amount', 14, 2);
@@ -31,7 +32,10 @@ return new class extends Migration
 
             // Статья расходов / категория операции (expense)
             $table->unsignedInteger('expense_id')->nullable();
-            $table->string('expense_title')->nullable(); // "Зарплата персонала", "Оказание услуг"
+
+            // "Зарплата персонала", "Оказание услуг"
+            $table->string('expense_title')->nullable();
+
             $table->unsignedInteger('expense_type')->nullable();
 
             $table->timestamps();
