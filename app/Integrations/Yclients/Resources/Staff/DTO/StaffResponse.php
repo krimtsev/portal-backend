@@ -14,6 +14,8 @@ final class StaffResponse extends ValidateResponse
         public readonly int $fired,
         public readonly ?string $dismissal_date,
         public readonly float $rating,
+        public readonly string $avatar,
+        public readonly string $avatar_big,
         public readonly ?EmployeeDTO $employee,
     ) {}
 
@@ -27,6 +29,8 @@ final class StaffResponse extends ValidateResponse
             'fired'          => ['required', 'boolean'],
             'specialization' => ['required', 'string'],
             'dismissal_date' => ['nullable', 'string'],
+            'avatar'         => ['nullable', 'string'],
+            'avatar_big'     => ['nullable', 'string'],
             'employee'       => ['nullable', 'array'],
         ];
     }

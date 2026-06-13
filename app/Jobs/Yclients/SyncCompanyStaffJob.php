@@ -66,6 +66,11 @@ final class SyncCompanyStaffJob implements ShouldBeUnique, ShouldQueue
 
         $upsertData = [];
 
+        $format = function (?string $value) {
+            $value = trim((string)$value);
+            return ($value === '') ? null : $value;
+        };
+
         foreach ($companyStaffData as $item) {
             $dto = StaffResponse::from($item);
 
@@ -73,12 +78,14 @@ final class SyncCompanyStaffJob implements ShouldBeUnique, ShouldQueue
                 'company_id'     => $dto->company_id,
                 'staff_id'       => $dto->id,
                 'name'           => $dto->name,
-                'firstname'      => $dto->employee?->firstname,
-                'surname'        => $dto->employee?->surname,
+                'firstname'      => $dto->employee?->firstname ?: null,
+                'surname'        => $dto->employee?->surname ?: null,
                 'specialization' => $dto->specialization,
                 'fired'          => $dto->fired,
                 'dismissal_date' => $dto->dismissal_date,
                 'rating'         => $dto->rating,
+                'avatar'         => $dto->avatar,
+                'avatar_big'     => $dto->avatar_big,
             ];
         }
 
@@ -94,9 +101,11 @@ final class SyncCompanyStaffJob implements ShouldBeUnique, ShouldQueue
                     'firstname',
                     'surname',
                     'specialization',
-                    'is_fired',
+                    'fired',
                     'dismissal_date',
                     'rating',
+                    'avatar',
+                    'avatar_big',
                 ]
             );
         }

@@ -7,8 +7,8 @@ use App\Integrations\Yclients\Core\BaseRequest;
 final class TransactionsFilters extends BaseRequest
 {
     public function __construct(
-        public readonly ?int $page = null,
-        public readonly ?int $count = null,
+        public readonly ?int $page = 1,
+        public readonly ?int $count = 500,
         public readonly ?int $account_id = null,
         public readonly ?int $supplier_id = null,
         public readonly ?int $client_id = null,

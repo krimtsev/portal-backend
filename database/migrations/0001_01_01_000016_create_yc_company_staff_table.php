@@ -21,9 +21,9 @@ return new class extends Migration
             // Имя сотрудника
             $table->string('name');
 
-            $table->string('firstname');
+            $table->string('firstname')->nullable();
 
-            $table->string('surname');
+            $table->string('surname')->nullable();
 
             // Специализация
             $table->string('specialization');
@@ -36,6 +36,10 @@ return new class extends Migration
 
             // Рейтинг сотрудника
             $table->decimal('rating', 3, 2)->default(0.00);
+
+            $table->string('avatar')->nullable();
+
+            $table->string('avatar_big')->nullable();
 
             $table->timestamps();
 

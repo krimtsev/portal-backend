@@ -9,7 +9,7 @@ use App\Integrations\Yclients\Resources\Comments\DTO\CommentsFilters;
 use App\Integrations\Yclients\Resources\Comments\DTO\CommentsResponse;
 use App\Integrations\Yclients\YclientsApi;
 use App\Integrations\Yclients\YclientsException;
-use App\Models\Yclient\YcCompanyStaff;
+use App\Models\Yclient\YcComment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -89,7 +89,7 @@ final class SyncCommentsJob implements ShouldBeUnique, ShouldQueue
         }
 
         if (!empty($upsertData)) {
-            YcCompanyStaff::upsert(
+            YcComment::upsert(
                 $upsertData,
                 [
                     'company_id',
