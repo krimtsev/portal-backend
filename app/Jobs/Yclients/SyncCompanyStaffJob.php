@@ -66,11 +66,6 @@ final class SyncCompanyStaffJob implements ShouldBeUnique, ShouldQueue
 
         $upsertData = [];
 
-        $format = function (?string $value) {
-            $value = trim((string)$value);
-            return ($value === '') ? null : $value;
-        };
-
         foreach ($companyStaffData as $item) {
             $dto = StaffResponse::from($item);
 

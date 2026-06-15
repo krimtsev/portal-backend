@@ -16,9 +16,11 @@ class YcRecordService extends Model
      */
     protected $fillable = [
         'service_id',
+        'company_id',
         'title',
         'cost',
         'manual_cost',
+        'analytics_cost',
         'discount',
         'amount',
     ];

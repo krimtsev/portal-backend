@@ -24,7 +24,7 @@ return new class extends Migration
             $table->decimal('amount', 14, 2);
 
             // Даты приходят с таймзоной (2026-04-01T22:46:00+0400)
-            $table->dateTimeTz('date');
+            $table->dateTime('date');
 
             // услуга или товар
             // 'service', 'goods_transaction', null

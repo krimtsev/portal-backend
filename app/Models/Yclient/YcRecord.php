@@ -33,6 +33,7 @@ class YcRecord extends Model
          */
         'total_cost',
         'total_manual_cost',
+        'total_analytics_cost',
     ];
 
     /**

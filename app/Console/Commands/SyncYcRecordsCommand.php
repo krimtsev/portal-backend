@@ -10,8 +10,9 @@ use Throwable;
 
 final class SyncYcRecordsCommand extends Command
 {
-    protected $signature = 'yclients:sync-transactions
+    protected $signature = 'yclients:sync-records
                             {--date= : Конкретный день в формате YYYY-MM-DD}
+                            {--month= : Полный месяц в формате YYYY-MM}
                             {--company_id= : Конкретный ID компании из YClients (yclients_id)}';
 
     protected $description = 'Синхронизация транзакций компании из YClients';
@@ -27,6 +28,7 @@ final class SyncYcRecordsCommand extends Command
         try {
             $dates = $periodService->resolveFromParams(
                 date: $this->option('date'),
+                month: $this->option('month')
             );
         } catch (Throwable $e) {
             $this->error('Ошибка параметров: ' . $e->getMessage());

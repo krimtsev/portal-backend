@@ -35,7 +35,7 @@ class YcTransaction extends Model
     protected function casts(): array
     {
         return [
-
+            'date' => 'datetime',
         ];
     }
 }

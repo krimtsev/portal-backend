@@ -72,6 +72,8 @@ return new class extends Migration
             // ID самой услуги
             $table->unsignedBigInteger('service_id');
 
+            $table->unsignedBigInteger('company_id');
+
             // Название услуги на момент записи (например: "МУЖСКАЯ СТРИЖКА")
             $table->string('title');
 

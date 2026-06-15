@@ -10,6 +10,7 @@ use App\Integrations\Yclients\Resources\Transactions\DTO\TransactionsResponse;
 use App\Integrations\Yclients\YclientsApi;
 use App\Integrations\Yclients\YclientsException;
 use App\Models\Yclient\YcTransaction;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -77,7 +78,7 @@ final class SyncTransactionsJob implements ShouldBeUnique, ShouldQueue
         foreach ($transactionsData as $item) {
             $dto = TransactionsResponse::from($item);
 
-            $upsertData = [
+            $upsertData[] = [
                 'transaction_id' => $dto->id,
                 'company_id'     => $this->companyId,
                 'staff_id'       => $dto->master?->id,
@@ -89,7 +90,7 @@ final class SyncTransactionsJob implements ShouldBeUnique, ShouldQueue
                 'expense_id'     => $dto->expense?->id,
                 'expense_title'  => $dto->expense?->title,
                 'expense_type'   => $dto->expense?->type,
-                'date'           => $dto->date,
+                'date'           => Carbon::parse($dto->date)->toDateTimeString(), // Убираем таймзону
             ];
         }
 

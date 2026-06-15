@@ -9,13 +9,13 @@ use App\Integrations\Yclients\Resources\Analytics\DTO\CompanyStatsFilters;
 use App\Integrations\Yclients\Resources\Analytics\DTO\CompanyStatsResponse;
 use App\Integrations\Yclients\YclientsApi;
 use App\Integrations\Yclients\YclientsException;
+use App\Models\Yclient\YcStaffDailyStat;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -82,7 +82,7 @@ final class SyncStaffDailyStatsJob implements ShouldQueue
 
             $dto = CompanyStatsResponse::from($staffStatsData);
 
-            DB::table('yc_staff_daily_stats')->updateOrCreate(
+            YcStaffDailyStat::updateOrCreate(
                 [
                     'company_id' => $this->companyId,
                     'staff_id'   => $this->staffId,

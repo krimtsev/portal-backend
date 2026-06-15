@@ -81,19 +81,24 @@ final class SyncRecordsJob implements ShouldBeUnique, ShouldQueue
             foreach ($chunk as $item) {
                 $dto = RecordsResponse::from($item);
 
+                if (!$dto->client?->id) {
+                    continue;
+                }
+
                 $recordsToUpsert[] = [
                     'record_id'             => $dto->id,
                     'company_id'            => $this->companyId,
                     'staff_id'              => $dto->staff_id,
                     'visit_id'              => $dto->visit_id,
-                    'client_id'             => $dto->client->id,
-                    'client_name'           => $dto->client->name,
-                    'client_phone'          => $dto->client->phone,
-                    'client_success_visits' => $dto->client->success_visits_count ?? 0,
-                    'client_fail_visits'    => $dto->client->fail_visits_count ?? 0,
+                    'client_id'             => $dto->client?->id,
+                    'client_name'           => $dto->client?->name,
+                    'client_phone'          => $dto->client?->phone,
+                    'client_success_visits' => $dto->client?->success_visits_count ?? 0,
+                    'client_fail_visits'    => $dto->client?->fail_visits_count ?? 0,
                     'datetime'              => $dto->datetime,
                     'total_cost'            => array_sum(array_map(fn ($s) => $s->cost, $dto->services)),
                     'total_manual_cost'     => array_sum(array_map(fn ($s) => $s->manual_cost, $dto->services)),
+                    'total_analytics_cost'  => 0,
                 ];
 
                 foreach ($dto->services as $serviceDto) {
@@ -102,14 +107,15 @@ final class SyncRecordsJob implements ShouldBeUnique, ShouldQueue
                     }
 
                     $servicesToUpsert[] = [
-                        'company_id'  => $this->companyId,
-                        'record_id'   => $dto->id,
-                        'service_id'  => $serviceDto->id,
-                        'title'       => $serviceDto->title,
-                        'cost'        => $serviceDto->cost,
-                        'manual_cost' => $serviceDto->manual_cost,
-                        'discount'    => $serviceDto->discount,
-                        'amount'      => $serviceDto->amount,
+                        'company_id'     => $this->companyId,
+                        'record_id'      => $dto->id,
+                        'service_id'     => $serviceDto->id,
+                        'title'          => $serviceDto->title,
+                        'cost'           => $serviceDto->cost,
+                        'analytics_cost' => 0,
+                        'manual_cost'    => $serviceDto->manual_cost,
+                        'discount'       => $serviceDto->discount,
+                        'amount'         => $serviceDto->amount,
                     ];
                 }
 

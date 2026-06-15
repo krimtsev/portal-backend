@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\QueueName;
 use App\Integrations\Yclients\Resources\Records\RecordsResource;
 use App\Integrations\Yclients\Services\PeriodResolutionService;
 use App\Jobs\Yclients\ProcessPartnerStaffDailyStatsJob;
@@ -33,7 +34,8 @@ final class SyncYcStaffDailyStatsCommand extends Command
 
         try {
             $dates = $periodService->resolveFromParams(
-                date: $this->option('date')
+                date: $this->option('date'),
+                month: $this->option('month')
             );
         } catch (Throwable $e) {
             $this->error('Ошибка параметров: ' . $e->getMessage());
@@ -65,8 +67,21 @@ final class SyncYcStaffDailyStatsCommand extends Command
         foreach ($dates as $date) {
             $dateString = $date->toDateString();
 
-            $batch = Bus::batch([])
+            $jobs = [];
+            foreach ($partners as $partner) {
+                $jobs[] = new ProcessPartnerStaffDailyStatsJob(
+                    (int) $partner->yclients_id,
+                    $dateString
+                );
+            }
+
+            if (empty($jobs)) {
+                continue;
+            }
+
+            Bus::batch($jobs)
                 ->name("Сбор статистика по сотрудникам за: {$date}")
+                ->onQueue(QueueName::YCLIENTS->value)
                 ->allowFailures()
                 ->catch(function (Throwable $e) use ($date) {
                     Log::error("Критический сбой пакета статистики сотрудников за {$date}: {$e->getMessage()}");
@@ -76,16 +91,7 @@ final class SyncYcStaffDailyStatsCommand extends Command
                 })
                 ->dispatch();
 
-            foreach ($partners as $partner) {
-                $batch->add(
-                    new ProcessPartnerStaffDailyStatsJob(
-                        (int) $partner->yclients_id,
-                        $dateString
-                    )
-                );
-
-                $bar->advance();
-            }
+            $bar->advance();
         }
 
         $bar->finish();
