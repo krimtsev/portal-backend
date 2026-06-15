@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\Yclients\SyncCompanyStaffJob;
+use App\Jobs\Yclients\SyncYcCompanyStaffJob;
 use App\Models\Partner\Partner;
 use Illuminate\Console\Command;
 
@@ -43,7 +43,7 @@ final class SyncYcCompanyStaffCommand extends Command
         $bar->start();
 
         foreach ($partners as $partner) {
-            SyncCompanyStaffJob::dispatch(
+            SyncYcCompanyStaffJob::dispatch(
                 (int) $partner->yclients_id,
             );
 

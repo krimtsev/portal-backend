@@ -5,11 +5,7 @@ declare(strict_types=1);
 namespace App\Jobs\Yclients;
 
 use App\Enums\QueueName;
-use App\Integrations\Yclients\Resources\Comments\DTO\CommentsFilters;
-use App\Integrations\Yclients\Resources\Comments\DTO\CommentsResponse;
-use App\Integrations\Yclients\YclientsApi;
-use App\Integrations\Yclients\YclientsException;
-use App\Models\Yclient\YcComment;
+use App\Services\Yclients\SyncYcRecordService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -19,7 +15,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-final class SyncCommentsJob implements ShouldBeUnique, ShouldQueue
+final class SyncYcRecordsJob implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -41,7 +37,7 @@ final class SyncCommentsJob implements ShouldBeUnique, ShouldQueue
      */
     public function uniqueId(): string
     {
-        return "yc_comments_{$this->companyId}_{$this->date}";
+        return "yc_records_{$this->companyId}_{$this->date}";
     }
 
     /**
@@ -53,57 +49,9 @@ final class SyncCommentsJob implements ShouldBeUnique, ShouldQueue
         return [10, 60, 120];
     }
 
-    /**
-     * @throws YclientsException
-     */
-    public function handle(YclientsApi $yclients): void
+    public function handle(SyncYcRecordService $service): void
     {
-        $rawResponse = $yclients->comments()->getComments(
-            $this->companyId,
-            new CommentsFilters(
-                start_date: $this->date,
-                end_date: $this->date
-            )
-        );
-
-        $commentsData = $rawResponse['data'] ?? [];
-
-        if (empty($commentsData)) {
-            return;
-        }
-
-        $upsertData = [];
-
-        foreach ($commentsData as $item) {
-            $dto = CommentsResponse::from($item);
-
-            $upsertData[] = [
-                'company_id' => $this->companyId,
-                'comment_id' => $dto->id,
-                'salon_id'   => $dto->salon_id,
-                'staff_id'   => $dto->master_id,
-                'type'       => $dto->type,
-                'rating'     => $dto->rating,
-                'date'       => $dto->date,
-            ];
-        }
-
-        if (!empty($upsertData)) {
-            YcComment::upsert(
-                $upsertData,
-                [
-                    'company_id',
-                    'comment_id',
-                ],
-                [
-                    'salon_id',
-                    'staff_id',
-                    'type',
-                    'rating',
-                    'date',
-                ]
-            );
-        }
+        $service->sync($this->companyId, $this->date);
     }
 
     /**

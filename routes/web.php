@@ -6,7 +6,7 @@ use App\Integrations\Yclients\Resources\Comments\DTO\CommentsFilters;
 use App\Integrations\Yclients\Resources\Comments\DTO\CommentsResponse;
 use App\Integrations\Yclients\Resources\Records\DTO\RecordsFilters;
 use App\Integrations\Yclients\Resources\Records\DTO\RecordsResponse;
-use App\Integrations\Yclients\Resources\Staff\DTO\StaffResponse;
+use App\Integrations\Yclients\Resources\Staff\DTO\StaffScheduleResponse;
 use App\Integrations\Yclients\Resources\Transactions\DTO\TransactionsFilters;
 use App\Integrations\Yclients\Resources\Transactions\DTO\TransactionsResponse;
 use App\Integrations\Yclients\YclientsApi;
@@ -42,7 +42,7 @@ Route::prefix('test')
             $upsertData = [];
 
             foreach ($items as $item) {
-                $dto = StaffResponse::from($item);
+                $dto = StaffScheduleResponse::from($item);
 
                 $upsertData[] = [
                     'company_id'     => $dto->company_id,

@@ -6,6 +6,7 @@ use App\Integrations\Yclients\Resources\Analytics\AnalyticsResource;
 use App\Integrations\Yclients\Resources\Comments\CommentsResource;
 use App\Integrations\Yclients\Resources\Records\RecordsResource;
 use App\Integrations\Yclients\Resources\Staff\StaffResource;
+use App\Integrations\Yclients\Resources\StaffSchedule\StaffScheduleResource;
 use App\Integrations\Yclients\Resources\Transactions\TransactionsResource;
 
 class YclientsApi
@@ -40,6 +41,11 @@ class YclientsApi
     public function staff(): StaffResource
     {
         return $this->resolveResource(StaffResource::class);
+    }
+
+    public function staffSchedule(): StaffScheduleResource
+    {
+        return $this->resolveResource(StaffScheduleResource::class);
     }
 
     /**

@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Integrations\Yclients\Services\PeriodResolutionService;
-use App\Jobs\Yclients\SyncTransactionsJob;
+use App\Jobs\Yclients\SyncYcTransactionsJob;
 use App\Models\Partner\Partner;
 use Illuminate\Console\Command;
 use Throwable;
@@ -61,7 +61,7 @@ final class SyncYcTransactionsCommand extends Command
             $dateString = $date->toDateString();
 
             foreach ($partners as $partner) {
-                SyncTransactionsJob::dispatch(
+                SyncYcTransactionsJob::dispatch(
                     (int) $partner->yclients_id,
                     $dateString
                 );

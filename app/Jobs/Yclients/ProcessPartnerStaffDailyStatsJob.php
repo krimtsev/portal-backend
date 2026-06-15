@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Jobs\Yclients;
 
 use App\Enums\QueueName;
-use App\Integrations\Yclients\Resources\Records\DTO\RecordsFilters;
-use App\Integrations\Yclients\Resources\Records\DTO\RecordsResponse;
+use App\Integrations\Yclients\Resources\StaffSchedule\DTO\StaffScheduleFilters;
+use App\Integrations\Yclients\Resources\StaffSchedule\DTO\StaffScheduleResponse;
 use App\Integrations\Yclients\YclientsApi;
 use App\Integrations\Yclients\YclientsException;
+use App\Services\Yclients\SyncYcStaffScheduleService;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -53,39 +54,24 @@ final class ProcessPartnerStaffDailyStatsJob implements ShouldQueue
      * @throws Throwable
      * @throws YclientsException
      */
-    public function handle(YclientsApi $yclients): void
+    public function handle(SyncYcStaffScheduleService $service): void
     {
         if ($this->batch()?->cancelled()) {
             return;
         }
 
         try {
-            $rawResponse = $yclients->records()->getRecords(
-                $this->companyId,
-                new RecordsFilters(
-                    start_date: $this->date,
-                    end_date: $this->date
-                )
-            );
-
-            $recordsData = $rawResponse['data'] ?? [];
+            $activeStaffIds = $service->getActiveStaffIds($this->companyId, $this->date);
 
             /**
              * Собираем уникальные Id сотрудников у которых есть записи оказанных услуг
              */
-            $activeStaffIds = collect($recordsData)
-                ->map(fn (array $data) => RecordsResponse::from($data))
-                ->filter(fn (RecordsResponse $record) => $record->staff_id > 0 && !empty($record->services))
-                ->pluck('staff_id')
-                ->unique()
-                ->toArray();
-
             if (empty($activeStaffIds)) {
                 return;
             }
 
             $subJobs = array_map(
-                fn (int $staffId) => new SyncStaffDailyStatsJob($this->companyId, $staffId, $this->date),
+                fn (int $staffId) => new SyncYcStaffDailyStatsJob($this->companyId, $staffId, $this->date),
                 $activeStaffIds
             );
 
