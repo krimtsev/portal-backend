@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Yclient;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class YcRecordService extends Model
 {
@@ -10,6 +13,10 @@ class YcRecordService extends Model
      * @var string
      */
     protected $table = 'yc_record_services';
+
+    public $incrementing = false;
+
+    protected $primaryKey = 'record_id';
 
     /**
      * @var array<int, string>
@@ -20,7 +27,8 @@ class YcRecordService extends Model
         'title',
         'cost',
         'manual_cost',
-        'analytics_cost',
+        'tariff_cost',
+        'base_tariff_cost',
         'discount',
         'amount',
     ];
@@ -31,8 +39,15 @@ class YcRecordService extends Model
     protected function casts(): array
     {
         return [
-            'cost'        => 'float',
-            'manual_cost' => 'float',
+            'cost'             => 'float',
+            'manual_cost'      => 'float',
+            'tariff_cost'      => 'float',
+            'base_tariff_cost' => 'float',
         ];
+    }
+
+    public function record(): BelongsTo
+    {
+        return $this->belongsTo(YcRecord::class, 'record_id', 'record_id');
     }
 }

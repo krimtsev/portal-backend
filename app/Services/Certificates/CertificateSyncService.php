@@ -38,7 +38,7 @@ class CertificateSyncService
      */
     public function getRows(): array
     {
-        $path = config('services.google.certificate');
+        $path = config('partner.secrets.google.certificate');
         $sheet = json_decode(file_get_contents($path));
 
         try {

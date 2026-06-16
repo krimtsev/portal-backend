@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace App\Jobs\Yclients;
 
 use App\Enums\QueueName;
-use App\Integrations\Yclients\Resources\StaffSchedule\DTO\StaffScheduleFilters;
-use App\Integrations\Yclients\Resources\StaffSchedule\DTO\StaffScheduleResponse;
-use App\Integrations\Yclients\YclientsApi;
 use App\Integrations\Yclients\YclientsException;
 use App\Services\Yclients\SyncYcStaffScheduleService;
 use Illuminate\Bus\Batchable;

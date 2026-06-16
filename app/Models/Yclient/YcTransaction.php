@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Yclient;
 
 use Illuminate\Database\Eloquent\Model;
@@ -10,6 +12,10 @@ class YcTransaction extends Model
      * @var string
      */
     protected $table = 'yc_transactions';
+
+    protected $primaryKey = 'transaction_id';
+
+    public $incrementing = false;
 
     /**
      * @var array<int, string>

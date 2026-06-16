@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Yclient;
 
 use Illuminate\Database\Eloquent\Model;
@@ -10,6 +12,10 @@ class YcComment extends Model
      * @var string
      */
     protected $table = 'yc_comments';
+
+    protected $primaryKey = 'comment_id';
+
+    public $incrementing = false;
 
     /**
      * @var array<int, string>
@@ -30,7 +36,13 @@ class YcComment extends Model
     protected function casts(): array
     {
         return [
-            'date' => 'datetime',
+            'comment_id' => 'integer',
+            'company_id' => 'integer',
+            'salon_id'   => 'integer',
+            'staff_id'   => 'integer',
+            'rating'     => 'integer',
+            'type'       => 'integer',
+            'date'       => 'datetime',
         ];
     }
 }

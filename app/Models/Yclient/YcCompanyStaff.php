@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Yclient;
 
 use Illuminate\Database\Eloquent\Model;
@@ -11,6 +13,10 @@ class YcCompanyStaff extends Model
      */
     protected $table = 'yc_company_staff';
 
+    protected $primaryKey = 'staff_id';
+
+    public $incrementing = false;
+
     /**
      * @var array<int, string>
      */
@@ -21,9 +27,11 @@ class YcCompanyStaff extends Model
         'firstname',
         'surname',
         'specialization',
-        'is_fired',
+        'fired',
         'dismissal_date',
         'rating',
+        'avatar',
+        'avatar_big',
     ];
 
     /**
@@ -32,7 +40,7 @@ class YcCompanyStaff extends Model
     protected function casts(): array
     {
         return [
-            'is_fired'       => 'boolean',
+            'fired'          => 'boolean',
             'dismissal_date' => 'date:Y-m-d',
             'rating'         => 'decimal:2',
         ];

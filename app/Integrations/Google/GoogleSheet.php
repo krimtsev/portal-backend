@@ -21,7 +21,7 @@ class GoogleSheet
     {
         $client = new Client();
         $client->setScopes(Sheets::SPREADSHEETS);
-        $client->setAuthConfig(config('services.google.credentials'));
+        $client->setAuthConfig(config('partner.secrets.google.credentials'));
         $client->setAccessType('offline');
 
         return $client;

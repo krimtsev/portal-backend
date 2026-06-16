@@ -5,13 +5,7 @@ declare(strict_types=1);
 namespace App\Jobs\Yclients;
 
 use App\Enums\QueueName;
-use App\Integrations\Yclients\Resources\Transactions\DTO\TransactionsFilters;
-use App\Integrations\Yclients\Resources\Transactions\DTO\TransactionsResponse;
-use App\Integrations\Yclients\YclientsApi;
-use App\Integrations\Yclients\YclientsException;
-use App\Models\Yclient\YcTransaction;
 use App\Services\Yclients\SyncYcTransactionService;
-use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -57,7 +51,7 @@ final class SyncYcTransactionsJob implements ShouldBeUnique, ShouldQueue
 
     public function handle(SyncYcTransactionService $service): void
     {
-        $service->sync($this->companyId,  $this->date);
+        $service->sync($this->companyId, $this->date);
     }
 
     /**

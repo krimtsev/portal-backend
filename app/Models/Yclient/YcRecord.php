@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models\Yclient;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class YcRecord extends Model
 {
@@ -10,6 +13,10 @@ class YcRecord extends Model
      * @var string
      */
     protected $table = 'yc_records';
+
+    protected $primaryKey = 'record_id';
+
+    public $incrementing = false;
 
     /**
      * @var array<int, string>
@@ -26,14 +33,10 @@ class YcRecord extends Model
         'client_fail_visits',
         'datetime',
 
-        /**
-         * TODO: проверить необходимость таких колонок.
-         * может быть не актуально из за наборов.
-         * или подумать, считать суммы с учетом наборов.
-         */
         'total_cost',
         'total_manual_cost',
-        'total_analytics_cost',
+        'total_tariff_cost',
+        'total_base_tariff_cost',
     ];
 
     /**
@@ -42,7 +45,16 @@ class YcRecord extends Model
     protected function casts(): array
     {
         return [
-            'datetime' => 'datetime',
+            'datetime'               => 'datetime',
+            'total_cost'             => 'float',
+            'total_manual_cost'      => 'float',
+            'total_tariff_cost'      => 'float',
+            'total_base_tariff_cost' => 'float',
         ];
+    }
+
+    public function services(): HasMany
+    {
+        return $this->hasMany(YcRecordService::class, 'record_id', 'record_id');
     }
 }

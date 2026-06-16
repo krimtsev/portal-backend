@@ -38,20 +38,15 @@ return new class extends Migration
             // Фактическое время начала сеанса с таймзоной (ISO 8601)
             $table->dateTimeTz('datetime');
 
-            // Фактическое время начала сеанса
-            // $table->dateTime('date');
-            // Дата подачи заявки
-            // $table->dateTimeTz('create_date');
-            // Дата изменения чего-то
-            // $table->dateTimeTz('last_change_date');
-
             // Финансовые итоги по записи (агрегируем из услуг для быстрой аналитики)
             // Собираем из сервисов
             $table->decimal('total_cost', 14, 2)->default(0.00);
 
             $table->decimal('total_manual_cost', 14, 2)->default(0.00);
 
-            $table->decimal('total_analytics_cost', 14, 2)->default(0.00);
+            $table->decimal('total_tariff_cost', 14, 2)->default(0.00);
+
+            $table->decimal('total_base_tariff_cost', 14, 2)->default(0.00);
 
             $table->timestamps();
 
@@ -82,7 +77,11 @@ return new class extends Migration
 
             $table->decimal('manual_cost', 14, 2);
 
-            $table->decimal('analytics_cost', 14, 2);
+            // Стоимость по допам + manual
+            $table->decimal('tariff_cost', 14, 2);
+
+            // Считаем только допы
+            $table->decimal('base_tariff_cost', 14, 2);
 
             $table->decimal('discount', 14, 2)->default(0.00);
 

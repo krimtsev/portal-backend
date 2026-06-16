@@ -35,11 +35,6 @@ return [
         ],
     ],
 
-    'google' => [
-        'credentials' => storage_path('config/google/credentials.json'),
-        'certificate' => storage_path('config/google/certificate.json'),
-    ],
-
     'mango' => [
         'key'  => env('MANGO_VPBX_API_KEY'),
         'salt' => env('MANGO_SALT'),
