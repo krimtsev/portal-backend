@@ -13,7 +13,7 @@ final class ClientDTO extends ValidateResponse
         public readonly ?string $phone = null,
         public readonly ?int $success_visits_count = null,
         public readonly ?int $fail_visits_count = null,
-        public readonly ?int $discount = null,
+        public readonly ?float $discount = null,
         public readonly ?int $is_new = null,
     ) {}
 
@@ -26,7 +26,7 @@ final class ClientDTO extends ValidateResponse
             'phone'                => ['nullable', 'string'],
             'success_visits_count' => ['nullable', 'integer'],
             'fail_visits_count'    => ['nullable', 'integer'],
-            'discount'             => ['nullable', 'integer'],
+            'discount'             => ['nullable', 'numeric'],
             'is_new'               => ['nullable', 'boolean'],
         ];
     }

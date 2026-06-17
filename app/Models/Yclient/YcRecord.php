@@ -50,6 +50,7 @@ class YcRecord extends Model
             'total_manual_cost'      => 'float',
             'total_tariff_cost'      => 'float',
             'total_base_tariff_cost' => 'float',
+            'discount'               => 'float',
         ];
     }
 

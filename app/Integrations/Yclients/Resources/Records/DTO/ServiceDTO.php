@@ -11,7 +11,7 @@ final class ServiceDTO extends ValidateResponse
         public readonly ?string $title = null,
         public readonly ?float $cost = null,
         public readonly ?float $manual_cost = null,
-        public readonly ?int $discount = null,
+        public readonly ?float $discount = null,
         public readonly ?int $amount = null,
     ) {}
 
@@ -22,7 +22,7 @@ final class ServiceDTO extends ValidateResponse
             'title'       => ['nullable', 'string'],
             'cost'        => ['nullable', 'numeric'],
             'manual_cost' => ['nullable', 'numeric'],
-            'discount'    => ['nullable', 'integer'],
+            'discount'    => ['nullable', 'numeric'],
             'amount'      => ['nullable', 'integer'],
         ];
     }

@@ -26,8 +26,10 @@ abstract class ValidateResponse
         if ($validator->fails()) {
             $dto = static::class;
             $errors = json_encode($validator->errors()->toArray(), JSON_UNESCAPED_UNICODE);
+            $passedData = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+
             throw new YclientsException(
-                "Критическая ошибка валидации [{$dto}]: " . $errors
+                "Критическая ошибка валидации [{$dto}]: {$errors} \nПришедшие данные: {$passedData}"
             );
         }
 
