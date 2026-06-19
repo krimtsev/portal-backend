@@ -6,12 +6,12 @@ namespace App\Models\Yclient;
 
 use Illuminate\Database\Eloquent\Model;
 
-class YcTransaction extends Model
+class YcStaffTransaction extends Model
 {
     /**
      * @var string
      */
-    protected $table = 'yc_transactions';
+    protected $table = 'yc_staff_transactions';
 
     protected $primaryKey = 'transaction_id';
 
@@ -23,6 +23,7 @@ class YcTransaction extends Model
     protected $fillable = [
         'transaction_id',
         'company_id',
+        'staff_id',
         'master_id',
         'document_id',
         'record_id',

@@ -23,6 +23,8 @@ class YcCompanyDailyStat extends Model
         'income_total',
         'income_goods',
         'income_services',
+        'income_average',
+        'income_average_services',
         'fullness_percent',
         'record_completed',
         'record_pending',
@@ -44,9 +46,11 @@ class YcCompanyDailyStat extends Model
             'company_id' => 'integer',
             'date'       => 'date:Y-m-d',
 
-            'income_total'    => 'float',
-            'income_goods'    => 'float',
-            'income_services' => 'float',
+            'income_total'            => 'float',
+            'income_goods'            => 'float',
+            'income_services'         => 'float',
+            'income_average'          => 'float',
+            'income_average_services' => 'float',
 
             'fullness_percent' => 'float',
 

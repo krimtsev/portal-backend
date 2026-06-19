@@ -24,6 +24,10 @@ return new class extends Migration
 
             $table->decimal('income_services', 14, 2);
 
+            $table->decimal('income_average', 14, 2);
+
+            $table->decimal('income_average_services', 14, 2);
+
             // Операционные показатели
             $table->decimal('fullness_percent', 6, 2); // Загруженность за день
 

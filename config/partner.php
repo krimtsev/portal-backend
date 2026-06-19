@@ -9,8 +9,8 @@ return [
 
     'secrets' => [
         'google' => [
-            'credentials' => ".secrets/google/credentials.json",
-            'certificate' => ".secrets/google/certificate.json",
+            'credentials' => '.secrets/google/credentials.json',
+            'certificate' => '.secrets/google/certificate.json',
         ],
     ],
 ];

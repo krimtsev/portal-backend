@@ -7,20 +7,21 @@ namespace App\Services\Yclients;
 use App\Integrations\Yclients\Resources\Transactions\DTO\TransactionsFilters;
 use App\Integrations\Yclients\Resources\Transactions\DTO\TransactionsResponse;
 use App\Integrations\Yclients\YclientsApi;
-use App\Models\Yclient\YcTransaction;
+use App\Models\Yclient\YcStaffTransaction;
 use Carbon\Carbon;
 
-final readonly class SyncYcTransactionService
+final readonly class SyncYcStaffTransactionService
 {
     public function __construct(
         private YclientsApi $yclients
     ) {}
 
-    public function sync(int $companyId, string $date): void
+    public function sync(int $companyId, int $staffId, string $date): void
     {
         $rawResponse = $this->yclients->transactions()->getTransactions(
             $companyId,
             new TransactionsFilters(
+                master_id: $staffId,
                 start_date: $date,
                 end_date: $date
             )
@@ -40,6 +41,7 @@ final readonly class SyncYcTransactionService
             $upsertData[] = [
                 'transaction_id' => $dto->id,
                 'company_id'     => $companyId,
+                'staff_id'       => $staffId,
                 'master_id'      => $dto->master?->id,
                 'document_id'    => $dto->document_id,
                 'record_id'      => $dto->record_id,
@@ -59,11 +61,12 @@ final readonly class SyncYcTransactionService
             ];
         }
 
-        YcTransaction::upsert(
+        YcStaffTransaction::upsert(
             $upsertData,
             [
                 'company_id',
                 'transaction_id',
+                'staff_id',
             ],
             [
                 'master_id',
