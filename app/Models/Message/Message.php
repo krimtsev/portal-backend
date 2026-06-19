@@ -4,14 +4,11 @@ namespace App\Models\Message;
 
 use App\Models\Partner\Partner;
 use App\Models\User\User;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Message extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'title',
         'description',
@@ -67,37 +64,4 @@ class Message extends Model
                     });
             });
     }
-
-    /**
-     * Проверка видимости конкретного сообщения для пользователя.
-     */
-    /*public function isVisibleFor($user): bool
-    {
-        if ($this->disabled) {
-            return false;
-        }
-
-        $todayDay = now()->day;
-        $userId = $user?->id;
-        $partnerId = $user?->partner_id;
-
-        // Нет фильтров → показываем всем
-        if (!$this->user_id && !$this->partner_id && empty($this->days)) {
-            return true;
-        }
-
-        if ($this->user_id && $this->user_id !== $userId) {
-            return false;
-        }
-
-        if ($this->partner_id && $this->partner_id !== $partnerId) {
-            return false;
-        }
-
-        if (!empty($this->days) && !in_array($todayDay, $this->days)) {
-            return false;
-        }
-
-        return true;
-    }*/
 }

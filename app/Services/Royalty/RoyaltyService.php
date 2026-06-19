@@ -6,7 +6,7 @@ use App\Models\Partner\Partner;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
-class RoyaltyService
+final class RoyaltyService
 {
     private const VAT_PERCENT = 5;
 
