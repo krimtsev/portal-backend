@@ -29,6 +29,10 @@ class PartnerGroupController extends Controller
     public function list(Request $request): \Illuminate\Http\JsonResponse
     {
         $query = PartnerGroup::select(['id', 'title'])
+            ->with(['partners' => function ($query) {
+                $query->select(['id', 'group_id', 'name'])
+                    ->orderBy('name');
+            }])
             ->withCount('partners')
             ->orderBy('title');
 

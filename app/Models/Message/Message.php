@@ -64,37 +64,4 @@ class Message extends Model
                     });
             });
     }
-
-    /**
-     * Проверка видимости конкретного сообщения для пользователя.
-     */
-    /*public function isVisibleFor($user): bool
-    {
-        if ($this->disabled) {
-            return false;
-        }
-
-        $todayDay = now()->day;
-        $userId = $user?->id;
-        $partnerId = $user?->partner_id;
-
-        // Нет фильтров → показываем всем
-        if (!$this->user_id && !$this->partner_id && empty($this->days)) {
-            return true;
-        }
-
-        if ($this->user_id && $this->user_id !== $userId) {
-            return false;
-        }
-
-        if ($this->partner_id && $this->partner_id !== $partnerId) {
-            return false;
-        }
-
-        if (!empty($this->days) && !in_array($todayDay, $this->days)) {
-            return false;
-        }
-
-        return true;
-    }*/
 }

@@ -6,7 +6,7 @@ use App\Integrations\Google\GoogleSheet;
 use App\Models\Certificate\Certificate;
 use Illuminate\Support\Str;
 
-class CertificateSyncService
+final class CertificateSyncService
 {
     /**
      * Обновить базу сертификатов

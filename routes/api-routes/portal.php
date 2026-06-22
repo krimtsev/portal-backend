@@ -8,6 +8,8 @@ Route::prefix('v1')->group(function () {
     Route::post('logout', [Controllers\Auth\AuthController::class, 'logout']);
 
     Route::middleware(['auth:sanctum'])->group(function () {
+        Route::get('home', [Controllers\App\AppController::class, 'homeData']);
+
         Route::get('user-data', [Controllers\Auth\AuthController::class, 'userData']);
 
         Route::post('certificates', [Controllers\Sheet\CertificateController::class, 'list']);
@@ -21,8 +23,6 @@ Route::prefix('v1')->group(function () {
 
             Route::get('folder/{folder}/download/{fileName}', [Controllers\Cloud\CloudFilesController::class, 'download']);
         });
-
-        Route::get('messages', [Controllers\Message\MessageController::class, 'list']);
 
         Route::get('user-partners', [Controllers\Partners\PartnerController::class, 'getUserPartners']);
     });
