@@ -8,7 +8,7 @@ use App\Models\Certificate\Certificate;
 use App\Responses\JsonResponse;
 use Illuminate\Http\Request;
 
-class CertificateController extends Controller
+final class CertificateController extends Controller
 {
     /**
      * Получить список сертификатов

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 
-class ChangePasswordController extends Controller
+final class ChangePasswordController extends Controller
 {
     public function update(ChangePasswordRequest $request): \Illuminate\Http\JsonResponse
     {

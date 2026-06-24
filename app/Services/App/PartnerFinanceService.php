@@ -27,11 +27,11 @@ final class PartnerFinanceService
 
         $companyId = (int) $yclientsId;
 
-/*        return Cache::remember(
-            "partner_finances_{$companyId}_last_4_months",
-            now()->addHours(2),
-            fn () => $this->calculateStats($companyId)
-        );*/
+        /*        return Cache::remember(
+                    "partner_finances_{$companyId}_last_4_months",
+                    now()->addHours(2),
+                    fn () => $this->calculateStats($companyId)
+                );*/
 
         return $this->calculateStats($companyId);
     }
@@ -76,7 +76,7 @@ final class PartnerFinanceService
      */
     private function calculatePercent(float $current, float $previous): int
     {
-       if ($previous > 0) {
+        if ($previous > 0) {
             return (int) round((($current - $previous) / $previous) * 100);
         }
 

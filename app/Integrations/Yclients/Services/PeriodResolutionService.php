@@ -5,7 +5,7 @@ namespace App\Integrations\Yclients\Services;
 use Illuminate\Support\Carbon;
 use InvalidArgumentException;
 
-class PeriodResolutionService
+final class PeriodResolutionService
 {
     /**
      * Генерирует массив объектов Carbon на основе переданных параметров

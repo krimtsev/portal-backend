@@ -8,7 +8,7 @@ use App\Models\Partner\Partner;
 use App\Responses\JsonResponse;
 use Illuminate\Http\Request;
 
-class FranchiseeController extends Controller
+final class FranchiseeController extends Controller
 {
     /**
      * Получить список контактов

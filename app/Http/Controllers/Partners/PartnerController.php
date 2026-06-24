@@ -14,7 +14,7 @@ use App\Responses\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class PartnerController extends Controller
+final class PartnerController extends Controller
 {
     /**
      * Получение списка партнеров доступных пользователю

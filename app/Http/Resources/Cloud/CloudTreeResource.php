@@ -2,13 +2,8 @@
 
 namespace App\Http\Resources\Cloud;
 
+use App\Enums\Cloud\CloudType;
 use Illuminate\Http\Resources\Json\JsonResource;
-
-enum CloudType: string
-{
-    case FOLDER = 'folder';
-    case FILE = 'file';
-}
 
 class CloudTreeResource extends JsonResource
 {

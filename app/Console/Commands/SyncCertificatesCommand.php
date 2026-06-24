@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use App\Jobs\UpdateCertificatesJob;
 use Illuminate\Console\Command;
 
-class SyncCertificatesCommand extends Command
+final class SyncCertificatesCommand extends Command
 {
     protected $signature = 'certificates:sync {--now : Запустить синхронизацию минуя очередь }';
 

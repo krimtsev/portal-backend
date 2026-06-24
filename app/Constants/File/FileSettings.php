@@ -2,7 +2,7 @@
 
 namespace App\Constants\File;
 
-class FileSettings
+final class FileSettings
 {
     public const IMAGE_MIMES = 'jpg,jpeg,png,webp,tif,ai';
 

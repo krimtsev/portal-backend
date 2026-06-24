@@ -8,7 +8,7 @@
     <meta name="format-detection" content="telephone=no,address=no,email=no,date=no,url=no">
     <meta name="color-scheme" content="light dark">
     <meta name="supported-color-schemes" content="light dark">
-    <title> {{ $title ?? config('app.name') }} </title>
+    <title> {{ $title ?? config('partner.current') }} </title>
 
     <!--[if gte mso 9]>
     <xml>

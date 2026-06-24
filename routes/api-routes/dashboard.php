@@ -84,4 +84,10 @@ Route::prefix('v1/dashboard')
             ->group(function () {
                 Route::post('list', [Controllers\Royalty\RoyaltyController::class, 'list']);
             });
+
+        Route::prefix('statistics')
+            ->middleware(['role:admin,sysadmin'])
+            ->group(function () {
+                Route::post('staff/list', [Controllers\Statistics\StaffStatisticsController::class, 'list']);
+            });
     });
