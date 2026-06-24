@@ -51,8 +51,6 @@ return new class extends Migration
 
             $table->unsignedInteger('client_lost');
 
-            $table->unsignedInteger('client_total');
-
             $table->timestamps();
 
             // Защита от дублей + быстрый поиск

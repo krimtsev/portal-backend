@@ -17,7 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class CloudController extends Controller
+final class CloudController extends Controller
 {
     public function __construct(
         private CloudRepository $repository

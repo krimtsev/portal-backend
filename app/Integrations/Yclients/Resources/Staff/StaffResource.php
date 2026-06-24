@@ -5,7 +5,7 @@ namespace App\Integrations\Yclients\Resources\Staff;
 use App\Integrations\Yclients\Core\ApiResource;
 use App\Integrations\Yclients\YclientsException;
 
-class StaffResource extends ApiResource
+final class StaffResource extends ApiResource
 {
     /**
      * Получить список сотрудников

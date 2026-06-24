@@ -7,7 +7,7 @@ use App\Models\Ticket\Ticket;
 use App\Models\Ticket\TicketEvent;
 use Illuminate\Support\Facades\Auth;
 
-class TicketsEventsController extends Controller
+final class TicketsEventsController extends Controller
 {
     /**
      * Добавить запись изменений

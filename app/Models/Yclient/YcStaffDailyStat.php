@@ -35,7 +35,6 @@ class YcStaffDailyStat extends Model
         'client_return',
         'client_active',
         'client_lost',
-        'client_total',
     ];
 
     /**
@@ -65,7 +64,6 @@ class YcStaffDailyStat extends Model
             'client_return' => 'integer',
             'client_active' => 'integer',
             'client_lost'   => 'integer',
-            'client_total'  => 'integer',
         ];
     }
 

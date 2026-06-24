@@ -13,7 +13,7 @@ use App\Responses\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class PartnerGroupController extends Controller
+final class PartnerGroupController extends Controller
 {
     public function options(): \Illuminate\Http\JsonResponse
     {

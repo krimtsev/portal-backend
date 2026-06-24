@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 
-class UserController extends Controller
+final class UserController extends Controller
 {
     public function list(Request $request): \Illuminate\Http\JsonResponse
     {

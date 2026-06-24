@@ -6,7 +6,7 @@ use App\Integrations\Yclients\Core\ApiResource;
 use App\Integrations\Yclients\Resources\Records\DTO\RecordsFilters;
 use App\Integrations\Yclients\YclientsException;
 
-class RecordsResource extends ApiResource
+final class RecordsResource extends ApiResource
 {
     /**
      * Получить список записей

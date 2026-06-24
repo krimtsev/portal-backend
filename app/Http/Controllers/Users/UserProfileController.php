@@ -8,7 +8,7 @@ use App\Http\Resources\User\UserProfileResource;
 use App\Responses\JsonResponse;
 use Illuminate\Http\Request;
 
-class UserProfileController extends Controller
+final class UserProfileController extends Controller
 {
     public function show(Request $request): \Illuminate\Http\JsonResponse
     {

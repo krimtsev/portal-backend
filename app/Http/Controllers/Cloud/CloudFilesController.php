@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class CloudFilesController extends Controller
+final class CloudFilesController extends Controller
 {
     public function download(Request $request, CloudFolder $folder, string $fileName): \Illuminate\Http\JsonResponse|StreamedResponse
     {

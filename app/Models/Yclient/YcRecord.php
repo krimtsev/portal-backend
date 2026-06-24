@@ -32,6 +32,10 @@ class YcRecord extends Model
         'client_success_visits',
         'client_fail_visits',
         'datetime',
+        'visit_attendance',
+        'attendance',
+        'confirmed',
+        'length',
 
         'total_cost',
         'total_manual_cost',

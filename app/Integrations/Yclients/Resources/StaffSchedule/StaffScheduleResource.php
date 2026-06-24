@@ -6,7 +6,7 @@ use App\Integrations\Yclients\Core\ApiResource;
 use App\Integrations\Yclients\Resources\StaffSchedule\DTO\StaffScheduleFilters;
 use App\Integrations\Yclients\YclientsException;
 
-class StaffScheduleResource extends ApiResource
+final class StaffScheduleResource extends ApiResource
 {
     /**
      * Получение графиков работы сотрудников

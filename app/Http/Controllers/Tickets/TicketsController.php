@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 
-class TicketsController extends Controller
+final class TicketsController extends Controller
 {
     private function isDashboard(): bool
     {

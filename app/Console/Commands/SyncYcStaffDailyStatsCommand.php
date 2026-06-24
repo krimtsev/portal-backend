@@ -19,7 +19,7 @@ final class SyncYcStaffDailyStatsCommand extends Command
                             {--month= : Полный месяц в формате YYYY-MM}
                             {--company_id= : Конкретный ID компании из YClients}';
 
-    protected $description = 'Парсинг работавших сотрудников и сбор их дневной статистики';
+    protected $description = 'Синхронизация статистики по сотрудникам из YClients';
 
     /**
      * @throws Throwable

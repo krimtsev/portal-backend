@@ -40,6 +40,13 @@ abstract class ValidateResponse
                 continue;
             }
 
+            // Пустые массивы превращаем в null
+            if (is_array($cleanData[$key]) && empty($cleanData[$key]) && !is_array($targetClass)) {
+                $cleanData[$key] = null;
+
+                continue;
+            }
+
             if (is_array($targetClass)) {
                 // Если указан массив, например: 'services_links' => [ServiceDTO::class]
                 $dtoClass = $targetClass[0];

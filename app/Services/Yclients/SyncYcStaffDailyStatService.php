@@ -55,7 +55,6 @@ final readonly class SyncYcStaffDailyStatService
                 'client_return'           => $dto->client_stats->return_count,
                 'client_active'           => $dto->client_stats->active_count,
                 'client_lost'             => $dto->client_stats->lost_count,
-                'client_total'            => $dto->client_stats->total_count,
             ]
         );
     }

@@ -6,7 +6,7 @@ use App\Integrations\Yclients\Core\ApiResource;
 use App\Integrations\Yclients\Resources\Comments\DTO\CommentsFilters;
 use App\Integrations\Yclients\YclientsException;
 
-class CommentsResource extends ApiResource
+final class CommentsResource extends ApiResource
 {
     /**
      * Получить комментарии

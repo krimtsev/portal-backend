@@ -53,10 +53,6 @@ final readonly class SyncYcRecordService
             foreach ($chunk as $item) {
                 $dto = RecordsResponse::from($item);
 
-                if (!$dto->client?->id) {
-                    continue;
-                }
-
                 $totalCost = 0.00;
                 $totalManualCost = 0.00;
                 $totalTariffCost = 0.00;
@@ -99,6 +95,10 @@ final readonly class SyncYcRecordService
                     'client_success_visits'  => $dto->client?->success_visits_count ?? 0,
                     'client_fail_visits'     => $dto->client?->fail_visits_count ?? 0,
                     'datetime'               => $dto->datetime,
+                    'visit_attendance'       => $dto->visit_attendance,
+                    'attendance'             => $dto->attendance,
+                    'confirmed'              => $dto->confirmed,
+                    'length'                 => $dto->length,
                     'total_cost'             => $totalCost,
                     'total_manual_cost'      => $totalManualCost,
                     'total_tariff_cost'      => $totalTariffCost,
@@ -122,6 +122,10 @@ final readonly class SyncYcRecordService
                             'client_success_visits',
                             'client_fail_visits',
                             'datetime',
+                            'visit_attendance',
+                            'attendance',
+                            'confirmed',
+                            'length',
                             'total_cost',
                             'total_manual_cost',
                             'total_tariff_cost',
@@ -152,6 +156,11 @@ final readonly class SyncYcRecordService
         }
     }
 
+    /**
+     * Цены по тарифам
+     * $tariff_cost - считаем как const цены из тарифа или цена по записи
+     * $base_tariff_cost - цена из тарифов, считаем только cost
+     */
     private function calculateTariffCosts(object $serviceDto, Collection $activeTariffs): array
     {
         /** @var YcTariff|null $tariff */
@@ -165,7 +174,7 @@ final readonly class SyncYcRecordService
         }
 
         return [
-            'tariff_cost'      => (float) ($tariff->cost ?? $serviceDto->manual_cost),
+            'tariff_cost'      => (float) ($tariff->cost !== null ? $tariff->cost : $serviceDto->manual_cost),
             'base_tariff_cost' => $tariff->cost !== null ? (float) $tariff->cost : 0.00,
         ];
     }

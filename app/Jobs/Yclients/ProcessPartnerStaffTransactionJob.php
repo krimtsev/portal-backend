@@ -6,7 +6,7 @@ namespace App\Jobs\Yclients;
 
 use App\Enums\QueueName;
 use App\Integrations\Yclients\YclientsException;
-use App\Services\Yclients\SyncYcStaffScheduleService;
+use App\Services\Yclients\YcStaffScheduleService;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -51,7 +51,7 @@ final class ProcessPartnerStaffTransactionJob implements ShouldQueue
      * @throws Throwable
      * @throws YclientsException
      */
-    public function handle(SyncYcStaffScheduleService $service): void
+    public function handle(YcStaffScheduleService $service): void
     {
         if ($this->batch()?->cancelled()) {
             return;

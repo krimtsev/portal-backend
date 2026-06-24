@@ -11,7 +11,7 @@ use App\Responses\JsonResponse;
 use App\Services\Royalty\RoyaltyService;
 use Carbon\Carbon;
 
-class RoyaltyController extends Controller
+final class RoyaltyController extends Controller
 {
     protected RoyaltyService $royaltyService;
 

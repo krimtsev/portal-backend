@@ -88,6 +88,6 @@ Route::prefix('v1/dashboard')
         Route::prefix('statistics')
             ->middleware(['role:admin,sysadmin'])
             ->group(function () {
-                Route::post('staff/list', [Controllers\Statistics\StatisticsStaffController::class, 'list']);
+                Route::post('staff/list', [Controllers\Statistics\StaffStatisticsController::class, 'list']);
             });
     });

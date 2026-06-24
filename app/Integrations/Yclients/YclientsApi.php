@@ -7,6 +7,7 @@ use App\Integrations\Yclients\Resources\Comments\CommentsResource;
 use App\Integrations\Yclients\Resources\Records\RecordsResource;
 use App\Integrations\Yclients\Resources\Staff\StaffResource;
 use App\Integrations\Yclients\Resources\StaffSchedule\StaffScheduleResource;
+use App\Integrations\Yclients\Resources\StorageTransactions\StorageTransactionsResource;
 use App\Integrations\Yclients\Resources\Transactions\TransactionsResource;
 
 class YclientsApi
@@ -31,6 +32,11 @@ class YclientsApi
     public function transactions(): TransactionsResource
     {
         return $this->resolveResource(TransactionsResource::class);
+    }
+
+    public function storageTransactions(): StorageTransactionsResource
+    {
+        return $this->resolveResource(StorageTransactionsResource::class);
     }
 
     public function records(): RecordsResource

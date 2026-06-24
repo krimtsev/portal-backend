@@ -8,7 +8,7 @@ final class RecordsFilters extends BaseRequest
 {
     public function __construct(
         public readonly ?int $page = 1,
-        public readonly ?int $count = 500,
+        public readonly ?int $count = 1000,
         public readonly ?int $staff_id = null,
         public readonly ?int $client_id = null,
         public readonly ?int $created_user_id = null,

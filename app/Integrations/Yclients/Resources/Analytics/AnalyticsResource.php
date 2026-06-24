@@ -6,7 +6,7 @@ use App\Integrations\Yclients\Core\ApiResource;
 use App\Integrations\Yclients\Resources\Analytics\DTO\CompanyStatsFilters;
 use App\Integrations\Yclients\YclientsException;
 
-class AnalyticsResource extends ApiResource
+final class AnalyticsResource extends ApiResource
 {
     /**
      * Получить основные показатели компании

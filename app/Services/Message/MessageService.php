@@ -2,15 +2,16 @@
 
 namespace App\Services\Message;
 
-use App\Models\User\User;
 use App\Models\Message\Message;
-use Illuminate\Support\Facades\Cache;
+use App\Models\User\User;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Cache;
 
 final class MessageService
 {
     /**
      * Получает список доступных пользователю сообщений
+     *
      * * @return Collection<int, Message>
      */
     public function getActiveMessagesForUser(User $user): Collection

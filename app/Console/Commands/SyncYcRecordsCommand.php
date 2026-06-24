@@ -15,7 +15,7 @@ final class SyncYcRecordsCommand extends Command
                             {--month= : Полный месяц в формате YYYY-MM}
                             {--company_id= : Конкретный ID компании из YClients (yclients_id)}';
 
-    protected $description = 'Синхронизация транзакций компании из YClients';
+    protected $description = 'Синхронизация списка записей компании из YClients';
 
     public function handle(PeriodResolutionService $periodService): int
     {

@@ -35,6 +35,18 @@ return new class extends Migration
             // Неуспешные визиты
             $table->integer('client_fail_visits')->default(0);
 
+            // Статус визита
+            $table->integer('visit_attendance');
+
+            // Статус записи
+            $table->integer('attendance');
+
+            // Статус подтверждения записи
+            $table->integer('confirmed');
+
+            // Длительность сеанса
+            $table->integer('length');
+
             // Фактическое время начала сеанса с таймзоной (ISO 8601)
             $table->dateTimeTz('datetime');
 

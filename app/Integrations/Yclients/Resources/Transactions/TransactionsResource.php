@@ -6,7 +6,7 @@ use App\Integrations\Yclients\Core\ApiResource;
 use App\Integrations\Yclients\Resources\Transactions\DTO\TransactionsFilters;
 use App\Integrations\Yclients\YclientsException;
 
-class TransactionsResource extends ApiResource
+final class TransactionsResource extends ApiResource
 {
     /**
      * Получить транзакции
