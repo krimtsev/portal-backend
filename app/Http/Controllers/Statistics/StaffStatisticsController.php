@@ -75,6 +75,7 @@ final class StaffStatisticsController
             ->select('staff_id')
             ->selectRaw('SUM(CASE WHEN expense_id IN (6, 12) THEN ABS(amount) ELSE 0 END) as transaction_loyalty')
             ->selectRaw('SUM(CASE WHEN expense_id IN (7) THEN ABS(amount) ELSE 0 END) as transaction_sales')
+            ->selectRaw("SUM(CASE WHEN sold_item_type = 'goods_transaction' THEN 1 ELSE 0 END) as goods_count")
             ->groupBy('staff_id')
             ->get()
             ->keyBy('staff_id');
@@ -83,8 +84,12 @@ final class StaffStatisticsController
             ->where('company_id', $partner->yclients_id)
             ->whereNotNull('master_id')
             ->whereBetween('create_date', [$startDateTime, $endDateTime])
+            ->where(function ($query) {
+                $query->where('loyalty_abonement_id', '>', 0)
+                    ->orWhere('loyalty_certificate_id', '>', 0);
+            })
             ->select('master_id')
-            ->selectRaw('SUM(CASE WHEN loyalty_abonement_id IS NOT NULL AND loyalty_certificate_id IS NOT NULL THEN 1 ELSE 0 END) as transaction_count')
+            ->selectRaw('COUNT(*) as transaction_count')
             ->groupBy('master_id')
             ->get()
             ->keyBy('master_id');
@@ -156,11 +161,13 @@ final class StaffStatisticsController
             $staff->transaction_loyalty = $staffTransaction ? (float) $staffTransaction->transaction_loyalty : 0.00;
 
             // Средний чек
-            $transaction_count = $staffStorageTransaction ? $staffStorageTransaction->transaction_count : 0;
-            $record_completed = $staff->record_completed + $transaction_count;
-            $staff->average_sum = $staff->record_completed > 0
+            //$transaction_count = $staffStorageTransaction ? $staffStorageTransaction->transaction_count : 0;
+            $staff_transaction_count = $staffTransaction ? $staffTransaction->goods_count : 0;
+            $record_completed = $staff->record_completed + $staff_transaction_count;
+            $staff->average_sum = $record_completed > 0
                 ? (int) round($staff->income_total / $record_completed)
                 : 0;
+            $staff->record_completed_2 = $record_completed;
 
             // Возвращаемость
             $pastClients = $pastClientsByStaff->get($staff->staff_id, collect());
