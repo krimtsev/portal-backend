@@ -38,6 +38,7 @@ final class StaffStatisticsController
             ->selectRaw('MAX(yc_company_staff.firstname) as firstname')
             ->selectRaw('MAX(yc_company_staff.surname) as surname')
             ->selectRaw('MAX(yc_company_staff.specialization) as specialization')
+            ->selectRaw('MAX(yc_company_staff.avatar) as avatar')
             // Финансовые и клиентские агрегаты за период
             ->selectRaw('SUM(income_total) as income_total')
             ->selectRaw('SUM(client_new) as client_new')
@@ -161,13 +162,13 @@ final class StaffStatisticsController
                 ? (int) round($staff->income_total / $record_completed)
                 : 0;
 
+            // Возвращаемость
             $pastClients = $pastClientsByStaff->get($staff->staff_id, collect());
             $currentClients = $currentClientsByStaff->get($staff->staff_id, collect());
 
             $pastClientsCount = $pastClients->count();
             $returnedClientsCount = $currentClients->intersect($pastClients)->count();
 
-            // Записываем процент возвращаемости в объект сотрудника
             $staff->retention_percent = $pastClientsCount > 0
                 ? (int) round(($returnedClientsCount / $pastClientsCount) * 100)
                 : 0;
