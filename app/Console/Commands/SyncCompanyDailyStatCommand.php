@@ -20,7 +20,7 @@ class SyncCompanyDailyStatCommand extends Command
 
     public function handle(PeriodResolutionService $periodService): int
     {
-        if (!config('jobs.royalty')) {
+        if (!config('jobs.yclients')) {
             $this->warn('Синхронизация отключена в конфигурации.');
 
             return self::SUCCESS;
