@@ -60,32 +60,40 @@ final class RecordsResponse extends ValidateResponse
         public readonly int $attendance,
         public readonly int $confirmed,
         public readonly int $length,
+        public readonly bool $deleted,
         public readonly array $services,
         public readonly ?ClientDTO $client,
+        public readonly array $documents,
+        public readonly array $goods_transactions
     ) {}
 
     protected static function rules(): array
     {
         return [
-            'id'               => ['required', 'integer'],
-            'company_id'       => ['required', 'integer'],
-            'staff_id'         => ['required', 'integer'],
-            'visit_id'         => ['required', 'integer'],
-            'datetime'         => ['required', 'string'],
-            'visit_attendance' => ['required', 'integer'],
-            'attendance'       => ['required', 'integer'],
-            'confirmed'        => ['required', 'integer'],
-            'length'           => ['required', 'integer'],
-            'services'         => ['nullable', 'array'],
-            'client'           => ['nullable', 'array'],
+            'id'                 => ['required', 'integer'],
+            'company_id'         => ['required', 'integer'],
+            'staff_id'           => ['required', 'integer'],
+            'visit_id'           => ['required', 'integer'],
+            'datetime'           => ['required', 'string'],
+            'visit_attendance'   => ['required', 'integer'],
+            'attendance'         => ['required', 'integer'],
+            'confirmed'          => ['required', 'integer'],
+            'length'             => ['required', 'integer'],
+            'deleted'            => ['required', 'boolean'],
+            'services'           => ['nullable', 'array'],
+            'client'             => ['nullable', 'array'],
+            'documents'          => ['nullable', 'array'],
+            'goods_transactions' => ['nullable', 'array'],
         ];
     }
 
     protected static function casts(): array
     {
         return [
-            'services' => [ServiceDTO::class],
-            'client'   => ClientDTO::class,
+            'services'           => [ServiceDTO::class],
+            'client'             => ClientDTO::class,
+            'documents'          => [DocumentDTO::class],
+            'goods_transactions' => [GoodsTransactionDTO::class],
         ];
     }
 

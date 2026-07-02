@@ -59,7 +59,10 @@ final readonly class SyncYcStorageTransactionService
                 'good_id'                => $dto->good->id,
                 'good_title'             => $dto->good->title,
                 'storage_id'             => $dto->storage?->id,
+                'storage_title'          => $dto->storage?->title,
                 'client_id'              => $dto->client?->id,
+                'service_id'             => $dto->service?->id,
+                'service_title'          => $dto->service?->title,
             ];
         }
 
@@ -87,7 +90,10 @@ final readonly class SyncYcStorageTransactionService
                 'good_id',
                 'good_title',
                 'storage_id',
+                'storage_title',
                 'client_id',
+                'service_id',
+                'service_title',
             ]
         );
     }

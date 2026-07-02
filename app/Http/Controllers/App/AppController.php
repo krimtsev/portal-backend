@@ -6,14 +6,14 @@ namespace App\Http\Controllers\App;
 
 use App\Http\Controllers\Controller;
 use App\Responses\JsonResponse;
-use App\Services\App\PartnerFinanceService;
 use App\Services\Message\MessageService;
+use App\Services\Statistics\PartnerStatisticsService;
 use Illuminate\Support\Facades\Auth;
 
 final class AppController extends Controller
 {
     public function __construct(
-        private readonly PartnerFinanceService $financeService,
+        private readonly PartnerStatisticsService $statisticsService,
         private readonly MessageService $messageService
     ) {}
 
@@ -22,7 +22,7 @@ final class AppController extends Controller
         $user = Auth::user();
 
         return JsonResponse::Send([
-            'finances' => $this->financeService->getMonthlyIncomeStats($user),
+            'finances' => $this->statisticsService->getPartnerFinanceService($user),
             'messages' => $this->messageService->getActiveMessagesForUser($user),
         ]);
     }

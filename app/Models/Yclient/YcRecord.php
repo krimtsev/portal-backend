@@ -36,6 +36,7 @@ class YcRecord extends Model
         'attendance',
         'confirmed',
         'length',
+        'deleted',
 
         'total_cost',
         'total_manual_cost',
@@ -55,6 +56,7 @@ class YcRecord extends Model
             'total_tariff_cost'      => 'float',
             'total_base_tariff_cost' => 'float',
             'discount'               => 'float',
+            'deleted'                => 'boolean',
         ];
     }
 

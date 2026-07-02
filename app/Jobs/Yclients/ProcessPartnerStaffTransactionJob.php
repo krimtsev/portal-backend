@@ -58,7 +58,7 @@ final class ProcessPartnerStaffTransactionJob implements ShouldQueue
         }
 
         try {
-            $activeStaffIds = $service->getActiveStaffIds($this->companyId, $this->date);
+            $activeStaffIds = $service->getStaffIdsForDate($this->companyId, $this->date);
 
             /**
              * Собираем уникальные Id сотрудников у которых есть записи оказанных услуг
@@ -72,7 +72,9 @@ final class ProcessPartnerStaffTransactionJob implements ShouldQueue
                 $activeStaffIds
             );
 
-            $this->batch()->add($subJobs);
+            foreach (array_chunk($subJobs, 25) as $chunk) {
+                $this->batch()->add($chunk);
+            }
         } catch (Throwable $e) {
             Log::error("Ошибка определения списка сотрудников для компании {$this->companyId}: {$e->getMessage()}");
             throw $e;

@@ -1,7 +1,11 @@
 <?php
 
 // Обновление сертификатов из Google Sheets
-Schedule::command('certificates:sync')->dailyAt('02:00');
+Schedule::command('certificates:sync')->dailyAt('01:00');
+
+// Синхронизация сотрудников из YClients
+// Должен быть всегда раньше остальных запросов в YClients
+Schedule::command('yclients:sync-staff-work-days')->dailyAt('02:00');
 
 // Синхронизация основных показателей компании из YClients (Royalty)
 Schedule::command('yclients:sync-company-stats')->dailyAt('03:00');

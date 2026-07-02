@@ -44,8 +44,11 @@ class YcStorageTransaction extends Model
         'good_id',
         'good_title',
         'storage_id',
+        'storage_title',
         'client_id',
         'master_id',
+        'service_id',
+        'service_title',
     ];
 
     /**
@@ -72,5 +75,6 @@ class YcStorageTransaction extends Model
         'storage_id'             => 'integer',
         'client_id'              => 'integer',
         'master_id'              => 'integer',
+        'service_id'             => 'integer',
     ];
 }

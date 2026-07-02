@@ -53,7 +53,7 @@ return new class extends Migration
 
             // Склад
             $table->unsignedBigInteger('storage_id');
-            // $table->string('storage_title');
+            $table->string('storage_title');
 
             // Клиент
             $table->unsignedBigInteger('client_id')->nullable();
@@ -61,8 +61,8 @@ return new class extends Migration
             // $table->string('client_phone')->nullable();
 
             // Услуга
-            // $table->unsignedBigInteger('service_id')->nullable();
-            // $table->string('service_title')->nullable();
+            $table->unsignedBigInteger('service_id')->nullable();
+            $table->string('service_title')->nullable();
 
             // Поставщик
             // $table->unsignedBigInteger('supplier_id')->nullable()->index();

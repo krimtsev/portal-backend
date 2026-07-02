@@ -20,4 +20,11 @@ Route::prefix('v1/profile')
             Route::delete('ticket/{ticket}', [Controllers\Tickets\TicketsController::class, 'remove']);
             Route::get('ticket/{ticket}/download/{fileName}', [Controllers\Tickets\TicketsFilesController::class, 'download']);
         });
+
+        Route::prefix('statistics')
+            ->group(function () {
+                Route::get('staff/compare', [Controllers\Statistics\StaffStatisticsController::class, 'compare']);
+                Route::get('staff/details', [Controllers\Statistics\StaffStatisticsController::class, 'staffDetails']);
+                Route::get('company/stats', [Controllers\Statistics\PartnerStatisticsController::class, 'company']);
+            });
     });

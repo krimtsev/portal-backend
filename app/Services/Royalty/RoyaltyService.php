@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\Royalty;
 
 use App\Models\Partner\Partner;
@@ -89,7 +91,7 @@ final class RoyaltyService
             $startMonth = $startAt->copy()->startOfMonth();
 
             if ($targetMonth->gt($startMonth)) {
-                $start = $startMonth->diffInMonths($targetMonth);
+                $start = (int) $startMonth->diffInMonths($targetMonth);
                 $yearsPassed = intdiv($start, 12);
                 $percent += $yearsPassed * self::ROYALTY_STEP;
             }

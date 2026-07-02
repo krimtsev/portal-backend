@@ -14,14 +14,11 @@ class YcRecordService extends Model
      */
     protected $table = 'yc_record_services';
 
-    public $incrementing = false;
-
-    protected $primaryKey = 'record_id';
-
     /**
      * @var array<int, string>
      */
     protected $fillable = [
+        'record_id',
         'service_id',
         'company_id',
         'title',

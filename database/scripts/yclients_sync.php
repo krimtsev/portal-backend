@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Artisan;
  * php artisan tinker database/scripts/yclients_sync.php
  */
 $commands = [
+    'yclients:sync-staff-work-days',
     'yclients:sync-comments',
     'yclients:sync-staff-stats',
     'yclients:sync-transactions',
@@ -17,7 +18,7 @@ $commands = [
     'yclients:sync-storage-transactions',
 ];
 
-$months = ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05'];
+$months = ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06'];
 $companyId = 41120;
 
 foreach ($commands as $command) {

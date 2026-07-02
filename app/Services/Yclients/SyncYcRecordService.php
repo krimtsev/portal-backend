@@ -8,6 +8,8 @@ use App\Integrations\Yclients\Resources\Records\DTO\RecordsFilters;
 use App\Integrations\Yclients\Resources\Records\DTO\RecordsResponse;
 use App\Integrations\Yclients\YclientsApi;
 use App\Models\Yclient\YcRecord;
+use App\Models\Yclient\YcRecordDocument;
+use App\Models\Yclient\YcRecordGoodsTransaction;
 use App\Models\Yclient\YcRecordService;
 use App\Models\Yclient\YcTariff;
 use Illuminate\Support\Collection;
@@ -49,6 +51,8 @@ final readonly class SyncYcRecordService
         foreach (array_chunk($recordsData, 50) as $chunk) {
             $recordsToUpsert = [];
             $servicesToUpsert = [];
+            $documentsToUpsert = [];
+            $goodsToUpsert = [];
 
             foreach ($chunk as $item) {
                 $dto = RecordsResponse::from($item);
@@ -84,6 +88,51 @@ final readonly class SyncYcRecordService
                     ];
                 }
 
+                foreach ($dto->documents as $documentDto) {
+                    if (!$documentDto->id) {
+                        continue;
+                    }
+
+                    $documentsToUpsert[] = [
+                        'document_id'  => $documentDto->id,
+                        'company_id'   => $companyId,
+                        'type_id'      => $documentDto->type_id,
+                        'type_title'   => $documentDto->type_title,
+                        'storage_id'   => $documentDto->storage_id,
+                        'user_id'      => $documentDto->user_id,
+                        'date_created' => $documentDto->date_created,
+                        'visit_id'     => $documentDto->visit_id,
+                        'record_id'    => $documentDto->record_id,
+                    ];
+                }
+
+                foreach ($dto->goods_transactions as $goodsDto) {
+                    if (!$goodsDto->id) {
+                        continue;
+                    }
+
+                    $goodsToUpsert[] = [
+                        'record_id'              => $dto->id,
+                        'transaction_id'         => $goodsDto->id,
+                        'company_id'             => $dto->company_id,
+                        'title'                  => $goodsDto->title,
+                        'amount'                 => $goodsDto->amount,
+                        'cost_per_unit'          => $goodsDto->cost_per_unit,
+                        'cost'                   => $goodsDto->cost,
+                        'manual_cost'            => $goodsDto->manual_cost,
+                        'master_id'              => $goodsDto->master_id,
+                        'storage_id'             => $goodsDto->storage_id,
+                        'good_id'                => $goodsDto->good_id,
+                        'discount'               => $goodsDto->discount,
+                        'loyalty_abonement_id'   => $goodsDto->loyalty_abonement_id,
+                        'loyalty_certificate_id' => $goodsDto->loyalty_certificate_id,
+
+                        'datetime'        => $dto->datetime,   // Время записи
+                        'record_staff_id' => $dto->staff_id,   // Мастер
+                        'attendance'      => $dto->attendance, // Статус
+                    ];
+                }
+
                 $recordsToUpsert[] = [
                     'record_id'              => $dto->id,
                     'company_id'             => $companyId,
@@ -99,6 +148,7 @@ final readonly class SyncYcRecordService
                     'attendance'             => $dto->attendance,
                     'confirmed'              => $dto->confirmed,
                     'length'                 => $dto->length,
+                    'deleted'                => $dto->deleted,
                     'total_cost'             => $totalCost,
                     'total_manual_cost'      => $totalManualCost,
                     'total_tariff_cost'      => $totalTariffCost,
@@ -106,7 +156,12 @@ final readonly class SyncYcRecordService
                 ];
             }
 
-            DB::transaction(function () use ($recordsToUpsert, $servicesToUpsert) {
+            DB::transaction(function () use (
+                $recordsToUpsert,
+                $servicesToUpsert,
+                $documentsToUpsert,
+                $goodsToUpsert,
+            ) {
                 if (!empty($recordsToUpsert)) {
                     YcRecord::upsert(
                         $recordsToUpsert,
@@ -149,6 +204,49 @@ final readonly class SyncYcRecordService
                             'amount',
                             'tariff_cost',
                             'base_tariff_cost',
+                        ]
+                    );
+                }
+
+                if (!empty($documentsToUpsert)) {
+                    YcRecordDocument::upsert(
+                        $documentsToUpsert,
+                        [
+                            'record_id',
+                            'document_id',
+                        ],
+                        [
+                            'company_id',
+                            'type_id',
+                            'type_title',
+                            'storage_id',
+                            'user_id',
+                            'date_created',
+                            'visit_id',
+                        ]
+                    );
+                }
+
+                if (!empty($goodsToUpsert)) {
+                    YcRecordGoodsTransaction::upsert(
+                        $goodsToUpsert,
+                        [
+                            'record_id',
+                            'transaction_id',
+                        ],
+                        [
+                            'company_id',
+                            'title',
+                            'amount',
+                            'cost_per_unit',
+                            'cost',
+                            'manual_cost',
+                            'master_id',
+                            'storage_id',
+                            'good_id',
+                            'discount',
+                            'loyalty_abonement_id',
+                            'loyalty_certificate_id',
                         ]
                     );
                 }
