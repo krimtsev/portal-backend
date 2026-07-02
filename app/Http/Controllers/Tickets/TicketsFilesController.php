@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class TicketsFilesController extends Controller
+final class TicketsFilesController extends Controller
 {
     /**
      * Скачать файл тикета

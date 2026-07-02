@@ -5,6 +5,7 @@ namespace App\Services\Certificates;
 use App\Integrations\Google\GoogleSheet;
 use App\Models\Certificate\Certificate;
 use Illuminate\Support\Str;
+use Throwable;
 
 final class CertificateSyncService
 {
@@ -38,12 +39,12 @@ final class CertificateSyncService
      */
     public function getRows(): array
     {
-        $path = config('services.google.certificate');
+        $path = config('partner.secrets.google.certificate');
         $sheet = json_decode(file_get_contents($path));
 
         try {
             $table = (new GoogleSheet())->readSheet($sheet);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             logger()->error('Certificates get rows failed', [
                 'message' => $e->getMessage(),
                 'trace'   => $e->getTraceAsString(),
