@@ -101,24 +101,18 @@ final class StaffStatisticsService
         $referenceDate = Carbon::parse($date)->startOfMonth();
         $companyId = (int) $partner->yclients_id;
 
-        $endDate = $referenceDate->copy()->endOfMonth();
-        $startDate = $referenceDate->copy()->subMonths(4)->startOfMonth();
+        $endDate = $referenceDate->copy()->endOfMonth()->format('Y-m-d');
+        $startDate = $referenceDate->copy()->subMonths(4)->startOfMonth()->format('Y-m-d');
 
         // Сотрудник
-        $staff = YcCompanyStaff::select([
-            'staff_id',
-            'name',
-            'specialization',
-            'avatar_big'
-        ])
-            ->where('staff_id', $staffId)
+        $staff = YcCompanyStaff::where('staff_id', $staffId)
             ->where('company_id', $companyId)
             ->firstOrFail();
 
 
         $stats = YcStaffDailyStat::forCompany($companyId)
             ->where('staff_id', $staffId)
-            ->forPeriod($startDate->format('Y-m-d'), $endDate->format('Y-m-d'))
+            ->forPeriod($startDate, $endDate)
             ->get();
 
         $monthlyTotals = [];
@@ -128,18 +122,21 @@ final class StaffStatisticsService
 
             if (!isset($monthlyTotals[$monthKey])) {
                 $monthlyTotals[$monthKey] = [
-                    'additional_services' => 0.0,
-                    'transaction_sales' => 0.0,
-                    'average_sum_total' => 0.0,
-                    'fullness_percent_total' => 0.0,
-                    'client_total' => 0,
-                    'client_return' => 0,
-                    'client_new' => 0,
-                    'work_days' => 0,
+                    'client_new'       => 0,
+                    'client_return'    => 0,
+                    'client_active'    => 0,
+                    'fullness_percent' => 0.00,
+                    'work_days'        => 0
                 ];
             }
 
-            $monthlyTotals[$monthKey]['additional_services'] += $stat->additional_services ?? 0;
+            $monthlyTotals[$monthKey]['client_new'] += $stat->client_new;
+            $monthlyTotals[$monthKey]['client_return'] += $stat->client_return;
+            $monthlyTotals[$monthKey]['client_active'] += $stat->client_active;
+            $monthlyTotals[$monthKey]['fullness_percent'] += $stat->fullness_percent;
+            $monthlyTotals[$monthKey]['work_days']++;
+
+/*            $monthlyTotals[$monthKey]['additional_services'] += $stat->additional_services ?? 0;
             $monthlyTotals[$monthKey]['transaction_sales'] += $stat->transaction_sales ?? 0;
             $monthlyTotals[$monthKey]['average_sum_total'] += $stat->average_sum ?? 0;
             $monthlyTotals[$monthKey]['fullness_percent_total'] += $stat->fullness_percent ?? 0;
@@ -149,12 +146,12 @@ final class StaffStatisticsService
 
             if (($stat->fullness_percent ?? 0) > 0 || ($stat->income_total ?? 0) > 0) {
                 $monthlyTotals[$monthKey]['work_days']++;
-            }
+            }*/
         }
 
         return [
-            'staff' => $staff,
-            'monthly_stats' => $monthlyTotals,
+            'staff'          => $staff,
+            'monthly_stats'  => $monthlyTotals,
             'reference_date' => $referenceDate->format('Y-m-d'),
         ];
     }

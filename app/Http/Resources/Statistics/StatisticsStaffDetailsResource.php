@@ -11,12 +11,12 @@ final class StatisticsStaffDetailsResource extends JsonResource
     public function toArray(Request $request): array
     {
         $staff = $this->resource['staff'];
-
-
         $monthlyStats = $this->resource['monthly_stats'];
-        $referenceDate = Carbon::parse($this->resource['reference_date']);
+        $referenceDate = $this->resource['reference_date'];
 
-        $history = [
+        $currentStats = $monthlyStats[$referenceDate];
+
+        /*$history = [
             'additional_services' => [],
             'average_sum' => [],
             'transaction_sales' => [],
@@ -57,10 +57,10 @@ final class StatisticsStaffDetailsResource extends JsonResource
 
         $cStats = $monthlyStats[$currentMonthKey] ?? [];
         $pStats = $monthlyStats[$prevMonthKey] ?? [];
+        */
 
-        // Вычисляем среднюю заполняемость
-        $currentFullness = !empty($cStats['work_days'])
-            ? round($cStats['fullness_percent_total'] / $cStats['work_days'], 2)
+        $fullnessPercent = !empty($currentStats['work_days'])
+            ? round($currentStats['fullness_percent'] / $currentStats['work_days'])
             : 0;
 
         return [
@@ -69,7 +69,19 @@ final class StatisticsStaffDetailsResource extends JsonResource
             'specialization' => $staff->specialization,
             'avatar_big'     => $staff->avatar_big,
 
-            'history' => $history,
+            'client_new'       => $currentStats['client_new'],
+            'client_return'    => $currentStats['client_return'],
+            'client_active'    => $currentStats['client_active'],
+            'fullness_percent' => $fullnessPercent,
+
+            'month' => [
+
+            ],
+
+            'work_days'      => $currentStats['work_days'],
+            'date'           => $referenceDate,
+
+            /*'history' => $history,
             'current_month' => [
                 'fullness_percent' => $currentFullness,
                 'client_total' => [
@@ -84,7 +96,7 @@ final class StatisticsStaffDetailsResource extends JsonResource
                     'value' => $cStats['client_new'] ?? 0,
                     'growth' => $this->calculateGrowth((float)($cStats['client_new'] ?? 0), (float)($pStats['client_new'] ?? 0))
                 ]
-            ]
+            ]*/
         ];
     }
 

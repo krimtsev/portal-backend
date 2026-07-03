@@ -63,13 +63,11 @@ final class PartnerStatisticsService
     {
         $referenceDate = Carbon::parse($date);
 
-        // Нам нужно выгрузить на 1 месяц больше данных, чем запрашивается,
-        // чтобы рассчитать процент изменения (разницу) для самого старого месяца.
-        $endDate = $referenceDate->copy()->endOfMonth();
-        $startDate = $referenceDate->copy()->subMonths($monthsCount)->startOfMonth();
+        $endDate = $referenceDate->copy()->endOfMonth()->format('Y-m-d');
+        $startDate = $referenceDate->copy()->subMonths($monthsCount)->startOfMonth()->format('Y-m-d');
 
         $stats = YcCompanyDailyStat::forCompany($companyId)
-            ->forPeriod($startDate->format('Y-m-d'), $endDate->format('Y-m-d'))
+            ->forPeriod($startDate, $endDate)
             ->get(['date', 'income_total']);
 
         $monthlyTotals = [];
@@ -88,8 +86,8 @@ final class PartnerStatisticsService
             $previousTotal = $monthlyTotals[$previousMonth] ?? 0.0;
 
             $result[$currentMonth] = [
-                'income_total' => (int) round($currentTotal),
-                'percent'      => $this->calculatePercent($currentTotal, $previousTotal),
+                'value'   => (int) round($currentTotal),
+                'percent' => $this->calculatePercent($currentTotal, $previousTotal),
             ];
         }
 
