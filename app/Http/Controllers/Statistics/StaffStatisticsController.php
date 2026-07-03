@@ -46,7 +46,8 @@ final class StaffStatisticsController extends Controller
         ]);
     }
 
-    public function staffDetails(StatisticsStaffDetailsRequest $request) {
+    public function staffDetails(StatisticsStaffDetailsRequest $request)
+    {
         $partner = Partner::findOrFail($request->input('partner_id'));
         $staffId = (int) $request->input('staff_id');
 

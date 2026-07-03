@@ -37,7 +37,7 @@ final readonly class SyncYcStaffWorkDaysService
             [
                 'staff_id',
                 'company_id',
-                'date'
+                'date',
             ],
         );
     }

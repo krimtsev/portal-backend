@@ -4,7 +4,6 @@ namespace App\Http\Resources\Statistics;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Carbon;
 
 final class StatisticsStaffDetailsResource extends JsonResource
 {
@@ -78,8 +77,8 @@ final class StatisticsStaffDetailsResource extends JsonResource
 
             ],
 
-            'work_days'      => $currentStats['work_days'],
-            'date'           => $referenceDate,
+            'work_days' => $currentStats['work_days'],
+            'date'      => $referenceDate,
 
             /*'history' => $history,
             'current_month' => [
@@ -121,18 +120,19 @@ final class StatisticsStaffDetailsResource extends JsonResource
      */
     private function calculateGrowth(float $current, float $previous): ?int
     {
-        if ($current == 0 && $previous == 0) {
+        if ($current === 0 && $previous === 0) {
             return 0;
         }
 
         if ($current >= $previous) {
-            if ($current == 0) {
+            if ($current === 0) {
                 return 0;
             }
+
             return (int) round((1 - ($previous / $current)) * 100);
         }
 
-        if ($previous == 0) {
+        if ($previous === 0) {
             return 0;
         }
 

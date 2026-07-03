@@ -11,11 +11,10 @@ use App\Models\Yclient\YcRecord;
 use App\Models\Yclient\YcRecordGoodsTransaction;
 use App\Models\Yclient\YcStaffDailyStat;
 use App\Models\Yclient\YcStaffTransaction;
-use App\Models\Yclient\YcStorageTransaction;
 use App\Models\Yclient\YcStaffWorkDay;
+use App\Models\Yclient\YcStorageTransaction;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
-
 
 final class StaffStatisticsService
 {
@@ -92,6 +91,7 @@ final class StaffStatisticsService
         // Добавляем данные прошлого месяца как свойство к текущим объектам
         return $currentStats->map(function ($staff) use ($prevStats) {
             $staff->previous_stats = $prevStats->get($staff->staff_id);
+
             return $staff;
         });
     }
@@ -109,7 +109,6 @@ final class StaffStatisticsService
             ->where('company_id', $companyId)
             ->firstOrFail();
 
-
         $stats = YcStaffDailyStat::forCompany($companyId)
             ->where('staff_id', $staffId)
             ->forPeriod($startDate, $endDate)
@@ -126,7 +125,7 @@ final class StaffStatisticsService
                     'client_return'    => 0,
                     'client_active'    => 0,
                     'fullness_percent' => 0.00,
-                    'work_days'        => 0
+                    'work_days'        => 0,
                 ];
             }
 
@@ -136,17 +135,17 @@ final class StaffStatisticsService
             $monthlyTotals[$monthKey]['fullness_percent'] += $stat->fullness_percent;
             $monthlyTotals[$monthKey]['work_days']++;
 
-/*            $monthlyTotals[$monthKey]['additional_services'] += $stat->additional_services ?? 0;
-            $monthlyTotals[$monthKey]['transaction_sales'] += $stat->transaction_sales ?? 0;
-            $monthlyTotals[$monthKey]['average_sum_total'] += $stat->average_sum ?? 0;
-            $monthlyTotals[$monthKey]['fullness_percent_total'] += $stat->fullness_percent ?? 0;
-            $monthlyTotals[$monthKey]['client_total'] += $stat->client_total ?? 0;
-            $monthlyTotals[$monthKey]['client_return'] += $stat->client_return ?? 0;
-            $monthlyTotals[$monthKey]['client_new'] += $stat->client_new ?? 0;
+            /*            $monthlyTotals[$monthKey]['additional_services'] += $stat->additional_services ?? 0;
+                        $monthlyTotals[$monthKey]['transaction_sales'] += $stat->transaction_sales ?? 0;
+                        $monthlyTotals[$monthKey]['average_sum_total'] += $stat->average_sum ?? 0;
+                        $monthlyTotals[$monthKey]['fullness_percent_total'] += $stat->fullness_percent ?? 0;
+                        $monthlyTotals[$monthKey]['client_total'] += $stat->client_total ?? 0;
+                        $monthlyTotals[$monthKey]['client_return'] += $stat->client_return ?? 0;
+                        $monthlyTotals[$monthKey]['client_new'] += $stat->client_new ?? 0;
 
-            if (($stat->fullness_percent ?? 0) > 0 || ($stat->income_total ?? 0) > 0) {
-                $monthlyTotals[$monthKey]['work_days']++;
-            }*/
+                        if (($stat->fullness_percent ?? 0) > 0 || ($stat->income_total ?? 0) > 0) {
+                            $monthlyTotals[$monthKey]['work_days']++;
+                        }*/
         }
 
         return [

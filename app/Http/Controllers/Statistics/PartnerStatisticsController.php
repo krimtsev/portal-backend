@@ -48,7 +48,7 @@ final class PartnerStatisticsController extends Controller
         );
 
         return JsonResponse::Send([
-            'data' => new StatisticsCompanyResource($stats)
+            'data' => new StatisticsCompanyResource($stats),
         ]);
     }
 }

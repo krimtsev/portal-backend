@@ -28,7 +28,7 @@ final class StatisticsStaffCompareResource extends JsonResource
             'services_with_transactions',
             'transaction_loyalty',
             'average_sum',
-            'work_days_count'
+            'work_days_count',
         ];
 
         $growth = [];
@@ -48,18 +48,19 @@ final class StatisticsStaffCompareResource extends JsonResource
 
     private function calculateGrowth(float $current, float $previous): ?int
     {
-        if ($current == 0 && $previous == 0) {
+        if ($current === 0 && $previous === 0) {
             return 0;
         }
 
         if ($current >= $previous) {
-            if ($current == 0) {
+            if ($current === 0) {
                 return 0;
             }
+
             return (int) round((1 - ($previous / $current)) * 100);
         }
 
-        if ($previous == 0) {
+        if ($previous === 0) {
             return 0;
         }
 
