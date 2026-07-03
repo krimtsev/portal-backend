@@ -24,8 +24,15 @@ $months = ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06'];
 foreach ($commands as $command) {
     foreach ($months as $month) {
         echo "Running {$command} for {$month}...\n";
-        Artisan::call($command, [
-            '--month'      => $month
+        $resultCode = Artisan::call($command, [
+            '--month' => $month
         ]);
+
+        if ($resultCode === 0) {
+            echo "✅ Success: {$command} for {$month}\n";
+        } else {
+            echo "❌ Error (Code {$resultCode}) on {$command} for {$month}\n";
+            echo Artisan::output() . "\n";
+        }
     }
 }
