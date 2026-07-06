@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('yc_staff_daily_stats', function (Blueprint $table) {
+        Schema::create('yc_staff_stats', function (Blueprint $table) {
             $table->id();
 
             $table->unsignedBigInteger('staff_id');
@@ -17,21 +17,23 @@ return new class extends Migration
             $table->unsignedInteger('company_id');
 
             // Дата среза
-            $table->date('date');
+            $table->date('start_date');
+
+            $table->date('end_date')->nullable();
 
             // Финансовые показатели
-            $table->decimal('income_total', 14, 2);
+            $table->decimal('income_total', 14);
 
-            $table->decimal('income_goods', 14, 2);
+            $table->decimal('income_goods', 14);
 
-            $table->decimal('income_services', 14, 2);
+            $table->decimal('income_services', 14);
 
-            $table->decimal('income_average', 14, 2);
+            $table->decimal('income_average', 14);
 
-            $table->decimal('income_average_services', 14, 2);
+            $table->decimal('income_average_services', 14);
 
             // Операционные показатели
-            $table->decimal('fullness_percent', 6, 2);
+            $table->decimal('fullness_percent', 6);
 
             // Записи
             $table->unsignedInteger('record_completed');
@@ -53,14 +55,12 @@ return new class extends Migration
 
             $table->timestamps();
 
-            // Защита от дублей + быстрый поиск
-            $table->unique(['company_id', 'staff_id', 'date'], 'yc_staff_daily_unique');
-            $table->index('date');
+            $table->unique(['company_id', 'staff_id', 'start_date', 'end_date'], 'yc_staff_daily_unique');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('yc_staff_daily_stats');
+        Schema::dropIfExists('yc_staff_stats');
     }
 };

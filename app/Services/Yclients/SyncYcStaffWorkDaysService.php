@@ -15,7 +15,7 @@ final readonly class SyncYcStaffWorkDaysService
 
     public function sync(int $companyId, string $date): void
     {
-        $staffIds = $this->scheduleService->getActiveStaffIds($companyId, $date);
+        $staffIds = $this->scheduleService->getActiveStaffIds($companyId, $date, $date);
 
         if (empty($staffIds)) {
             return;

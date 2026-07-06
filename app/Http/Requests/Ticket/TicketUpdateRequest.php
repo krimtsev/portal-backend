@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Ticket;
 
 use App\Constants\File\FileSettings;
@@ -7,7 +9,7 @@ use App\Enums\Ticket\TicketState;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
-class TicketUpdateRequest extends FormRequest
+final class TicketUpdateRequest extends FormRequest
 {
     public function authorize(): bool
     {

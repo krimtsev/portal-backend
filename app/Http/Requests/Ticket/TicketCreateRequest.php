@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Ticket;
 
 use App\Constants\File\FileSettings;
 use Illuminate\Foundation\Http\FormRequest;
 
-class TicketCreateRequest extends FormRequest
+final class TicketCreateRequest extends FormRequest
 {
     public function authorize(): bool
     {

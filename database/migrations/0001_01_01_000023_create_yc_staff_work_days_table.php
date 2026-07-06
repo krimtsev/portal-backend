@@ -13,8 +13,11 @@ return new class extends Migration
     {
         Schema::create('yc_staff_work_days', function (Blueprint $table) {
             $table->id();
+
             $table->unsignedBigInteger('staff_id');
+
             $table->unsignedBigInteger('company_id');
+
             $table->date('date');
 
             $table->timestamps();

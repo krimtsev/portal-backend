@@ -5,7 +5,7 @@ namespace App\Helpers;
 use Generator;
 use Illuminate\Support\Carbon;
 
-class QueueThrottler
+final class QueueThrottler
 {
     /**
      * Разрезает и распределяет поток элементов, генерируя для каждого нарастающую Carbon-задержку.

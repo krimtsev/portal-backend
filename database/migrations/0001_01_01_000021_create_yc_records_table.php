@@ -54,7 +54,7 @@ return new class extends Migration
 
             // Финансовые итоги по записи (агрегируем из услуг для быстрой аналитики)
             // Собираем из сервисов
-            $table->decimal('total_cost', 14, 2)->default(0.00);
+            $table->decimal('total_cost', 14)->default(0.00);
 
             $table->decimal('total_manual_cost', 14, 2)->default(0.00);
 
@@ -163,15 +163,15 @@ return new class extends Migration
             $table->integer('amount');
 
             // Цена за единицу товара
-            $table->decimal('cost_per_unit', 14, 2);
+            $table->decimal('cost_per_unit', 14);
 
             // Стоимость с учетом скидок
-            $table->decimal('cost', 14, 2);
+            $table->decimal('cost', 14);
 
             // Стоимость с учетом предварительной скидки (за вычетом скидки переданной в параметре discount)
-            $table->decimal('manual_cost', 14, 2);
+            $table->decimal('manual_cost', 14);
 
-            $table->decimal('discount', 14, 2)->default(0.00);
+            $table->decimal('discount', 14)->default(0.00);
 
             // Привязки к сущностям
             $table->unsignedBigInteger('master_id')->nullable();

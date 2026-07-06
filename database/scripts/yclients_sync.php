@@ -9,9 +9,10 @@ use Illuminate\Support\Facades\Artisan;
  * php artisan tinker database/scripts/yclients_sync.php
  */
 $commands = [
+    'yclients:sync-company-daily-stats',
     'yclients:sync-staff-work-days',
     'yclients:sync-comments',
-    'yclients:sync-staff-stats',
+    'yclients:sync-staff-daily-stats',
     'yclients:sync-transactions',
     'yclients:sync-staff-transactions',
     'yclients:sync-records',
@@ -24,9 +25,16 @@ $companyId = 41120;
 foreach ($commands as $command) {
     foreach ($months as $month) {
         echo "Running {$command} for {$month}...\n";
-        Artisan::call($command, [
+        $resultCode = Artisan::call($command, [
             '--month'      => $month,
             '--company_id' => $companyId,
         ]);
+
+        if ($resultCode === 0) {
+            echo "✅ Success: {$command} for {$month}\n";
+        } else {
+            echo "❌ Error (Code {$resultCode}) on {$command} for {$month}\n";
+            echo Artisan::output() . "\n";
+        }
     }
 }

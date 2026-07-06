@@ -6,7 +6,7 @@ namespace App\Jobs\Yclients;
 
 use App\Enums\QueueName;
 use App\Integrations\Yclients\YclientsException;
-use App\Services\Yclients\SyncYcStaffDailyStatService;
+use App\Services\Yclients\SyncYcStaffStatService;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -39,7 +39,7 @@ final class SyncYcStaffDailyStatsJob implements ShouldQueue
      */
     public function uniqueId(): string
     {
-        return "yc_staff_stats_{$this->companyId}_{$this->staffId}_{$this->date}";
+        return "yc_staff_daily_stats_{$this->companyId}_{$this->staffId}_{$this->date}";
     }
 
     /**
@@ -55,7 +55,7 @@ final class SyncYcStaffDailyStatsJob implements ShouldQueue
      * @throws Throwable
      * @throws YclientsException
      */
-    public function handle(SyncYcStaffDailyStatService $service): void
+    public function handle(SyncYcStaffStatService $service): void
     {
         if ($this->batch()?->cancelled()) {
             return;

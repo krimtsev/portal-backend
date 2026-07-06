@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Cloud;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class CloudCreateRequest extends FormRequest
+final class CloudCreateRequest extends FormRequest
 {
     public function authorize(): bool
     {

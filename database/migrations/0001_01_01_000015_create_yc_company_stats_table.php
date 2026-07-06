@@ -8,24 +8,30 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('yc_company_daily_stats', function (Blueprint $table) {
+        Schema::create('yc_company_stats', function (Blueprint $table) {
             $table->id();
 
             // ID компании в YClients
             $table->unsignedInteger('company_id');
 
             // Дата среза
-            $table->date('date');
+            $table->date('start_date');
+
+            $table->date('end_date')->nullable();
 
             // Финансовые показатели
-            $table->decimal('income_total', 14, 2);
+            $table->decimal('income_total', 14);
 
-            $table->decimal('income_goods', 14, 2);
+            $table->decimal('income_goods', 14);
 
-            $table->decimal('income_services', 14, 2);
+            $table->decimal('income_services', 14);
+
+            $table->decimal('income_average', 14);
+
+            $table->decimal('income_average_services', 14);
 
             // Операционные показатели
-            $table->decimal('fullness_percent', 6, 2); // Загруженность за день
+            $table->decimal('fullness_percent', 6);
 
             // Записи
             $table->unsignedInteger('record_completed');
@@ -45,17 +51,14 @@ return new class extends Migration
 
             $table->unsignedInteger('client_lost');
 
-            $table->unsignedInteger('client_total');
-
             $table->timestamps();
 
-            // Защита от дублей + быстрый поиск
-            $table->unique(['company_id', 'date'], 'yc_company_daily_unique');
+            $table->unique(['company_id', 'start_date', 'end_date'], 'yc_company_unique');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('yc_company_daily_stats');
+        Schema::dropIfExists('yc_company_stats');
     }
 };

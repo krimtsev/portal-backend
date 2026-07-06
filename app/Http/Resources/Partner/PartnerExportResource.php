@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Resources\Partner;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PartnerExportResource extends JsonResource
+final class PartnerExportResource extends JsonResource
 {
     public function toArray(Request $request)
     {

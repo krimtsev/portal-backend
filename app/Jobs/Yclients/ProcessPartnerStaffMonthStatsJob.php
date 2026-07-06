@@ -16,7 +16,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-final class ProcessPartnerStaffDailyStatsJob implements ShouldQueue
+final class ProcessPartnerStaffMonthStatsJob implements ShouldQueue
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -28,14 +28,15 @@ final class ProcessPartnerStaffDailyStatsJob implements ShouldQueue
 
     public function __construct(
         public readonly int $companyId,
-        public readonly string $date
+        public readonly string $start_date,
+        public readonly string $end_date
     ) {
         $this->onQueue(QueueName::YCLIENTS->value);
     }
 
     public function uniqueId(): string
     {
-        return "yc_partner_staff_daily_stats_{$this->companyId}_{$this->date}";
+        return "yc_partner_staff_month_stats_{$this->companyId}_{$this->start_date}_{$this->end_date}";
     }
 
     /**
@@ -58,24 +59,25 @@ final class ProcessPartnerStaffDailyStatsJob implements ShouldQueue
         }
 
         try {
-            $activeStaffIds = $service->getStaffIdsForDate(
-                $this->companyId,
-                $this->date,
-                $this->date
-            );
-
             /**
              * Собираем уникальные Id сотрудников у которых есть записи оказанных услуг
              */
+            $activeStaffIds = $service->getStaffIdsForDate(
+                $this->companyId,
+                $this->start_date,
+                $this->end_date
+            );
+
             if (empty($activeStaffIds)) {
                 return;
             }
 
             $subJobs = array_map(
-                fn (int $staffId) => new SyncYcStaffDailyStatsJob(
+                fn (int $staffId) => new SyncYcStaffMonthStatsJob(
                     $this->companyId,
                     $staffId,
-                    $this->date
+                    $this->start_date,
+                    $this->end_date,
                 ),
                 $activeStaffIds
             );

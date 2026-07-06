@@ -58,7 +58,11 @@ final class ProcessPartnerStaffTransactionJob implements ShouldQueue
         }
 
         try {
-            $activeStaffIds = $service->getStaffIdsForDate($this->companyId, $this->date);
+            $activeStaffIds = $service->getStaffIdsForDate(
+                $this->companyId,
+                $this->date,
+                $this->date
+            );
 
             /**
              * Собираем уникальные Id сотрудников у которых есть записи оказанных услуг

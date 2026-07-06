@@ -73,7 +73,7 @@ final class RoyaltyService
             ->copy()
             ->startOfMonth();
 
-        $freePeriodEnd = $openedMonth->copy()->addMonth(2);
+        $freePeriodEnd = $openedMonth->copy()->addMonths(2);
 
         /**
          * Первые 2 месяца бесплатно

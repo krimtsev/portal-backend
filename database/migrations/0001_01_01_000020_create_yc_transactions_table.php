@@ -27,7 +27,7 @@ return new class extends Migration
 
             $table->unsignedBigInteger('client_id')->nullable();
 
-            $table->decimal('amount', 14, 2);
+            $table->decimal('amount', 14);
 
             // Даты приходят с таймзоной (2026-04-01T22:46:00+0400)
             $table->dateTime('date');
@@ -78,7 +78,7 @@ return new class extends Migration
 
             $table->unsignedBigInteger('client_id')->nullable();
 
-            $table->decimal('amount', 14, 2);
+            $table->decimal('amount', 14);
 
             // Даты приходят с таймзоной (2026-04-01T22:46:00+0400)
             $table->dateTime('date');

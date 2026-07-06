@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Resources\Ticket;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class TicketListResource extends JsonResource
+final class TicketListResource extends JsonResource
 {
     public function toArray(Request $request): array
     {

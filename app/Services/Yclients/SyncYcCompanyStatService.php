@@ -7,38 +7,37 @@ namespace App\Services\Yclients;
 use App\Integrations\Yclients\Resources\Analytics\DTO\CompanyStatsFilters;
 use App\Integrations\Yclients\Resources\Analytics\DTO\CompanyStatsResponse;
 use App\Integrations\Yclients\YclientsApi;
-use App\Models\Yclient\YcStaffDailyStat;
+use App\Models\Yclient\YcCompanyStat;
 
-final readonly class SyncYcStaffDailyStatService
+final readonly class SyncYcCompanyStatService
 {
     public function __construct(
         private YclientsApi $yclients
     ) {}
 
-    public function sync(int $companyId, int $staffId, string $date): void
+    public function sync(int $companyId, string $startDate, ?string $endDate = null): void
     {
         $rawResponse = $this->yclients->analytics()->getCompanyStats(
             $companyId,
             new CompanyStatsFilters(
-                date_from: $date,
-                date_to: $date,
-                staff_id: $staffId,
+                date_from: $startDate,
+                date_to: $endDate ?? $startDate
             )
         );
 
-        $staffStatsData = $rawResponse['data'] ?? [];
+        $companyStatsData = $rawResponse['data'] ?? [];
 
-        if (empty($staffStatsData)) {
+        if (empty($companyStatsData)) {
             return;
         }
 
-        $dto = CompanyStatsResponse::from($staffStatsData);
+        $dto = CompanyStatsResponse::from($companyStatsData);
 
-        YcStaffDailyStat::updateOrCreate(
+        YcCompanyStat::updateOrCreate(
             [
                 'company_id' => $companyId,
-                'staff_id'   => $staffId,
-                'date'       => $date,
+                'start_date' => $startDate,
+                'end_date'   => $endDate,
             ],
             [
                 'income_total'            => $dto->income_total_stats->current_sum,

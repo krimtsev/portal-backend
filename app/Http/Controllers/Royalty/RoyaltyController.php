@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Royalty;
 
+use App\Helpers\DateHelper;
 use App\Helpers\Pagination\Pagination;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Royalty\RoyaltyListRequest;
@@ -32,9 +35,9 @@ final class RoyaltyController extends Controller
 
         $request->merge(['filters' => $filters]);
 
-        $monthInput = Carbon::parse($filters['date']);
-        $startDate = Carbon::parse($monthInput)->startOfMonth()->format('Y-m-d');
-        $endDate = Carbon::parse($monthInput)->endOfMonth()->format('Y-m-d');
+        $monthInput = DateHelper::parseMonthWithoutShift($filters['date']);
+        $startDate = $monthInput->copy()->startOfMonth()->format('Y-m-d');
+        $endDate = $monthInput->copy()->endOfMonth()->format('Y-m-d');
 
         $query = Partner::withRoyalty()
             ->select(
@@ -44,17 +47,19 @@ final class RoyaltyController extends Controller
                 'partners.start_at',
                 'partners.opened_at',
             )
-            ->leftJoin('yc_company_daily_stats as stats', function ($join) use ($startDate, $endDate) {
+            ->leftJoin('yc_company_stats as stats', function ($join) use ($startDate, $endDate) {
                 $join->on('stats.company_id', '=', 'partners.yclients_id')
-                    ->whereBetween('stats.date', [$startDate, $endDate]);
+                    ->whereBetween('stats.start_date', [$startDate, $endDate])
+                    ->whereNull('stats.end_date');
             })
             ->selectRaw('COALESCE(SUM(stats.income_total), 0) as income_total')
-            ->selectRaw('COUNT(DISTINCT stats.date) as days_count')
+            ->selectRaw('COUNT(DISTINCT stats.start_date) as days_count')
             ->groupBy(
                 'partners.id',
                 'partners.name',
                 'partners.yclients_id',
-                'partners.start_at'
+                'partners.start_at',
+                'partners.opened_at'
             );
 
         $result = Pagination::paginate(

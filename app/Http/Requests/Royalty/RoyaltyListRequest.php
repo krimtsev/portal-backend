@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Royalty;
 
 use App\Http\Requests\BaseListRequest;
+use Carbon\Carbon;
 
-class RoyaltyListRequest extends BaseListRequest
+final class RoyaltyListRequest extends BaseListRequest
 {
     public function authorize(): bool
     {

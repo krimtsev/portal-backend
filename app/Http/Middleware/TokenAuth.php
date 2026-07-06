@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Middleware;
 
 use App\Responses\JsonResponse;
 use Closure;
 use Illuminate\Http\Request;
 
-class TokenAuth
+final class TokenAuth
 {
     /**
      * Handle an incoming request.

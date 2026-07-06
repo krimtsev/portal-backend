@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Cloud;
 
 use App\Constants\File\FileSettings;
 use Illuminate\Foundation\Http\FormRequest;
 
-class CloudFileUploadRequest extends FormRequest
+final class CloudFileUploadRequest extends FormRequest
 {
     public function authorize(): bool
     {

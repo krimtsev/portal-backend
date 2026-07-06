@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Resources\Cloud;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CloudResource extends JsonResource
+final class CloudResource extends JsonResource
 {
     public function toArray(Request $request): array
     {

@@ -7,12 +7,12 @@ namespace App\Models\Yclient;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
-class YcStaffDailyStat extends Model
+class YcStaffStat extends Model
 {
     /**
      * @var string
      */
-    protected $table = 'yc_staff_daily_stats';
+    protected $table = 'yc_staff_stats';
 
     /**
      * @var array<int, string>
@@ -20,7 +20,8 @@ class YcStaffDailyStat extends Model
     protected $fillable = [
         'staff_id',
         'company_id',
-        'date',
+        'start_date',
+        'end_date',
         'income_total',
         'income_goods',
         'income_services',
@@ -45,7 +46,8 @@ class YcStaffDailyStat extends Model
         return [
             'staff_id'   => 'integer',
             'company_id' => 'integer',
-            'date'       => 'date:Y-m-d',
+            'start_date' => 'date:Y-m-d',
+            'end_date'   => 'date:Y-m-d',
 
             'income_total'            => 'float',
             'income_goods'            => 'float',
@@ -71,9 +73,21 @@ class YcStaffDailyStat extends Model
      * Локальный Scope для фильтрации по периоду.
      * YcCompanyDailyStat::forPeriod($start, $end)->get()
      */
-    public function scopeForPeriod(Builder $query, string $startDate, string $endDate): Builder
+    // public function scopeForPeriod(Builder $query, string $startDate, string $endDate): Builder
+    // {
+    //     return $query->whereBetween('date', [$startDate, $endDate]);
+    // }
+
+    public function scopeDailyForPeriod(Builder $query, string $startDate, string $endDate): Builder
     {
-        return $query->whereBetween('date', [$startDate, $endDate]);
+        return $query->whereNull('end_date')
+            ->whereBetween('start_date', [$startDate, $endDate]);
+    }
+
+    public function scopeMonthlyForPeriod(Builder $query, string $startDate, string $endDate): Builder
+    {
+        return $query->whereNotNull('end_date')
+            ->whereBetween('start_date', [$startDate, $endDate]);
     }
 
     /**

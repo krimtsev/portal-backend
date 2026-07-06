@@ -15,7 +15,7 @@ return new class extends Migration
 
             $table->string('title')->nullable();
 
-            $table->decimal('cost', 14, 2)->nullable();
+            $table->decimal('cost', 14)->nullable();
 
             $table->date('start_date');
 

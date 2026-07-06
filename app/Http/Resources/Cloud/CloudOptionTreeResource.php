@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Resources\Cloud;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CloudOptionTreeResource extends JsonResource
+final class CloudOptionTreeResource extends JsonResource
 {
     /**
      * Преобразует данные папки в формат Tree Node (PrimeVue)

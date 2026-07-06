@@ -6,20 +6,21 @@ use App\Enums\QueueName;
 use App\Integrations\Yclients\Resources\Records\RecordsResource;
 use App\Integrations\Yclients\Services\PeriodResolutionService;
 use App\Jobs\Yclients\ProcessPartnerStaffDailyStatsJob;
+use App\Jobs\Yclients\ProcessPartnerStaffMonthStatsJob;
 use App\Models\Partner\Partner;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-final class SyncYcStaffDailyStatsCommand extends Command
+final class SyncYcStaffMonthStatsCommand extends Command
 {
-    protected $signature = 'yclients:sync-staff-daily-stats
+    protected $signature = 'yclients:sync-staff-stats
                             {--date= : Конкретный день в формате YYYY-MM-DD}
                             {--month= : Полный месяц в формате YYYY-MM}
                             {--company_id= : Конкретный ID компании из YClients}';
 
-    protected $description = 'Синхронизация статистики по сотрудникам за сутки из YClients';
+    protected $description = 'Синхронизация статистики по сотрудникам за месяц из YClients';
 
     /**
      * @throws Throwable
@@ -33,10 +34,9 @@ final class SyncYcStaffDailyStatsCommand extends Command
         }
 
         try {
-            $dates = $periodService->resolveFromParams(
-                date: $this->option('date'),
-                month: $this->option('month')
-            );
+            $month = $this->option('month') ?? now()->subMonth()->startOfMonth()->format('Y-m');
+            [$startDate, $endDate] = $periodService->resolveMonthBounds($month);
+
         } catch (Throwable $e) {
             $this->error('Ошибка параметров: ' . $e->getMessage());
 
@@ -57,45 +57,38 @@ final class SyncYcStaffDailyStatsCommand extends Command
             return self::SUCCESS;
         }
 
-        $totalJobs = $partners->count() * count($dates);
-        $this->info('Период определен. Дней: ' . count($dates) . '. Активных партнеров: ' . $partners->count());
+        $totalJobs = $partners->count();
+        $this->info("Период определен: с {$startDate} по {$endDate}. Активных партнеров: {$totalJobs}");
         $this->info("Стартует отправка {$totalJobs} задач в очередь...");
 
         $bar = $this->output->createProgressBar($totalJobs);
         $bar->start();
 
-        foreach ($dates as $date) {
-            $dateString = $date->toDateString();
-
-            $jobs = [];
-            foreach ($partners as $partner) {
-                $jobs[] = new ProcessPartnerStaffDailyStatsJob(
-                    (int) $partner->yclients_id,
-                    $dateString
-                );
-            }
-
-            if (empty($jobs)) {
-                continue;
-            }
-
-            Bus::batch($jobs)
-                ->name("Сбор статистика по сотрудникам за: {$date}")
-                ->onQueue(QueueName::YCLIENTS->value)
-                ->allowFailures()
-                ->catch(function (Throwable $e) use ($date) {
-                    Log::error("Критический сбой пакета статистики сотрудников за {$date}: {$e->getMessage()}");
-                })
-                ->finally(function () use ($date) {
-                    Log::info("Пакет синхронизации статистики сотрудников за {$date} завершен.");
-                })
-                ->dispatch();
-
-            $bar->advance();
+        $jobs = [];
+        foreach ($partners as $partner) {
+            $jobs[] = new ProcessPartnerStaffMonthStatsJob(
+                (int) $partner->yclients_id,
+                $startDate,
+                $endDate
+            );
         }
 
-        $bar->finish();
-        $this->newLine(2);
+        if (empty($jobs)) {
+            return self::SUCCESS;
+        }
+
+        Bus::batch($jobs)
+            ->name("Сбор статистики по сотрудникам за период: {$startDate} - {$endDate}")
+            ->onQueue(QueueName::YCLIENTS->value)
+            ->allowFailures()
+            ->catch(function (Throwable $e) use ($startDate, $endDate) {
+                Log::error("Критический сбой пакета статистики сотрудников за период {$startDate} - {$endDate}: {$e->getMessage()}");
+            })
+            ->finally(function () use ($startDate, $endDate) {
+                Log::info("Пакет синхронизации статистики сотрудников за период {$startDate} - {$endDate} завершен.");
+            })
+            ->dispatch();
+
         $this->info('Все задачи успешно распределены.');
 
         return self::SUCCESS;

@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Resources\Statistics;
 
+use App\Helpers\MathHelper;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -34,36 +37,15 @@ final class StatisticsStaffCompareResource extends JsonResource
         $growth = [];
 
         foreach ($metricsToCompare as $key) {
-            $currentVal = (float) ($currentData[$key] ?? 0);
-            $prevVal = $prevData ? (float) ($prevData[$key] ?? 0) : 0;
+            $currentVal = (float) ($currentData[$key] ?? 0.00);
+            $prevVal = $prevData ? (float) ($prevData[$key] ?? 0.00) : 0.00;
 
-            $growth[$key] = $this->calculateGrowth($currentVal, $prevVal);
+            $growth[$key] = MathHelper::calculateGrowth($currentVal, $prevVal);
         }
 
         return [
             ...$currentData,
             'growth' => $growth,
         ];
-    }
-
-    private function calculateGrowth(float $current, float $previous): ?int
-    {
-        if ($current === 0 && $previous === 0) {
-            return 0;
-        }
-
-        if ($current >= $previous) {
-            if ($current === 0) {
-                return 0;
-            }
-
-            return (int) round((1 - ($previous / $current)) * 100);
-        }
-
-        if ($previous === 0) {
-            return 0;
-        }
-
-        return (int) round((($current - $previous) / $previous) * 100);
     }
 }

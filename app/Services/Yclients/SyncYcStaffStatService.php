@@ -7,34 +7,40 @@ namespace App\Services\Yclients;
 use App\Integrations\Yclients\Resources\Analytics\DTO\CompanyStatsFilters;
 use App\Integrations\Yclients\Resources\Analytics\DTO\CompanyStatsResponse;
 use App\Integrations\Yclients\YclientsApi;
-use App\Models\Yclient\YcCompanyDailyStat;
+use App\Models\Yclient\YcStaffStat;
 
-final readonly class SyncYcCompanyDailyStatService
+final readonly class SyncYcStaffStatService
 {
     public function __construct(
         private YclientsApi $yclients
     ) {}
 
-    public function sync(int $companyId, string $date): void
+    public function sync(int $companyId, int $staffId, string $startDate, ?string $endDate = null): void
     {
         $rawResponse = $this->yclients->analytics()->getCompanyStats(
             $companyId,
             new CompanyStatsFilters(
-                date_from: $date,
-                date_to: $date
+                date_from: $startDate,
+                date_to: $endDate ?? $startDate,
+                staff_id: $staffId,
             )
         );
 
-        $companyStatsData = $rawResponse['data'] ?? [];
+        $staffStatsData = $rawResponse['data'] ?? [];
 
-        if (empty($companyStatsData)) {
+        if (empty($staffStatsData)) {
             return;
         }
 
-        $dto = CompanyStatsResponse::from($companyStatsData);
+        $dto = CompanyStatsResponse::from($staffStatsData);
 
-        YcCompanyDailyStat::updateOrCreate(
-            ['company_id' => $companyId, 'date' => $date],
+        YcStaffStat::updateOrCreate(
+            [
+                'company_id' => $companyId,
+                'staff_id'   => $staffId,
+                'start_date' => $startDate,
+                'end_date'   => $endDate,
+            ],
             [
                 'income_total'            => $dto->income_total_stats->current_sum,
                 'income_goods'            => $dto->income_goods_stats->current_sum,
@@ -50,7 +56,6 @@ final readonly class SyncYcCompanyDailyStatService
                 'client_return'           => $dto->client_stats->return_count,
                 'client_active'           => $dto->client_stats->active_count,
                 'client_lost'             => $dto->client_stats->lost_count,
-                'client_total'            => $dto->client_stats->total_count,
             ]
         );
     }

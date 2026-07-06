@@ -4,7 +4,7 @@ namespace App\Helpers;
 
 use Illuminate\Support\Facades\Cache as FacadeCache;
 
-class Cache
+final class Cache
 {
     /**
      * Универсальный remember с опциональными тегами.

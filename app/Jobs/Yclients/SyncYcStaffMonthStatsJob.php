@@ -6,7 +6,7 @@ namespace App\Jobs\Yclients;
 
 use App\Enums\QueueName;
 use App\Integrations\Yclients\YclientsException;
-use App\Services\Yclients\YcStaffScheduleService;
+use App\Services\Yclients\SyncYcStaffStatService;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -16,7 +16,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-final class ProcessPartnerStaffDailyStatsJob implements ShouldQueue
+final class SyncYcStaffMonthStatsJob implements ShouldQueue
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -28,14 +28,19 @@ final class ProcessPartnerStaffDailyStatsJob implements ShouldQueue
 
     public function __construct(
         public readonly int $companyId,
-        public readonly string $date
+        public readonly int $staffId,
+        public readonly string $start_date,
+        public readonly string $end_date,
     ) {
         $this->onQueue(QueueName::YCLIENTS->value);
     }
 
+    /**
+     * Уникальный ID задачи для предотвращения race conditions.
+     */
     public function uniqueId(): string
     {
-        return "yc_partner_staff_daily_stats_{$this->companyId}_{$this->date}";
+        return "yc_staff_month_stats_{$this->companyId}_{$this->staffId}_{$this->start_date}_{$this->end_date}";
     }
 
     /**
@@ -51,49 +56,35 @@ final class ProcessPartnerStaffDailyStatsJob implements ShouldQueue
      * @throws Throwable
      * @throws YclientsException
      */
-    public function handle(YcStaffScheduleService $service): void
+    public function handle(SyncYcStaffStatService $service): void
     {
         if ($this->batch()?->cancelled()) {
             return;
         }
 
         try {
-            $activeStaffIds = $service->getStaffIdsForDate(
+            $service->sync(
                 $this->companyId,
-                $this->date,
-                $this->date
+                $this->staffId,
+                $this->start_date,
+                $this->end_date,
             );
-
-            /**
-             * Собираем уникальные Id сотрудников у которых есть записи оказанных услуг
-             */
-            if (empty($activeStaffIds)) {
-                return;
-            }
-
-            $subJobs = array_map(
-                fn (int $staffId) => new SyncYcStaffDailyStatsJob(
-                    $this->companyId,
-                    $staffId,
-                    $this->date
-                ),
-                $activeStaffIds
-            );
-
-            foreach (array_chunk($subJobs, 25) as $chunk) {
-                $this->batch()->add($chunk);
-            }
         } catch (Throwable $e) {
-            Log::error("Ошибка определения списка сотрудников для компании {$this->companyId}: {$e->getMessage()}");
+            Log::error("Сбой сбора статистики мастера {$this->staffId} в компании {$this->companyId}: {$e->getMessage()}");
             throw $e;
         }
     }
 
+    /**
+     * Метод срабатывает, когда все попытки завершились неудачей
+     */
     public function failed(Throwable $exception): void
     {
         Log::channel('yclients')
             ->critical('Синхронизация YClients завершилась.', [
                 'company_id' => $this->companyId,
+                'start_date' => $this->start_date,
+                'end_date'   => $this->end_date,
                 'error'      => $exception->getMessage(),
             ]);
     }

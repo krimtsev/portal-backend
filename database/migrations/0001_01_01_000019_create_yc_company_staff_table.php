@@ -35,7 +35,7 @@ return new class extends Migration
             $table->date('dismissal_date')->nullable();
 
             // Рейтинг сотрудника
-            $table->decimal('rating', 3, 2)->default(0.00);
+            $table->decimal('rating', 3)->default(0.00);
 
             $table->string('avatar')->nullable();
 

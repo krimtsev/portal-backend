@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('yc_storage_transactions', function (Blueprint $table) {
+        Schema::create('yc_storage_transactions', callback: function (Blueprint $table) {
             $table->unsignedBigInteger('transaction_id')->primary();
 
             $table->unsignedBigInteger('company_id');
@@ -24,16 +24,16 @@ return new class extends Migration
 
             $table->unsignedTinyInteger('operation_unit_type');
 
-            $table->decimal('amount', 12, 2);
+            $table->decimal('amount', 12);
 
             // "2026-05-19T18:54:00+0400"
             $table->dateTimeTz('create_date');
 
-            $table->decimal('cost_per_unit', 12, 2);
+            $table->decimal('cost_per_unit', 12);
 
-            $table->decimal('cost', 12, 2);
+            $table->decimal('cost', 12);
 
-            $table->decimal('discount', 12, 2);
+            $table->decimal('discount', 12);
 
             $table->text('comment')->nullable();
 

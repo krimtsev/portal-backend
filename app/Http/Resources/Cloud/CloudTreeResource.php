@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Resources\Cloud;
 
 use App\Enums\Cloud\CloudType;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CloudTreeResource extends JsonResource
+final class CloudTreeResource extends JsonResource
 {
     public function toArray($request): array
     {

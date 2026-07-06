@@ -2,7 +2,7 @@
 
 namespace App\Helpers;
 
-class NumberHelper
+final class NumberHelper
 {
     public static function money(float|int|string|null $value): string
     {

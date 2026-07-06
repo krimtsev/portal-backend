@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Services\Statistics;
 
+use App\Helpers\DateHelper;
+use App\Helpers\MathHelper;
 use App\Models\Partner\Partner;
 use App\Models\User\User;
-use App\Models\Yclient\YcCompanyDailyStat;
+use App\Models\Yclient\YcCompanyStat;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 
@@ -61,18 +63,18 @@ final class PartnerStatisticsService
 
     private function calculateStats(int $companyId, string $date, int $monthsCount): array
     {
-        $referenceDate = Carbon::parse($date);
+        $referenceDate = DateHelper::parseMonthWithoutShift($date);
 
         $endDate = $referenceDate->copy()->endOfMonth()->format('Y-m-d');
         $startDate = $referenceDate->copy()->subMonths($monthsCount)->startOfMonth()->format('Y-m-d');
 
-        $stats = YcCompanyDailyStat::forCompany($companyId)
-            ->forPeriod($startDate, $endDate)
-            ->get(['date', 'income_total']);
+        $stats = YcCompanyStat::forCompany($companyId)
+            ->dailyForPeriod($startDate, $endDate)
+            ->get(['start_date', 'income_total']);
 
         $monthlyTotals = [];
         foreach ($stats as $stat) {
-            $monthKey = Carbon::parse($stat->date)->startOfMonth()->format('Y-m-d');
+            $monthKey = Carbon::parse($stat->start_date)->startOfMonth()->format('Y-m-d');
             $monthlyTotals[$monthKey] = ($monthlyTotals[$monthKey] ?? 0.0) + $stat->income_total;
         }
 
@@ -87,58 +89,11 @@ final class PartnerStatisticsService
 
             $result[$currentMonth] = [
                 'value'   => (int) round($currentTotal),
-                'percent' => $this->calculatePercent($currentTotal, $previousTotal),
+                'percent' => MathHelper::calculatePercent($currentTotal, $previousTotal),
             ];
         }
 
         return $result;
     }
 
-    /**
-     * Вычисляет процент изменения между текущим и прошлым месяцем.
-     */
-    private function calculatePercent(float $current, float $previous): int
-    {
-        if ($previous > 0) {
-            return (int) round((($current - $previous) / $previous) * 100);
-        }
-
-        if ($current > 0) {
-            return 100;
-        }
-
-        return 0;
-    }
-
-    public function getMonthlyCompanyStats(Partner $partner, Carbon $date): ?YcCompanyDailyStat
-    {
-        $companyId = (int) $partner->yclients_id;
-
-        if (!$companyId) {
-            return null;
-        }
-
-        $endDate = $date->copy()->endOfMonth()->format('Y-m-d');
-        $startDate = $date->copy()->startOfMonth()->format('Y-m-d');
-
-        return YcCompanyDailyStat::forCompany($companyId)
-            ->forPeriod($startDate, $endDate)
-            ->where('fullness_percent', '>', 0)
-            ->selectRaw('
-                SUM(income_total) as income_total,
-                SUM(income_goods) as income_goods,
-                SUM(income_services) as income_services,
-                ROUND(AVG(fullness_percent), 2) as fullness_percent,
-                SUM(record_completed) as record_completed,
-                SUM(record_pending) as record_pending,
-                SUM(record_canceled) as record_canceled,
-                SUM(record_total) as record_total,
-                SUM(client_new) as client_new,
-                SUM(client_return) as client_return,
-                SUM(client_active) as client_active,
-                SUM(client_lost) as client_lost,
-                SUM(client_total) as client_total
-            ')
-            ->first();
-    }
 }

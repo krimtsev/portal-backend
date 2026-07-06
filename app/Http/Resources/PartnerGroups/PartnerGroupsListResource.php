@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Resources\PartnerGroups;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PartnerGroupsListResource extends JsonResource
+final class PartnerGroupsListResource extends JsonResource
 {
     public function toArray($request): array
     {

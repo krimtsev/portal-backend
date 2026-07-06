@@ -15,7 +15,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-final class SyncYcCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
+final class SyncYcCompanyMonthStatJob implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -27,7 +27,8 @@ final class SyncYcCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
 
     public function __construct(
         public readonly int $companyId,
-        public readonly string $date
+        public readonly string $startDate,
+        public readonly string $endDate,
     ) {
         $this->onQueue(QueueName::YCLIENTS->value);
     }
@@ -37,7 +38,7 @@ final class SyncYcCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
      */
     public function uniqueId(): string
     {
-        return "yc_company_daily_stats_{$this->companyId}_{$this->date}";
+        return "yc_company_month_stats_{$this->companyId}_{$this->startDate}_{$this->endDate}";
     }
 
     /**
@@ -53,8 +54,8 @@ final class SyncYcCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
     {
         $service->sync(
             $this->companyId,
-            $this->date,
-            null
+            $this->startDate,
+            $this->endDate
         );
     }
 
@@ -66,7 +67,8 @@ final class SyncYcCompanyDailyStatJob implements ShouldBeUnique, ShouldQueue
         Log::channel('yclients')
             ->critical('Синхронизация YClients завершилась.', [
                 'company_id' => $this->companyId,
-                'date'       => $this->date,
+                'start_date' => $this->startDate,
+                'end_date'   => $this->endDate,
                 'error'      => $exception->getMessage(),
             ]);
     }

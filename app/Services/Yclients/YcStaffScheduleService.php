@@ -15,27 +15,29 @@ final readonly class YcStaffScheduleService
         private YclientsApi $yclients
     ) {}
 
-    public function getStaffIdsForDate(int $companyId, string $date): array
+    public function getStaffIdsForDate(int $companyId, string $startDate, string $endDate): array
     {
-        $staffIds = YcStaffWorkDay::where('date', $date)
-            ->where('company_id', $companyId)
+        $staffIds = YcStaffWorkDay::where('company_id', $companyId)
+            ->whereBetween('date', [$startDate, $endDate])
             ->pluck('staff_id')
+            ->unique()
+            ->values()
             ->toArray();
 
         if (!empty($staffIds)) {
             return $staffIds;
         }
 
-        return $this->getActiveStaffIds($companyId, $date);
+        return $this->getActiveStaffIds($companyId, $startDate, $endDate);
     }
 
     /**
      * Собирает уникальные ID из расписания и записей.
      */
-    public function getActiveStaffIds(int $companyId, string $date): array
+    public function getActiveStaffIds(int $companyId, string $startDate, string $endDate): array
     {
-        $scheduleStaffIds = collect($this->getScheduleStaffIds($companyId, $date));
-        $recordsStaffIds = collect($this->getRecordStaffIds($companyId, $date));
+        $scheduleStaffIds = collect($this->getScheduleStaffIds($companyId, $startDate, $endDate));
+        $recordsStaffIds = collect($this->getRecordStaffIds($companyId, $startDate, $endDate));
 
         return $scheduleStaffIds
             ->merge($recordsStaffIds)
@@ -47,13 +49,13 @@ final readonly class YcStaffScheduleService
     /**
      * Получает ID сотрудников из расписания.
      */
-    public function getScheduleStaffIds(int $companyId, string $date): array
+    public function getScheduleStaffIds(int $companyId, string $startDate, string $endDate): array
     {
         $rawResponse = $this->yclients->staffSchedule()->getStaffSchedule(
             $companyId,
             new StaffScheduleFilters(
-                start_date: $date,
-                end_date: $date
+                start_date: $startDate,
+                end_date: $endDate
             )
         );
 
@@ -67,13 +69,13 @@ final readonly class YcStaffScheduleService
     /**
      * Получает ID сотрудников из записей (records).
      */
-    public function getRecordStaffIds(int $companyId, string $date): array
+    public function getRecordStaffIds(int $companyId, string $startDate, string $endDate): array
     {
         $rawResponse = $this->yclients->records()->getRecords(
             $companyId,
             new RecordsFilters(
-                start_date: $date,
-                end_date: $date
+                start_date: $startDate,
+                end_date: $endDate
             )
         );
 

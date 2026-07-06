@@ -4,18 +4,18 @@ namespace App\Console\Commands;
 
 use App\Integrations\Yclients\Services\PeriodResolutionService;
 use App\Jobs\Yclients\SyncYcCompanyDailyStatJob;
+use App\Jobs\Yclients\SyncYcCompanyMonthStatJob;
 use App\Models\Partner\Partner;
 use Illuminate\Console\Command;
 use Throwable;
 
-final class SyncYcCompanyDailyStatCommand extends Command
+final class SyncYcCompanyMonthStatCommand extends Command
 {
-    protected $signature = 'yclients:sync-company-daily-stats
-                            {--date= : Конкретный день в формате YYYY-MM-DD}
+    protected $signature = 'yclients:sync-company-month-stats
                             {--month= : Полный месяц в формате YYYY-MM}
                             {--company_id= : Конкретный ID компании из YClients (yclients_id)}';
 
-    protected $description = 'Синхронизация основных показателей компании за сутки из YClients';
+    protected $description = 'Синхронизация основных показателей компании за месяц из YClients';
 
     public function handle(PeriodResolutionService $periodService): int
     {
@@ -26,10 +26,9 @@ final class SyncYcCompanyDailyStatCommand extends Command
         }
 
         try {
-            $dates = $periodService->resolveFromParams(
-                date: $this->option('date'),
-                month: $this->option('month')
-            );
+            $month = $this->option('month') ?? now()->subMonth()->startOfMonth()->format('Y-m');
+            [$startDate, $endDate] = $periodService->resolveMonthBounds($month);
+
         } catch (Throwable $e) {
             $this->error('Ошибка параметров: ' . $e->getMessage());
 
@@ -50,24 +49,21 @@ final class SyncYcCompanyDailyStatCommand extends Command
             return self::SUCCESS;
         }
 
-        $totalJobs = $partners->count() * count($dates);
-        $this->info('Период определен. Дней: ' . count($dates) . '. Активных партнеров: ' . $partners->count());
+        $totalJobs = $partners->count();
+        $this->info("Период определен: с {$startDate} по {$endDate}. Активных партнеров: {$totalJobs}");
         $this->info("Стартует отправка {$totalJobs} задач в очередь...");
 
         $bar = $this->output->createProgressBar($totalJobs);
         $bar->start();
 
-        foreach ($dates as $date) {
-            $dateString = $date->toDateString();
+        foreach ($partners as $partner) {
+            SyncYcCompanyMonthStatJob::dispatch(
+                (int) $partner->yclients_id,
+                $startDate,
+                $endDate,
+            );
 
-            foreach ($partners as $partner) {
-                SyncYcCompanyDailyStatJob::dispatch(
-                    (int) $partner->yclients_id,
-                    $dateString
-                );
-
-                $bar->advance();
-            }
+            $bar->advance();
         }
 
         $bar->finish();

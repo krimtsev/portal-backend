@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Statistics;
 
 use App\Http\Requests\BaseListRequest;
 
-final class StatisticsCompanyRequest extends BaseListRequest
+final class StatisticsTotalCompareRequest extends BaseListRequest
 {
     public function authorize(): bool
     {
@@ -14,11 +16,11 @@ final class StatisticsCompanyRequest extends BaseListRequest
     public function rules(): array
     {
         return [
-            'filters.date' => [
+            'date' => [
                 'required',
                 'date',
             ],
-            'filters.partner_id' => [
+            'partner_id' => [
                 'required',
                 'integer',
             ],
