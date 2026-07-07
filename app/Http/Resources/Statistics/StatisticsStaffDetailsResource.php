@@ -29,9 +29,9 @@ final class StatisticsStaffDetailsResource extends JsonResource
             'client_active'    => $currentStats['client_active'],
             'fullness_percent' => (int) round($currentStats['fullness_percent']),
 
-            'history'          => $history,
+            'history' => $history,
 
-            'date'      => $referenceDate,
+            'date' => $referenceDate,
         ];
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Integrations\Yclients\Services\PeriodResolutionService;
-use App\Jobs\Yclients\SyncYcCompanyDailyStatJob;
 use App\Jobs\Yclients\SyncYcCompanyMonthStatJob;
 use App\Models\Partner\Partner;
 use Illuminate\Console\Command;

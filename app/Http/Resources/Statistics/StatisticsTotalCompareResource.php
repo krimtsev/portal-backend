@@ -59,13 +59,13 @@ final class StatisticsTotalCompareResource extends JsonResource
         }
 
         return [
-            'income_total'               => (float) ($stat->income_total ?? 0.00),
-            'income_goods'               => (float) ($stat->income_goods ?? 0.00),
-            'client_new'                 => (int) ($stat->client_new ?? 0),
-            'client_return'              => (int) ($stat->client_return ?? 0),
-            'fullness_percent'           => (int) round((float) ($stat->fullness_percent ?? 0)),
-            'retention_percent'          => (int) round((float) ($stat->retention_percent ?? 0)),
-            'average_sum'                => (int) ($stat->average_sum ?? 0),
+            'income_total'      => (float) ($stat->income_total ?? 0.00),
+            'income_goods'      => (float) ($stat->income_goods ?? 0.00),
+            'client_new'        => (int) ($stat->client_new ?? 0),
+            'client_return'     => (int) ($stat->client_return ?? 0),
+            'fullness_percent'  => (int) round((float) ($stat->fullness_percent ?? 0)),
+            'retention_percent' => (int) round((float) ($stat->retention_percent ?? 0)),
+            'average_sum'       => (int) ($stat->average_sum ?? 0),
 
             'rating_total'               => (int) ($stat->rating_total ?? 0),
             'rating_best'                => (int) ($stat->rating_best ?? 0),

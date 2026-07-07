@@ -89,5 +89,4 @@ final class PartnerStatisticsService
 
         return $result;
     }
-
 }

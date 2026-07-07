@@ -75,7 +75,7 @@ final class PeriodResolutionService
 
         return [
             $start->toDateString(),
-            $end->toDateString()
+            $end->toDateString(),
         ];
     }
 }

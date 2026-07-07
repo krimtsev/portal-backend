@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Requests\Royalty;
 
 use App\Http\Requests\BaseListRequest;
-use Carbon\Carbon;
 
 final class RoyaltyListRequest extends BaseListRequest
 {

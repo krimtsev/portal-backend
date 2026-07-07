@@ -12,7 +12,6 @@ use App\Http\Resources\Royalty\RoyaltyListResource;
 use App\Models\Partner\Partner;
 use App\Responses\JsonResponse;
 use App\Services\Royalty\RoyaltyService;
-use Carbon\Carbon;
 
 final class RoyaltyController extends Controller
 {

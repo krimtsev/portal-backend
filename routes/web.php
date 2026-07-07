@@ -1,16 +1,5 @@
 <?php
 
-use App\Integrations\Yclients\Resources\Analytics\DTO\CompanyStatsFilters;
-use App\Integrations\Yclients\Resources\Analytics\DTO\CompanyStatsResponse;
-use App\Integrations\Yclients\Resources\Comments\DTO\CommentsFilters;
-use App\Integrations\Yclients\Resources\Comments\DTO\CommentsResponse;
-use App\Integrations\Yclients\Resources\Records\DTO\RecordsFilters;
-use App\Integrations\Yclients\Resources\Records\DTO\RecordsResponse;
-use App\Integrations\Yclients\Resources\Staff\DTO\StaffResponse;
-use App\Integrations\Yclients\Resources\Transactions\DTO\TransactionsFilters;
-use App\Integrations\Yclients\Resources\Transactions\DTO\TransactionsResponse;
-use App\Integrations\Yclients\YclientsApi;
-use App\Integrations\Yclients\YclientsClient;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Route;
 

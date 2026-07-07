@@ -3,9 +3,9 @@
 namespace App\Helpers;
 
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Cache as FacadeCache;
 use DateInterval;
 use DateTimeInterface;
+use Illuminate\Support\Facades\Cache as FacadeCache;
 
 final class Cache
 {
@@ -17,8 +17,7 @@ final class Cache
         Carbon|DateInterval|DateTimeInterface|int $ttl,
         callable $callback,
         ?string $tag = null
-    )
-    {
+    ) {
         $driver = config('cache.default');
 
         if ($tag && in_array($driver, ['redis', 'memcached'])) {

@@ -25,7 +25,7 @@ foreach ($commands as $command) {
     foreach ($months as $month) {
         echo "Running {$command} for {$month}...\n";
         $resultCode = Artisan::call($command, [
-            '--month' => $month
+            '--month' => $month,
         ]);
 
         if ($resultCode === 0) {

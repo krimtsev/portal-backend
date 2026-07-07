@@ -63,8 +63,8 @@ final readonly class YcStaffScheduleService
     /**
      * Наполняет карту сотрудников признаком присутствия в определенном источнике.
      *
-     * @param array<int> $ids
-     * @param array<int, array> $staffMap
+     * @param  array<int>  $ids
+     * @param  array<int, array>  $staffMap
      */
     private function hydrateStaffSource(array $ids, string $flag, array &$staffMap): void
     {
