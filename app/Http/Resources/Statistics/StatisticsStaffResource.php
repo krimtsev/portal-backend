@@ -12,14 +12,9 @@ final class StatisticsStaffResource extends JsonResource
     public function toArray(Request $request): array
     {
         $additionalServices = $this->records ? (float) $this->records->total_tariff_cost : 0.00;
-        $attendedCount = $this->records ? (int) $this->records->attended_count : 0;
-
         $transactionSales = $this->transactions ? (float) $this->transactions->transaction_sales : 0.00;
         $transactionLoyalty = $this->transactions ? (float) $this->transactions->transaction_loyalty : 0.00;
 
-        $storageTransactionCount = $this->storage_transactions ? $this->storage_transactions->transaction_count : 0;
-
-        $totalRecords = $attendedCount + $storageTransactionCount;
         $income_total = (int) round($this->income_total);
 
         return [
@@ -37,6 +32,7 @@ final class StatisticsStaffResource extends JsonResource
             'client_new'        => (int) $this->client_new,
             'client_return'     => (int) $this->client_return,
             'retention_percent' => (int) round($this->retention_percent),
+            'average_sum'       => (int) round($this->income_average ?? 0),
 
             'rating_total' => $this->ratings ? (int) $this->ratings->rating_total : 0,
             'rating_best'  => $this->ratings ? (int) $this->ratings->rating_best : 0,
@@ -46,9 +42,9 @@ final class StatisticsStaffResource extends JsonResource
             'services_with_transactions' => (int) round($additionalServices + $transactionSales),
             'transaction_loyalty'        => (int) $transactionLoyalty,
 
-            'average_sum' => $totalRecords > 0
-                ? (int) round($income_total / $totalRecords)
-                : 0,
+            'services_per_visit' => ($this->records && $this->records->attended_count > 0)
+                ? round($this->records->services_count / $this->records->attended_count, 2)
+                : 0.00,
         ];
     }
 }

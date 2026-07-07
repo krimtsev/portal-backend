@@ -45,22 +45,17 @@ Schedule::command('php artisan yclients:sync-transactions')
     ->dailyAt('04:30')
     ->timezone('Europe/Moscow');
 
-// Синхронизация транзакций по сотрудникам из YClients
-Schedule::command('yclients:sync-staff-transactions')
-    ->dailyAt('05:00')
-    ->timezone('Europe/Moscow');
-
-/**
- * Синхронизация основных показателей компании за сутки из YClients (Royalty)
- */
-//Schedule::command('yclients:sync-company-daily-stats')
-//->dailyAt('06:00')
-//->timezone('Europe/Moscow');
-
 /**
  * Синхронизация основных показателей компании с выбором за месяц из YClients (Royalty)
  */
 Schedule::command('yclients:sync-company-month-stats')
+    ->monthlyOn(1,'05:00')
+    ->timezone('Europe/Moscow');
+
+/**
+ * Синхронизация статистики по сотрудникам с выбором за месяц из YClients
+ */
+Schedule::command('yclients:sync-staff-month-stats')
     ->monthlyOn(1,'06:00')
     ->timezone('Europe/Moscow');
 
@@ -68,15 +63,15 @@ Schedule::command('yclients:sync-company-month-stats')
  * Синхронизация статистики по сотрудникам из YClients
  */
 //Schedule::command('yclients:sync-staff-daily-stats')
-//->dailyAt('05:00')
+//->dailyAt('06:00')
 //->timezone('Europe/Moscow');
 
 /**
- * Синхронизация статистики по сотрудникам с выбором за месяц из YClients
+ * Синхронизация основных показателей компании за сутки из YClients (Royalty)
  */
-Schedule::command('yclients:sync-staff-month-stats')
-    ->monthlyOn(1,'07:00')
-    ->timezone('Europe/Moscow');
+//Schedule::command('yclients:sync-company-daily-stats')
+//->dailyAt('05:00')
+//->timezone('Europe/Moscow');
 
 // Удаляем задачи которые старшее 30 дней
 Schedule::command('queue:prune-batches --hours=720')

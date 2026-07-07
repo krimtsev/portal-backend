@@ -7,7 +7,7 @@ namespace App\Services\Yclients;
 use App\Integrations\Yclients\Resources\Comments\DTO\CommentsFilters;
 use App\Integrations\Yclients\Resources\Comments\DTO\CommentsResponse;
 use App\Integrations\Yclients\YclientsApi;
-use App\Models\Yclient\YcComment;
+use App\Models\Yclients\YcComment;
 
 final readonly class SyncYcCommentService
 {

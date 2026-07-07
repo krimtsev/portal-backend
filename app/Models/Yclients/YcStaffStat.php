@@ -2,22 +2,23 @@
 
 declare(strict_types=1);
 
-namespace App\Models\Yclient;
+namespace App\Models\Yclients;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
-class YcCompanyStat extends Model
+class YcStaffStat extends Model
 {
     /**
      * @var string
      */
-    protected $table = 'yc_company_stats';
+    protected $table = 'yc_staff_stats';
 
     /**
      * @var array<int, string>
      */
     protected $fillable = [
+        'staff_id',
         'company_id',
         'start_date',
         'end_date',
@@ -43,6 +44,7 @@ class YcCompanyStat extends Model
     protected function casts(): array
     {
         return [
+            'staff_id'   => 'integer',
             'company_id' => 'integer',
             'start_date' => 'date:Y-m-d',
             'end_date'   => 'date:Y-m-d',
@@ -78,14 +80,14 @@ class YcCompanyStat extends Model
 
     public function scopeDailyForPeriod(Builder $query, string $startDate, string $endDate): Builder
     {
-        return $query->whereBetween('start_date', [$startDate, $endDate])
-            ->whereNull('end_date');
+        return $query->whereNull('end_date')
+            ->whereBetween('start_date', [$startDate, $endDate]);
     }
 
     public function scopeMonthlyForPeriod(Builder $query, string $startDate, string $endDate): Builder
     {
-        return $query->whereBetween('start_date', [$startDate, $endDate])
-            ->whereNotNull('end_date');
+        return $query->whereNotNull('end_date')
+            ->whereBetween('start_date', [$startDate, $endDate]);
     }
 
     /**

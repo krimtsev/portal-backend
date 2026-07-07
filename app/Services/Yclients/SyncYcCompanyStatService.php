@@ -7,7 +7,7 @@ namespace App\Services\Yclients;
 use App\Integrations\Yclients\Resources\Analytics\DTO\CompanyStatsFilters;
 use App\Integrations\Yclients\Resources\Analytics\DTO\CompanyStatsResponse;
 use App\Integrations\Yclients\YclientsApi;
-use App\Models\Yclient\YcCompanyStat;
+use App\Models\Yclients\YcCompanyStat;
 
 final readonly class SyncYcCompanyStatService
 {

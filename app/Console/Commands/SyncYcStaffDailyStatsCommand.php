@@ -84,10 +84,12 @@ final class SyncYcStaffDailyStatsCommand extends Command
                 ->onQueue(QueueName::YCLIENTS->value)
                 ->allowFailures()
                 ->catch(function (Throwable $e) use ($date) {
-                    Log::error("Критический сбой пакета статистики сотрудников за {$date}: {$e->getMessage()}");
+                    Log::channel('yclients')
+                        ->error("Критический сбой пакета статистики сотрудников за {$date}: {$e->getMessage()}");
                 })
                 ->finally(function () use ($date) {
-                    Log::info("Пакет синхронизации статистики сотрудников за {$date} завершен.");
+                    Log::channel('yclients')
+                        ->info("Пакет синхронизации статистики сотрудников за {$date} завершен.");
                 })
                 ->dispatch();
 

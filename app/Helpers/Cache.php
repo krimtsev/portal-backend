@@ -2,14 +2,22 @@
 
 namespace App\Helpers;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache as FacadeCache;
+use DateInterval;
+use DateTimeInterface;
 
 final class Cache
 {
     /**
      * Универсальный remember с опциональными тегами.
      */
-    public static function remember(string $key, int $ttl, callable $callback, ?string $tag = null)
+    public static function remember(
+        string $key,
+        Carbon|DateInterval|DateTimeInterface|int $ttl,
+        callable $callback,
+        ?string $tag = null
+    )
     {
         $driver = config('cache.default');
 

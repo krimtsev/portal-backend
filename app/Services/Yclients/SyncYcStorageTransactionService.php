@@ -7,7 +7,7 @@ namespace App\Services\Yclients;
 use App\Integrations\Yclients\Resources\StorageTransactions\DTO\StorageTransactionsFilters;
 use App\Integrations\Yclients\Resources\StorageTransactions\DTO\StorageTransactionsResponse;
 use App\Integrations\Yclients\YclientsApi;
-use App\Models\Yclient\YcStorageTransaction;
+use App\Models\Yclients\YcStorageTransaction;
 use Carbon\Carbon;
 
 final readonly class SyncYcStorageTransactionService

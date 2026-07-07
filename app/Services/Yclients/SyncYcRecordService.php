@@ -7,11 +7,11 @@ namespace App\Services\Yclients;
 use App\Integrations\Yclients\Resources\Records\DTO\RecordsFilters;
 use App\Integrations\Yclients\Resources\Records\DTO\RecordsResponse;
 use App\Integrations\Yclients\YclientsApi;
-use App\Models\Yclient\YcRecord;
-use App\Models\Yclient\YcRecordDocument;
-use App\Models\Yclient\YcRecordGoodsTransaction;
-use App\Models\Yclient\YcRecordService;
-use App\Models\Yclient\YcTariff;
+use App\Models\Yclients\YcRecord;
+use App\Models\Yclients\YcRecordDocument;
+use App\Models\Yclients\YcRecordGoodsTransaction;
+use App\Models\Yclients\YcRecordService;
+use App\Models\Yclients\YcTariff;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 

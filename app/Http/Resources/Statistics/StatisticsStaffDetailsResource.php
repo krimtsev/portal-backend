@@ -16,12 +16,7 @@ final class StatisticsStaffDetailsResource extends JsonResource
         $referenceDate = $this->resource['reference_date'];
 
         $currentStats = $monthlyStats[$referenceDate];
-        $workDays = $currentStats['work_days'];
         $history = $this->resource['history'];
-
-        $fullnessPercent = $workDays > 0
-            ? round($currentStats['fullness_percent'] / $workDays)
-            : 0;
 
         return [
             'id'             => $staff->staff_id,
@@ -32,11 +27,10 @@ final class StatisticsStaffDetailsResource extends JsonResource
             'client_new'       => $currentStats['client_new'],
             'client_return'    => $currentStats['client_return'],
             'client_active'    => $currentStats['client_active'],
-            'fullness_percent' => $fullnessPercent,
+            'fullness_percent' => (int) round($currentStats['fullness_percent']),
 
             'history'          => $history,
 
-            'work_days' => $currentStats['work_days'],
             'date'      => $referenceDate,
         ];
     }

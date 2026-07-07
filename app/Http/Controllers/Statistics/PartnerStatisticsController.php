@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Statistics;
 
-use App\Helpers\DateHelper;
+use App\Constants\Statistics\StatisticsCache;
+use App\Helpers\Cache;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Statistics\StatisticsTotalCompareRequest;
 use App\Http\Requests\Statistics\StatisticsPartnerRequest;
-use App\Http\Resources\Statistics\StatisticsTotalCompareResource;
 use App\Models\Partner\Partner;
 use App\Responses\JsonResponse;
 use App\Services\Statistics\PartnerStatisticsService;
-use Illuminate\Support\Carbon;
 
 final class PartnerStatisticsController extends Controller
 {
@@ -26,13 +24,16 @@ final class PartnerStatisticsController extends Controller
     public function income(StatisticsPartnerRequest $request): \Illuminate\Http\JsonResponse
     {
         $partner = Partner::findOrFail($request->input('filters.partner_id'));
-
+        $date = $request->input('filters.date');
         $monthsCount = (int) $request->input('filters.months_count', 6);
 
-        $stats = $this->statisticsService->getMonthlyIncomeStats(
-            $partner,
-            $request->input('filters.date'),
-            $monthsCount
+        $companyId = (int) $partner->yclients_id;
+
+        $stats = Cache::remember(
+            "statistics_partner_income_{$companyId}_{$date}_{$monthsCount}_months",
+            now()->addHours(3),
+            fn () => $this->statisticsService->getMonthlyIncomeStats($partner, $date, $monthsCount),
+            StatisticsCache::YC_STATISTICS_TAG
         );
 
         return JsonResponse::Send([

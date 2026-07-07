@@ -20,9 +20,13 @@ return new class extends Migration
 
             $table->date('date');
 
+            $table->boolean('has_schedule')->default(false);
+            $table->boolean('has_records')->default(false);
+            $table->boolean('has_storage')->default(false);
+
             $table->timestamps();
 
-            $table->unique(['staff_id', 'date']);
+            $table->unique(['staff_id', 'company_id', 'date']);
             $table->index('date');
         });
     }
@@ -32,6 +36,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('staff_work_days');
+        Schema::dropIfExists('yc_staff_work_days');
     }
 };

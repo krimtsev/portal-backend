@@ -32,6 +32,7 @@ final class StatisticsStaffCompareResource extends JsonResource
             'transaction_loyalty',
             'average_sum',
             'work_days_count',
+            'services_per_visit',
         ];
 
         $growth = [];

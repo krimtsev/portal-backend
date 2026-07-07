@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Models\Yclient;
+namespace App\Models\Yclients;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -14,9 +14,15 @@ class YcStaffWorkDay extends Model
         'staff_id',
         'company_id',
         'date',
+        'has_schedule',
+        'has_records',
+        'has_storage',
     ];
 
     protected $casts = [
-        'date' => 'date',
+        'date'         => 'date',
+        'has_schedule' => 'boolean',
+        'has_records'  => 'boolean',
+        'has_storage'  => 'boolean',
     ];
 }

@@ -6,8 +6,9 @@ namespace App\Services\Yclients;
 
 use App\Integrations\Yclients\Resources\Records\DTO\RecordsFilters;
 use App\Integrations\Yclients\Resources\StaffSchedule\DTO\StaffScheduleFilters;
+use App\Integrations\Yclients\Resources\StorageTransactions\DTO\StorageTransactionsFilters;
 use App\Integrations\Yclients\YclientsApi;
-use App\Models\Yclient\YcStaffWorkDay;
+use App\Models\Yclients\YcStaffWorkDay;
 
 final readonly class YcStaffScheduleService
 {
@@ -28,22 +29,55 @@ final readonly class YcStaffScheduleService
             return $staffIds;
         }
 
-        return $this->getActiveStaffIds($companyId, $startDate, $endDate);
+        return array_column($this->getActiveStaffWithSources($companyId, $startDate, $endDate), 'staff_id');
     }
 
     /**
-     * Собирает уникальные ID из расписания и записей.
+     * Собирает уникальные ID с указанием источников их происхождения.
      */
-    public function getActiveStaffIds(int $companyId, string $startDate, string $endDate): array
+    public function getActiveStaffWithSources(int $companyId, string $startDate, string $endDate): array
     {
-        $scheduleStaffIds = collect($this->getScheduleStaffIds($companyId, $startDate, $endDate));
-        $recordsStaffIds = collect($this->getRecordStaffIds($companyId, $startDate, $endDate));
+        $staffMap = [];
 
-        return $scheduleStaffIds
-            ->merge($recordsStaffIds)
-            ->unique()
-            ->values()
-            ->toArray();
+        $this->hydrateStaffSource(
+            $this->getScheduleStaffIds($companyId, $startDate, $endDate),
+            'has_schedule',
+            $staffMap
+        );
+
+        $this->hydrateStaffSource(
+            $this->getRecordStaffIds($companyId, $startDate, $endDate),
+            'has_records',
+            $staffMap
+        );
+
+        $this->hydrateStaffSource(
+            $this->getStorageStaffIds($companyId, $startDate, $endDate),
+            'has_storage',
+            $staffMap
+        );
+
+        return array_values($staffMap);
+    }
+
+    /**
+     * Наполняет карту сотрудников признаком присутствия в определенном источнике.
+     *
+     * @param array<int> $ids
+     * @param array<int, array> $staffMap
+     */
+    private function hydrateStaffSource(array $ids, string $flag, array &$staffMap): void
+    {
+        foreach ($ids as $id) {
+            $staffMap[$id] ??= [
+                'staff_id'     => $id,
+                'has_schedule' => false,
+                'has_records'  => false,
+                'has_storage'  => false,
+            ];
+
+            $staffMap[$id][$flag] = true;
+        }
     }
 
     /**
@@ -81,6 +115,28 @@ final readonly class YcStaffScheduleService
 
         return collect($rawResponse['data'] ?? [])
             ->pluck('staff_id')
+            ->filter()
+            ->unique()
+            ->values()
+            ->toArray();
+    }
+
+    /**
+     * Получает ID сотрудников из складских транзакций.
+     */
+    public function getStorageStaffIds(int $companyId, string $startDate, string $endDate): array
+    {
+        $rawResponse = $this->yclients->storageTransactions()->getStorageTransactions(
+            $companyId,
+            new StorageTransactionsFilters(
+                start_date: $startDate,
+                end_date: $endDate
+            )
+        );
+
+        return collect($rawResponse['data'] ?? [])
+            ->pluck('master.id')
+            ->filter()
             ->unique()
             ->values()
             ->toArray();

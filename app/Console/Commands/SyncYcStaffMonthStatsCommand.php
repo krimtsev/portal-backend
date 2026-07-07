@@ -15,8 +15,7 @@ use Throwable;
 
 final class SyncYcStaffMonthStatsCommand extends Command
 {
-    protected $signature = 'yclients:sync-staff-stats
-                            {--date= : Конкретный день в формате YYYY-MM-DD}
+    protected $signature = 'yclients:sync-staff-month-stats
                             {--month= : Полный месяц в формате YYYY-MM}
                             {--company_id= : Конкретный ID компании из YClients}';
 
@@ -25,7 +24,7 @@ final class SyncYcStaffMonthStatsCommand extends Command
     /**
      * @throws Throwable
      */
-    public function handle(PeriodResolutionService $periodService, RecordsResource $recordsResource): int
+    public function handle(PeriodResolutionService $periodService): int
     {
         if (!config('jobs.yclients')) {
             $this->warn('Синхронизация отключена.');
@@ -82,13 +81,17 @@ final class SyncYcStaffMonthStatsCommand extends Command
             ->onQueue(QueueName::YCLIENTS->value)
             ->allowFailures()
             ->catch(function (Throwable $e) use ($startDate, $endDate) {
-                Log::error("Критический сбой пакета статистики сотрудников за период {$startDate} - {$endDate}: {$e->getMessage()}");
+                Log::channel('yclients')
+                    ->error("Критический сбой пакета статистики сотрудников за период {$startDate} - {$endDate}: {$e->getMessage()}");
             })
             ->finally(function () use ($startDate, $endDate) {
-                Log::info("Пакет синхронизации статистики сотрудников за период {$startDate} - {$endDate} завершен.");
+                Log::channel('yclients')
+                    ->info("Пакет синхронизации статистики сотрудников за период {$startDate} - {$endDate} завершен.");
             })
             ->dispatch();
 
+        $bar->finish();
+        $this->newLine(2);
         $this->info('Все задачи успешно распределены.');
 
         return self::SUCCESS;

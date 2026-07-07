@@ -8,7 +8,7 @@ use App\Helpers\DateHelper;
 use App\Helpers\MathHelper;
 use App\Models\Partner\Partner;
 use App\Models\User\User;
-use App\Models\Yclient\YcCompanyStat;
+use App\Models\Yclients\YcCompanyStat;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 
@@ -24,12 +24,6 @@ final class PartnerStatisticsService
         if (!$companyId) {
             return [];
         }
-
-        /*        return Cache::remember(
-                    "company_finances_{$companyId}_{$date}_{$monthsCount}_months",
-                    now()->addHours(2),
-                    fn () => $this->calculateStats($companyId, $date, $monthsCount)
-                );*/
 
         return $this->calculateStats($companyId, $date, $monthsCount);
     }

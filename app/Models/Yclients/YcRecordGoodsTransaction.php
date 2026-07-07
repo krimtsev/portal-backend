@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Yclient;
+namespace App\Models\Yclients;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

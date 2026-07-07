@@ -7,7 +7,7 @@ namespace App\Services\Yclients;
 use App\Integrations\Yclients\Resources\Transactions\DTO\TransactionsFilters;
 use App\Integrations\Yclients\Resources\Transactions\DTO\TransactionsResponse;
 use App\Integrations\Yclients\YclientsApi;
-use App\Models\Yclient\YcTransaction;
+use App\Models\Yclients\YcTransaction;
 use Carbon\Carbon;
 
 final readonly class SyncYcTransactionService

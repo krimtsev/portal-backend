@@ -5,15 +5,13 @@ declare(strict_types=1);
 namespace App\Services\Statistics;
 
 use App\Models\Partner\Partner;
-use App\Models\Yclient\YcComment;
-use App\Models\Yclient\YcCompanyStat;
-use App\Models\Yclient\YcRecord;
-use App\Models\Yclient\YcRecordGoodsTransaction;
-use App\Models\Yclient\YcStaffStat;
-use App\Models\Yclient\YcStaffTransaction;
-use App\Models\Yclient\YcStaffWorkDay;
-use App\Models\Yclient\YcStorageTransaction;
-use App\Models\Yclient\YcTransaction;
+use App\Models\Yclients\YcComment;
+use App\Models\Yclients\YcRecord;
+use App\Models\Yclients\YcRecordGoodsTransaction;
+use App\Models\Yclients\YcStaffStat;
+use App\Models\Yclients\YcStaffWorkDay;
+use App\Models\Yclients\YcStorageTransaction;
+use App\Models\Yclients\YcTransaction;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Support\Collection;
@@ -37,9 +35,6 @@ final class StaffStatisticsService
         $ratingStats = $this->getRatingStats($companyId, $startDateTime, $endDateTime);
         $recordStats = $this->getRecordStats($companyId, $startDateTime, $endDateTime);
         $staffTransactions = $this->getTransactionStats($companyId, $startDateTime, $endDateTime);
-        $storageTransactions = $this->getStorageTransactionStats($companyId, $startDateTime, $endDateTime);
-
-        $goodsStats = $this->getGoodsTransactionStats($companyId, $startDateTime, $endDateTime);
 
         $workDaysStats = $this->getWorkDaysStats($companyId, $startDateTime, $endDateTime);
 
@@ -50,8 +45,6 @@ final class StaffStatisticsService
             $ratingStats,
             $recordStats,
             $staffTransactions,
-            $storageTransactions,
-            $goodsStats,
             $workDaysStats,
             $pastClients,
             $currentClients,
@@ -62,12 +55,9 @@ final class StaffStatisticsService
             $staff->records = $recordStats->get($staffId);
 
             $staff->transactions = $staffTransactions->get($staffId);
-            $staff->storage_transactions = $storageTransactions->get($staffId);
 
-            $staff->goods_stats = $goodsStats->get($staffId);
             $staff->work_days = $workDaysStats->get($staffId);
 
-            // Расчет возвращаемости
             $staffPast = $pastClients->get($staffId, collect());
             $staffCurrent = $currentClients->get($staffId, collect());
 
@@ -98,105 +88,35 @@ final class StaffStatisticsService
         });
     }
 
-    public function getTotalCompare(Partner $partner, \Illuminate\Support\Carbon $date): ?YcCompanyStat
-    {
-        $companyId = (int) $partner->yclients_id;
-
-        if (!$companyId) {
-            return null;
-        }
-
-        $startDate = $date->copy()->startOfMonth()->format('Y-m-d H:i:s');
-        $endDate = $date->copy()->endOfMonth()->format('Y-m-d H:i:s');
-
-        /** @var YcCompanyStat|null $stat */
-        $stat = YcCompanyStat::forCompany($companyId)
-            ->dailyForPeriod($startDate, $endDate)
-            ->where('fullness_percent', '>', 0)
-            ->selectRaw('
-                SUM(income_total) as income_total,
-                SUM(income_goods) as income_goods,
-                ROUND(AVG(fullness_percent), 2) as fullness_percent,
-                ROUND(AVG(income_average), 2) as average_sum,
-                SUM(client_new) as client_new,
-                SUM(client_return) as client_return
-            ')
-            ->first();
-
-        $attendedCount = YcRecord::query()
-            ->where('company_id', $companyId)
-            ->whereBetween('datetime', [$startDate, $endDate])
-            ->where('attendance', 1)
-            ->count();
-
-        $storageTransactionCount = YcStorageTransaction::query()
-            ->where('company_id', $companyId)
-            ->whereNotNull('master_id')
-            ->whereBetween('create_date', [$startDate, $endDate])
-            ->where(function ($query) {
-                $query->where('loyalty_abonement_id', '>', 0)
-                    ->orWhere('loyalty_certificate_id', '>', 0);
-            })
-            ->count();
-
-        $standaloneGoodsCount = YcRecordGoodsTransaction::query()
-            ->where('company_id', $companyId)
-            ->whereBetween('datetime', [$startDate, $endDate])
-            ->where(function ($query) {
-                $query->whereNull('record_staff_id')
-                    ->orWhereColumn('record_staff_id', '!=', 'master_id')
-                    ->orWhere('attendance', '!=', 1);
-            })
-            ->distinct('record_id')
-            ->count('record_id');
-
-        $totalRecords = $attendedCount + $storageTransactionCount + $standaloneGoodsCount;
-
-        if ($stat) {
-            $endDateTime = $date->copy()->endOfMonth()->endOfDay()->format('Y-m-d H:i:s');
-            $currentPeriod = $date->copy()->startOfMonth()->startOfDay()->subMonths(2)->startOfDay();
-            $currentPeriodStart = $date->copy()->startOfMonth()->subMonths(2)->startOfDay()->format('Y-m-d H:i:s');
-            $pastPeriodEnd = $currentPeriod->copy()->subDay()->endOfDay()->format('Y-m-d H:i:s');
-            $pastPeriodStart = $currentPeriod->copy()->subDays(60)->startOfDay()->format('Y-m-d H:i:s');
-
-            // Получаем уникальных клиентов компании за периоды
-            $companyPastClients = $this->getCompanyClientsByPeriod($companyId, $pastPeriodStart, $pastPeriodEnd);
-            $companyCurrentClients = $this->getCompanyClientsByPeriod($companyId, $currentPeriodStart, $endDateTime);
-
-            $stat->retention_percent = $companyPastClients->isNotEmpty()
-                ? round(($companyCurrentClients->intersect($companyPastClients)->count() / $companyPastClients->count()) * 100, 2)
-                : 0;
-
-            $stat->average_sum = $totalRecords > 0
-                ? (int) round($stat->income_total / $totalRecords)
-                : 0;
-        }
-
-        return $stat;
-    }
-
     private function getStaffBaseList(int $companyId, string $start, string $end): Collection
     {
+        // Переводим даты в чистый формат Y-m-d для работы со скоупом
+        $startDate = Carbon::parse($start)->format('Y-m-d');
+        $endDate = Carbon::parse($end)->format('Y-m-d');
+
         return YcStaffStat::query()
-            ->select('yc_staff_stats.staff_id')
+            ->select([
+                'yc_staff_stats.staff_id',
+                'yc_staff_stats.company_id',
+                'yc_staff_stats.income_total',
+                'yc_staff_stats.income_average',
+                'yc_staff_stats.client_new',
+                'yc_staff_stats.client_return',
+                'yc_staff_stats.fullness_percent',
+                'yc_staff_stats.record_completed',
+            ])
             ->leftJoin('yc_company_staff', function ($join) {
                 $join->on('yc_staff_stats.staff_id', '=', 'yc_company_staff.staff_id')
                     ->on('yc_staff_stats.company_id', '=', 'yc_company_staff.company_id');
             })
-            ->selectRaw('MAX(yc_company_staff.name) as name')
-            ->selectRaw('MAX(yc_company_staff.firstname) as firstname')
-            ->selectRaw('MAX(yc_company_staff.surname) as surname')
-            ->selectRaw('MAX(yc_company_staff.specialization) as specialization')
-            ->selectRaw('MAX(yc_company_staff.avatar) as avatar')
-            ->selectRaw('SUM(income_total) as income_total')
-            ->selectRaw('SUM(client_new) as client_new')
-            ->selectRaw('SUM(client_return) as client_return')
-            ->selectRaw('ROUND(AVG(fullness_percent), 2) as fullness_percent')
-            ->selectRaw('SUM(record_completed) as record_completed')
+            ->selectRaw('yc_company_staff.name as name')
+            ->selectRaw('yc_company_staff.firstname as firstname')
+            ->selectRaw('yc_company_staff.surname as surname')
+            ->selectRaw('yc_company_staff.specialization as specialization')
+            ->selectRaw('yc_company_staff.avatar as avatar')
             ->where('yc_staff_stats.company_id', $companyId)
-            ->whereBetween('yc_staff_stats.start_date', [$start, $end])
-            ->groupBy('yc_staff_stats.staff_id')
-            ->orderBy('income_total', 'desc')
+            ->monthlyForPeriod($startDate, $endDate)
+            ->orderBy('yc_staff_stats.income_total', 'desc')
             ->get();
     }
 
@@ -215,12 +135,18 @@ final class StaffStatisticsService
 
     private function getRecordStats(int $companyId, string $start, string $end): Collection
     {
+        $servicesSub = DB::table('yc_record_services')
+            ->select('record_id', DB::raw('SUM(amount) as services_count'))
+            ->groupBy('record_id');
+
         return YcRecord::query()
+            ->leftJoinSub($servicesSub, 'services_sub', 'yc_records.record_id', '=', 'services_sub.record_id')
             ->where('yc_records.company_id', $companyId)
             ->whereBetween('yc_records.datetime', [$start, $end])
             ->select('yc_records.staff_id')
             ->selectRaw('SUM(yc_records.total_tariff_cost) as total_tariff_cost')
             ->selectRaw('SUM(CASE WHEN yc_records.attendance = 1 THEN 1 ELSE 0 END) as attended_count')
+            ->selectRaw('SUM(CASE WHEN yc_records.attendance = 1 THEN COALESCE(services_sub.services_count, 0) ELSE 0 END) as services_count')
             ->groupBy('yc_records.staff_id')
             ->get()
             ->keyBy('staff_id');
@@ -251,23 +177,6 @@ final class StaffStatisticsService
             ->keyBy('master_id');
     }
 
-    private function getStorageTransactionStats(int $companyId, string $start, string $end): Collection
-    {
-        return YcStorageTransaction::query()
-            ->where('company_id', $companyId)
-            ->whereNotNull('master_id')
-            ->whereBetween('create_date', [$start, $end])
-            ->where(function ($query) {
-                $query->where('loyalty_abonement_id', '>', 0)
-                    ->orWhere('loyalty_certificate_id', '>', 0);
-            })
-            ->select('master_id')
-            ->selectRaw('COUNT(*) as transaction_count')
-            ->groupBy('master_id')
-            ->get()
-            ->keyBy('master_id');
-    }
-
     private function getClientsByPeriod(int $companyId, string $start, string $end): Collection
     {
         return YcRecord::query()
@@ -281,36 +190,6 @@ final class StaffStatisticsService
             ->map(fn ($records) => $records->pluck('client_id')->unique());
     }
 
-    private function getCompanyClientsByPeriod(int $companyId, string $start, string $end): Collection
-    {
-        return YcRecord::query()
-            ->where('company_id', $companyId)
-            ->whereBetween('datetime', [$start, $end])
-            ->where('attendance', 1)
-            ->whereNotNull('client_id')
-            ->pluck('client_id')
-            ->unique();
-    }
-
-    private function getGoodsTransactionStats(int $companyId, string $start, string $end): Collection
-    {
-        return YcRecordGoodsTransaction::query()
-            ->where('company_id', $companyId)
-            ->whereBetween('datetime', [$start, $end])
-            ->select('master_id')
-            ->selectRaw('
-                COUNT(DISTINCT CASE
-                    WHEN record_staff_id IS NULL
-                         OR record_staff_id != master_id
-                         OR attendance != 1
-                    THEN record_id
-                END) as standalone_goods_count
-            ')
-            ->groupBy('master_id')
-            ->get()
-            ->keyBy('master_id');
-    }
-
     /**
      * Получение количества рабочих дней (смен) сотрудников за период.
      */
@@ -318,6 +197,10 @@ final class StaffStatisticsService
     {
         return YcStaffWorkDay::query()
             ->where('company_id', $companyId)
+            ->where(function ($query) {
+                $query->where('has_schedule', true)
+                    ->orWhere('has_records', true);
+            })
             ->whereBetween('date', [$start, $end])
             ->select('staff_id')
             ->selectRaw('COUNT(*) as work_days_count')

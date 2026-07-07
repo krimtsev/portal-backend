@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Statistics;
 
+use App\Constants\Statistics\StatisticsCache;
+use App\Helpers\Cache;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Statistics\StatisticsTotalCompareRequest;
 use App\Http\Requests\Statistics\StatisticsStaffDetailsRequest;
@@ -16,22 +18,27 @@ use App\Models\Partner\Partner;
 use App\Responses\JsonResponse;
 use App\Services\Statistics\StaffDetailsStatisticsService;
 use App\Services\Statistics\StaffStatisticsService;
-use Illuminate\Support\Carbon;
+use App\Services\Statistics\StaffTotalStatisticsService;
 
 final class StaffStatisticsController extends Controller
 {
     public function __construct(
         private readonly StaffStatisticsService $staffStatisticsService,
+        private readonly StaffTotalStatisticsService $staffTotalStatisticsService,
         private readonly StaffDetailsStatisticsService $staffDetailsStatisticsService,
     ) {}
 
     public function list(StatisticsStaffRequest $request)
     {
         $partner = Partner::findOrFail($request->input('filters.partner_id'));
+        $date = $request->input('filters.date');
+        $companyId = (int) $partner->yclients_id;
 
-        $stats = $this->staffStatisticsService->getMonthlyStats(
-            $partner,
-            $request->input('filters.date')
+        $stats = Cache::remember(
+            "statistics_staff_list_{$companyId}_{$date}",
+            now()->addHours(3),
+            fn () => $this->staffStatisticsService->getMonthlyStats($partner, $date),
+            StatisticsCache::YC_STATISTICS_TAG
         );
 
         return JsonResponse::Send([
@@ -42,10 +49,14 @@ final class StaffStatisticsController extends Controller
     public function compare(StatisticsStaffRequest $request)
     {
         $partner = Partner::findOrFail($request->input('filters.partner_id'));
+        $date = $request->input('filters.date');
+        $companyId = (int) $partner->yclients_id;
 
-        $stats = $this->staffStatisticsService->getComparedMonthlyStats(
-            $partner,
-            $request->input('filters.date')
+        $stats = Cache::remember(
+            "statistics_staff_compare_{$companyId}_{$date}",
+            now()->addHours(3),
+            fn () => $this->staffStatisticsService->getComparedMonthlyStats($partner, $date),
+            StatisticsCache::YC_STATISTICS_TAG
         );
 
         return JsonResponse::Send([
@@ -56,11 +67,14 @@ final class StaffStatisticsController extends Controller
     public function totalCompare(StatisticsTotalCompareRequest $request): \Illuminate\Http\JsonResponse
     {
         $partner = Partner::findOrFail($request->input('partner_id'));
-        $date = Carbon::parse($request->input('date'));
+        $date = $request->input('date');
+        $companyId = (int) $partner->yclients_id;
 
-        $stats = $this->staffStatisticsService->getTotalCompare(
-            $partner,
-            $date
+        $stats = Cache::remember(
+            "statistics_staff_total_compare_{$companyId}_{$date}",
+            now()->addHours(3),
+            fn () => $this->staffTotalStatisticsService->getMonthlyStats($partner, $date),
+            StatisticsCache::YC_STATISTICS_TAG
         );
 
         return JsonResponse::Send([
@@ -72,11 +86,14 @@ final class StaffStatisticsController extends Controller
     {
         $partner = Partner::findOrFail($request->input('partner_id'));
         $staffId = (int) $request->input('staff_id');
+        $date = $request->input('date');
+        $companyId = (int) $partner->yclients_id;
 
-        $data = $this->staffDetailsStatisticsService->getStaffDetails(
-            $partner,
-            $staffId,
-            $request->input('date')
+        $data = Cache::remember(
+            "statistics_staff_details_{$companyId}_{$staffId}_{$date}",
+            now()->addHours(3),
+            fn () => $this->staffDetailsStatisticsService->getStaffDetails($partner, $staffId, $date),
+            StatisticsCache::YC_STATISTICS_TAG
         );
 
         return JsonResponse::Send([

@@ -6,7 +6,7 @@ namespace App\Services\Yclients;
 
 use App\Integrations\Yclients\Resources\Staff\DTO\StaffResponse;
 use App\Integrations\Yclients\YclientsApi;
-use App\Models\Yclient\YcCompanyStaff;
+use App\Models\Yclients\YcCompanyStaff;
 
 final readonly class SyncYcCompanyStaffService
 {
