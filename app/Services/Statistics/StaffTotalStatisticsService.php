@@ -108,6 +108,7 @@ final class StaffTotalStatisticsService
     {
         return YcComment::query()
             ->where('company_id', $companyId)
+            ->where('type', 1)
             ->whereBetween('date', [$start, $end])
             ->selectRaw('COUNT(*) as rating_total')
             ->selectRaw('SUM(CASE WHEN rating = 5 THEN 1 ELSE 0 END) as rating_best')

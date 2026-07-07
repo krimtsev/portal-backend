@@ -122,6 +122,7 @@ final class StaffStatisticsService
     {
         return YcComment::query()
             ->where('company_id', $companyId)
+            ->where('type', 1)
             ->whereBetween('date', [$start, $end])
             ->select('staff_id')
             ->selectRaw('COUNT(*) as rating_total')
