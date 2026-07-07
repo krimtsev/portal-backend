@@ -73,7 +73,7 @@ final class StaffStatisticsController extends Controller
         $stats = Cache::remember(
             "statistics_staff_total_compare_{$companyId}_{$date}",
             now()->addHours(3),
-            fn () => $this->staffTotalStatisticsService->getMonthlyStats($partner, $date),
+            fn () => $this->staffTotalStatisticsService->getComparedMonthlyStats($partner, $date),
             StatisticsCache::YC_STATISTICS_TAG
         );
 
