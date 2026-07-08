@@ -26,6 +26,8 @@ final class SyncYcStaffWorkDaysJob implements ShouldBeUnique, ShouldQueue
     /** Таймаут выполнения */
     public int $timeout = 60;
 
+    public float $throttleSleep = 1.0;
+
     public function __construct(
         public readonly int $companyId,
         public readonly string $date

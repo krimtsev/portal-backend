@@ -14,10 +14,10 @@ final readonly class ThrottleJobSleep
             return $next($job);
         } finally {
             if (config('yclients.job.throttle')) {
-                $seconds = (int) config('yclients.job.throttle_sleep', 2);
+                $seconds = (float) ($job->throttleSleep ?? config('yclients.job.throttle_sleep', 1.0));
 
                 if ($seconds > 0) {
-                    sleep($seconds);
+                    usleep((int) ($seconds * 1_000_000));
                 }
             }
         }

@@ -6,6 +6,7 @@ namespace App\Jobs\Yclients;
 
 use App\Enums\QueueName;
 use App\Integrations\Yclients\YclientsException;
+use App\Jobs\Middleware\ThrottleJobSleep;
 use App\Services\Yclients\YcStaffScheduleService;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
@@ -32,6 +33,11 @@ final class ProcessPartnerStaffMonthStatsJob implements ShouldQueue
         public readonly string $end_date
     ) {
         $this->onQueue(QueueName::YCLIENTS->value);
+    }
+
+    public function middleware(): array
+    {
+        return [new ThrottleJobSleep()];
     }
 
     public function uniqueId(): string

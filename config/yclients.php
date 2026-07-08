@@ -6,7 +6,7 @@ return [
 
     'job' => [
         'throttle' => (bool) env('YCLIENTS_JOB_THROTTLE', false),
-        'throttle_sleep' => (int) env('YCLIENTS_JOB_THROTTLE_SLEEP', 1),
+        'throttle_sleep' => (float) env('YCLIENTS_JOB_THROTTLE_SLEEP', 1.0),
     ],
 
     'http' => [

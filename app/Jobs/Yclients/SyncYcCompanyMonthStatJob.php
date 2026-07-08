@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Jobs\Yclients;
 
 use App\Enums\QueueName;
+use App\Jobs\Middleware\ThrottleJobSleep;
 use App\Services\Yclients\SyncYcCompanyStatService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -31,6 +32,11 @@ final class SyncYcCompanyMonthStatJob implements ShouldBeUnique, ShouldQueue
         public readonly string $endDate,
     ) {
         $this->onQueue(QueueName::YCLIENTS->value);
+    }
+
+    public function middleware(): array
+    {
+        return [new ThrottleJobSleep()];
     }
 
     /**
