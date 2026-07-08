@@ -9,8 +9,8 @@ final class StaffResponse extends ValidateResponse
     public function __construct(
         public readonly int $id,
         public readonly int $company_id,
-        public readonly string $name,
-        public readonly string $specialization,
+        public readonly ?string $name,
+        public readonly ?string $specialization,
         public readonly int $fired,
         public readonly ?string $dismissal_date,
         public readonly float $rating,
@@ -24,10 +24,10 @@ final class StaffResponse extends ValidateResponse
         return [
             'id'             => ['required', 'integer'],
             'company_id'     => ['required', 'integer'],
-            'name'           => ['required', 'string'],
+            'name'           => ['nullable', 'string'],
             'rating'         => ['required', 'numeric'],
             'fired'          => ['required', 'boolean'],
-            'specialization' => ['required', 'string'],
+            'specialization' => ['nullable', 'string'],
             'dismissal_date' => ['nullable', 'string'],
             'avatar'         => ['nullable', 'string'],
             'avatar_big'     => ['nullable', 'string'],

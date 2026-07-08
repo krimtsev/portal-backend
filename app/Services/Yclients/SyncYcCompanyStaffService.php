@@ -10,6 +10,9 @@ use App\Models\Yclients\YcCompanyStaff;
 
 final readonly class SyncYcCompanyStaffService
 {
+    private const DEFAULT_NAME = "no_name";
+    private const DEFAULT_SPECIALIZATION = "no_specialization";
+
     public function __construct(
         private YclientsApi $yclients
     ) {}
@@ -31,10 +34,10 @@ final readonly class SyncYcCompanyStaffService
             $upsertData[] = [
                 'company_id'     => $dto->company_id,
                 'staff_id'       => $dto->id,
-                'name'           => $dto->name,
+                'name'           => $dto->name ?: self::DEFAULT_NAME,
                 'firstname'      => $dto->employee?->firstname ?: null,
                 'surname'        => $dto->employee?->surname ?: null,
-                'specialization' => $dto->specialization,
+                'specialization' => $dto->specialization ?: self::DEFAULT_SPECIALIZATION,
                 'fired'          => $dto->fired,
                 'dismissal_date' => $dto->dismissal_date,
                 'rating'         => $dto->rating,

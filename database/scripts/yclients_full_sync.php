@@ -15,7 +15,6 @@ $commands = [
     'yclients:sync-comments',
     'yclients:sync-storage-transactions',
     'yclients:sync-staff-stats',
-    'yclients:sync-staff-transactions',
     'yclients:sync-transactions',
 ];
 

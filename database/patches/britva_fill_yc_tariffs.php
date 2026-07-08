@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Запуск патча:
- * php artisan tinker database/patches/britva_fill_yc_tariffs.php
+ * c
  */
 $startDate = '2026-01-01';
 $now = Carbon::now();
