@@ -52,17 +52,20 @@ final class AuthController extends Controller
 
         return JsonResponse::Send(
             [
-                'user' => [
-                    'login'   => $user->login,
-                    'role'    => $user->role,
-                    'name'    => $user->name,
-                    'avatar'  => $user->avatar,
-                    'email'   => $user->email,
+                'data' => [
+                    'user' => [
+                        'login'   => $user->login,
+                        'role'    => $user->role,
+                        'name'    => $user->name,
+                        'avatar'  => $user->avatar,
+                        'email'   => $user->email,
+                    ],
                     'partner' => $partner,
-                ],
-                'access' => [
-                    'location_map' => $user->access->location_map,
-                ],
+                    'access' => [
+                        'location_map' => $user->access->location_map,
+                    ],
+                    'timeZoneName' => $user->timeZoneName,
+                ]
             ]
         );
     }

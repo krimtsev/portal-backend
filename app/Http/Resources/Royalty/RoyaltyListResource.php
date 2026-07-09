@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\Royalty;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -23,7 +24,9 @@ final class RoyaltyListResource extends JsonResource
             'vat_amount'       => $this['vat_amount'],
             'royalty_with_vat' => $this['royalty_with_vat'],
             'days_count'       => $this['days_count'],
-            'start_at'         => $this['start_at'],
+            'start_at'         => $this['start_at']
+                ? Carbon::parse($this['start_at'])->format('Y-m-d')
+                : null,
         ];
     }
 }

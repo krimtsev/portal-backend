@@ -15,7 +15,7 @@ final class TransactionsResponse extends ValidateResponse
         public readonly ?int $sold_item_id,
         public readonly ?string $sold_item_type,
         public readonly string $date,
-        public readonly ExpenseDTO $expense,
+        public readonly ?ExpenseDTO $expense,
         public readonly ?MasterDTO $master,
         public readonly ?AccountDTO $account,
         public readonly ?ClientDTO $client,

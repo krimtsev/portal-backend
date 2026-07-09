@@ -31,6 +31,7 @@ class User extends Authenticatable
         'partner_id',
         'disabled',
         'avatar',
+        'timeZoneName',
         'last_activity',
         'email',
         'notes',
