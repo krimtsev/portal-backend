@@ -15,14 +15,20 @@ final class ExpenseDTO extends ValidateResponse
     protected static function rules(): array
     {
         return [
-            'id'    => ['nullable', 'integer'],
-            'title' => ['nullable', 'string'],
-            'type'  => ['nullable', 'integer'],
+            'id'    => ['sometimes', 'nullable'],
+            'title' => ['sometimes', 'nullable'],
+            'type'  => ['sometimes', 'nullable'],
         ];
     }
 
     protected static function build(array $validated): static
     {
-        return new self(...$validated);
+        $clean = array_map(fn($value) => $value === '' ? null : $value, $validated);
+
+        return new self(
+            id:    isset($clean['id'])    ? (int) $clean['id'] : null,
+            title: isset($clean['title']) ? (string) $clean['title'] : null,
+            type:  isset($clean['type'])  ? (int) $clean['type'] : null,
+        );
     }
 }
