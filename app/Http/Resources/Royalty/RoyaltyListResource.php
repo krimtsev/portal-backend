@@ -23,7 +23,6 @@ final class RoyaltyListResource extends JsonResource
             'royalty_amount'   => $this['royalty_amount'],
             'vat_amount'       => $this['vat_amount'],
             'royalty_with_vat' => $this['royalty_with_vat'],
-            'days_count'       => $this['days_count'],
             'start_at'         => $this['start_at']
                 ? Carbon::parse($this['start_at'])->format('Y-m-d')
                 : null,

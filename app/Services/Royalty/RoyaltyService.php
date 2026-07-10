@@ -52,7 +52,6 @@ final class RoyaltyService
                     'vat_percent'      => self::VAT_PERCENT,
                     'vat_amount'       => $vatAmount,
                     'royalty_with_vat' => round($royaltyAmount + $vatAmount, 2),
-                    'days_count'       => (int) $partner->days_count,
                     'start_at'         => $partner->start_at,
                 ];
             }

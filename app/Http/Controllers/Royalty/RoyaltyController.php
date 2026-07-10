@@ -52,7 +52,6 @@ final class RoyaltyController extends Controller
                     ->where('stats.end_date', $endDate);
             })
             ->selectRaw('COALESCE(SUM(stats.income_total), 0) as income_total')
-            ->selectRaw('COUNT(DISTINCT stats.start_date) as days_count')
             ->groupBy(
                 'partners.id',
                 'partners.name',
