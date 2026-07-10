@@ -13,7 +13,7 @@ final class DocumentDTO extends ValidateResponse
         public readonly int $user_id,
         public readonly int $company_id,
         public readonly int $number,
-        public readonly string $comment,
+        public readonly ?string $comment,
         public readonly string $date_created,
         public readonly int $category_id,
         public readonly int $visit_id,
