@@ -73,6 +73,15 @@ Schedule::command('yclients:sync-staff-month-stats')
 // ->dailyAt('05:00')
 // ->timezone('Europe/Moscow');
 
+/**
+ * Синхронизация статистики данных сотрудников из YClients
+ * временно, до добавления наблюдения изменений.
+ */
+Schedule::command('yclients:sync-company-staff')
+    ->monthlyOn(1, '08:00')
+    ->timezone('Europe/Moscow');
+
+
 // Удаляем задачи которые старшее 30 дней
 Schedule::command('queue:prune-batches --hours=720')
     ->dailyAt('09:00')
