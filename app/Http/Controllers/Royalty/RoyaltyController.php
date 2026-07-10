@@ -48,8 +48,8 @@ final class RoyaltyController extends Controller
             )
             ->leftJoin('yc_company_stats as stats', function ($join) use ($startDate, $endDate) {
                 $join->on('stats.company_id', '=', 'partners.yclients_id')
-                    ->whereBetween('stats.start_date', [$startDate, $endDate])
-                    ->whereNull('stats.end_date');
+                    ->where('stats.start_date', $startDate)
+                    ->where('stats.end_date', $endDate);
             })
             ->selectRaw('COALESCE(SUM(stats.income_total), 0) as income_total')
             ->selectRaw('COUNT(DISTINCT stats.start_date) as days_count')

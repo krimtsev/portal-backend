@@ -63,7 +63,7 @@ final class PartnerStatisticsService
         $startDate = $referenceDate->copy()->subMonths($monthsCount)->startOfMonth()->format('Y-m-d');
 
         $stats = YcCompanyStat::forCompany($companyId)
-            ->dailyForPeriod($startDate, $endDate)
+            ->monthlyForPeriod($startDate, $endDate)
             ->get(['start_date', 'income_total']);
 
         $monthlyTotals = [];
