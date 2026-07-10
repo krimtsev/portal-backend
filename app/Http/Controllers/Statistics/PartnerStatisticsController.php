@@ -31,7 +31,7 @@ final class PartnerStatisticsController extends Controller
 
         $stats = Cache::remember(
             "statistics_partner_income_{$companyId}_{$date}_{$monthsCount}_months",
-            now()->addHours(3),
+            now()->addDay(),
             fn () => $this->statisticsService->getMonthlyIncomeStats($partner, $date, $monthsCount),
             StatisticsCache::YC_STATISTICS_TAG
         );

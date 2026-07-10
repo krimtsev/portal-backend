@@ -36,7 +36,7 @@ final class StaffStatisticsController extends Controller
 
         $stats = Cache::remember(
             "statistics_staff_list_{$companyId}_{$date}",
-            now()->addHours(3),
+            now()->addDay(),
             fn () => $this->staffStatisticsService->getMonthlyStats($partner, $date),
             StatisticsCache::YC_STATISTICS_TAG
         );
@@ -54,7 +54,7 @@ final class StaffStatisticsController extends Controller
 
         $stats = Cache::remember(
             "statistics_staff_compare_{$companyId}_{$date}",
-            now()->addHours(3),
+            now()->addDay(),
             fn () => $this->staffStatisticsService->getComparedMonthlyStats($partner, $date),
             StatisticsCache::YC_STATISTICS_TAG
         );
@@ -72,7 +72,7 @@ final class StaffStatisticsController extends Controller
 
         $stats = Cache::remember(
             "statistics_staff_total_compare_{$companyId}_{$date}",
-            now()->addHours(3),
+            now()->addDay(),
             fn () => $this->staffTotalStatisticsService->getComparedMonthlyStats($partner, $date),
             StatisticsCache::YC_STATISTICS_TAG
         );
@@ -91,7 +91,7 @@ final class StaffStatisticsController extends Controller
 
         $data = Cache::remember(
             "statistics_staff_details_{$companyId}_{$staffId}_{$date}",
-            now()->addHours(3),
+            now()->addDay(),
             fn () => $this->staffDetailsStatisticsService->getStaffDetails($partner, $staffId, $date),
             StatisticsCache::YC_STATISTICS_TAG
         );
