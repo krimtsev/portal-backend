@@ -14,6 +14,7 @@ use App\Models\Yclients\YcRecordService;
 use App\Models\Yclients\YcTariff;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 final readonly class SyncYcRecordService
 {
@@ -139,7 +140,7 @@ final readonly class SyncYcRecordService
                     'staff_id'               => $dto->staff_id,
                     'visit_id'               => $dto->visit_id,
                     'client_id'              => $dto->client?->id,
-                    'client_name'            => $dto->client?->name,
+                    'client_name'            => Str::limit($dto->client?->name, 255, ''),
                     'client_phone'           => $dto->client?->phone,
                     'client_success_visits'  => $dto->client?->success_visits_count ?? 0,
                     'client_fail_visits'     => $dto->client?->fail_visits_count ?? 0,
