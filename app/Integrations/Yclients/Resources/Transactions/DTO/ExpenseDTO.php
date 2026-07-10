@@ -15,9 +15,9 @@ final class ExpenseDTO extends ValidateResponse
     protected static function rules(): array
     {
         return [
-            'id'    => ['sometimes', 'nullable', 'integer'],
-            'title' => ['sometimes', 'nullable', 'string'],
-            'type'  => ['sometimes', 'nullable', 'integer'],
+            'id'    => ['nullable', 'integer'],
+            'title' => ['nullable', 'string'],
+            'type'  => ['nullable', 'integer'],
         ];
     }
 
