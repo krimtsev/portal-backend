@@ -19,8 +19,8 @@ final class StaffDetailsStatisticsService
         $referenceDate = Carbon::parse($date)->startOfMonth();
         $companyId = (int) $partner->yclients_id;
 
-        $startDate = $referenceDate->copy()->subMonths(5)->startOfMonth()->format('Y-m-d');
-        $endDate = $referenceDate->copy()->endOfMonth()->format('Y-m-d');
+        $startDate = $referenceDate->copy()->subMonths(5)->startOfMonth()->format('Y-m-d H:i:s');
+        $endDate = $referenceDate->copy()->endOfMonth()->format('Y-m-d H:i:s');
 
         $staff = $this->getCompanyStaff($companyId, $staffId);
         $monthlyStats = $this->getStaffMonthlyStat($companyId, $staffId, $startDate, $endDate);
@@ -39,9 +39,9 @@ final class StaffDetailsStatisticsService
                 'client_return'       => (int) ($monthlyRow->client_return ?? 0),
                 'client_active'       => (int) ($monthlyRow->client_active ?? 0),
                 'income_goods'        => (int) ($monthlyRow->income_goods ?? 0),
-                'fullness_percent'    => (float) ($monthlyRow->fullness_percent ?? 0), // Берем напрямую из источника
+                'fullness_percent'    => (float) ($monthlyRow->fullness_percent ?? 0),
                 'additional_services' => (float) ($record->additional_services ?? 0),
-                'average_sum'         => (float) ($monthlyRow->income_average ?? 0),  // Берем готовый средний чек из источника
+                'average_sum'         => (float) ($monthlyRow->income_average ?? 0),
             ];
         }
 
