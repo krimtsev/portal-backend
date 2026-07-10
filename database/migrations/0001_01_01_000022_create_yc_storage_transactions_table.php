@@ -52,8 +52,8 @@ return new class extends Migration
             // $table->string('unit_title');
 
             // Склад
-            $table->unsignedBigInteger('storage_id');
-            $table->string('storage_title');
+            $table->unsignedBigInteger('storage_id')->nullable();
+            $table->string('storage_title')->nullable();
 
             // Клиент
             $table->unsignedBigInteger('client_id')->nullable();

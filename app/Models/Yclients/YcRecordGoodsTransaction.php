@@ -36,7 +36,7 @@ class YcRecordGoodsTransaction extends Model
             'record_id'              => 'integer',
             'transaction_id'         => 'integer',
             'company_id'             => 'integer',
-            'amount'                 => 'integer',
+            'amount'                 => 'float',
             'cost_per_unit'          => 'float',
             'cost'                   => 'float',
             'manual_cost'            => 'float',

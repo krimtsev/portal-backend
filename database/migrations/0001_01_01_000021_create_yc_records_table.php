@@ -160,7 +160,7 @@ return new class extends Migration
             // $table->string('article')->nullable();
 
             // Кол-во проданного товара
-            $table->integer('amount');
+            $table->decimal('amount', 10, 4)->default(0.0000);
 
             // Цена за единицу товара
             $table->decimal('cost_per_unit', 14);

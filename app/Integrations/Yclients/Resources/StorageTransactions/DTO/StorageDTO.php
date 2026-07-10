@@ -12,20 +12,25 @@ use App\Integrations\Yclients\Core\ValidateResponse;
 final class StorageDTO extends ValidateResponse
 {
     public function __construct(
-        public readonly int $id,
-        public readonly string $title,
+        public readonly ?int $id,
+        public readonly ?string $title,
     ) {}
 
     protected static function rules(): array
     {
         return [
-            'id'    => ['required', 'integer'],
-            'title' => ['required', 'string'],
+            'id'    => ['sometimes', 'nullable'],
+            'title' => ['sometimes', 'nullable'],
         ];
     }
 
     protected static function build(array $validated): static
     {
-        return new self(...$validated);
+        $clean = array_map(fn($value) => $value === '' ? null : $value, $validated);
+
+        return new self(
+            id:    isset($clean['id'])    ? (int) $clean['id'] : null,
+            title: isset($clean['title']) ? (string) $clean['title'] : null,
+        );
     }
 }
