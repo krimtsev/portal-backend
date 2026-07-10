@@ -19,7 +19,7 @@ final class DocumentDTO extends ValidateResponse
         public readonly int $visit_id,
         public readonly int $record_id,
         public readonly string $type_title,
-        public readonly bool $is_sale_bill_printed,
+        public readonly ?bool $is_sale_bill_printed,
     ) {}
 
     protected static function rules(): array
@@ -37,7 +37,7 @@ final class DocumentDTO extends ValidateResponse
             'visit_id'             => ['required', 'integer'],
             'record_id'            => ['required', 'integer'],
             'type_title'           => ['required', 'string'],
-            'is_sale_bill_printed' => ['required', 'boolean'],
+            'is_sale_bill_printed' => ['nullable', 'boolean'],
         ];
     }
 
