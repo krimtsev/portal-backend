@@ -31,17 +31,17 @@ Schedule::command('yclients:sync-records')
     ->timezone('Europe/Moscow');
 
 // Синхронизация комментариев из YClients
-Schedule::command('php artisan yclients:sync-comments')
+Schedule::command('yclients:sync-comments')
     ->dailyAt('03:30')
     ->timezone('Europe/Moscow');
 
 // Синхронизация товарных транзакций компании из YClients
-Schedule::command('php artisan yclients:sync-storage-transactions')
+Schedule::command('yclients:sync-storage-transactions')
     ->dailyAt('04:00')
     ->timezone('Europe/Moscow');
 
 // Синхронизация транзакций компании из YClients
-Schedule::command('php artisan yclients:sync-transactions')
+Schedule::command('yclients:sync-transactions')
     ->dailyAt('04:30')
     ->timezone('Europe/Moscow');
 
