@@ -34,9 +34,10 @@ final class StaffTotalStatisticsService
         $startDateTime = $monthInput->copy()->startOfMonth()->startOfDay()->format('Y-m-d H:i:s');
         $endDateTime = $monthInput->copy()->endOfMonth()->endOfDay()->format('Y-m-d H:i:s');
 
+        $currentPeriod = $monthInput->copy()->startOfMonth()->startOfDay()->subMonths(2)->startOfDay();
         $currentPeriodStart = $monthInput->copy()->startOfMonth()->subMonths(2)->startOfDay()->format('Y-m-d H:i:s');
-        $pastPeriodEnd = $monthInput->copy()->startOfMonth()->startOfDay()->subDay()->endOfDay()->format('Y-m-d H:i:s');
-        $pastPeriodStart = $monthInput->copy()->startOfMonth()->startOfDay()->subMonths(2)->subDays(60)->startOfDay()->format('Y-m-d H:i:s');
+        $pastPeriodEnd = $currentPeriod->copy()->subDay()->endOfDay()->format('Y-m-d H:i:s');
+        $pastPeriodStart = $currentPeriod->copy()->subDays(60)->startOfDay()->format('Y-m-d H:i:s');
 
         $companyPastClients = $this->getCompanyClientsByPeriod($companyId, $pastPeriodStart, $pastPeriodEnd);
         $companyCurrentClients = $this->getCompanyClientsByPeriod($companyId, $currentPeriodStart, $endDateTime);
