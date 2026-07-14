@@ -16,6 +16,7 @@ final class StatisticsStaffResource extends JsonResource
         $transactionLoyalty = $this->transactions ? (float) $this->transactions->transaction_loyalty : 0.00;
 
         $income_total = (int) round($this->income_total);
+        $income_goods = (int) round($this->income_goods);
 
         return [
             'staff_id'       => $this->staff_id,
@@ -27,6 +28,7 @@ final class StatisticsStaffResource extends JsonResource
 
             'work_days_count' => $this->work_days ? (int) $this->work_days->work_days_count : 0,
 
+            'income_goods'      => $income_goods,
             'income_total'      => $income_total,
             'fullness_percent'  => (int) round($this->fullness_percent),
             'client_new'        => (int) $this->client_new,

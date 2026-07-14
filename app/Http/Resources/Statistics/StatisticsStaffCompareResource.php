@@ -20,6 +20,7 @@ final class StatisticsStaffCompareResource extends JsonResource
 
         $metricsToCompare = [
             'income_total',
+            'income_goods',
             'fullness_percent',
             'client_new',
             'client_return',

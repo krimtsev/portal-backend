@@ -73,6 +73,7 @@ return new class extends Migration
             $table->index('company_id');
             $table->index('master_id');
             $table->index('good_id');
+            $table->index(['company_id', 'document_id', 'master_id'], 'yc_storage_document_master_idx');
         });
     }
 

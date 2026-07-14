@@ -50,6 +50,7 @@ return new class extends Migration
 
             $table->index(['company_id', 'date'], 'yc_trans_company_date_idx');
             $table->index(['company_id', 'master_id', 'date'], 'yc_trans_master_date_idx');
+            $table->index(['company_id', 'date', 'record_id'], 'yc_trans_stats_idx');
             $table->index('record_id');
             $table->index('document_id');
             $table->index('visit_id');

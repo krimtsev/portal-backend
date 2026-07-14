@@ -88,7 +88,6 @@ final class StaffStatisticsService
 
     private function getStaffBaseList(int $companyId, string $start, string $end): Collection
     {
-        // Переводим даты в чистый формат Y-m-d для работы со скоупом
         $startDate = Carbon::parse($start)->format('Y-m-d');
         $endDate = Carbon::parse($end)->format('Y-m-d');
 
@@ -97,6 +96,7 @@ final class StaffStatisticsService
                 'yc_staff_stats.staff_id',
                 'yc_staff_stats.company_id',
                 'yc_staff_stats.income_total',
+                'yc_staff_stats.income_goods',
                 'yc_staff_stats.income_average',
                 'yc_staff_stats.client_new',
                 'yc_staff_stats.client_return',
@@ -156,23 +156,23 @@ final class StaffStatisticsService
         $storageMasters = DB::table('yc_storage_transactions')
             ->select('document_id', DB::raw('MAX(master_id) as master_id'))
             ->where('company_id', $companyId)
+            ->whereNotNull('master_id')
             ->groupBy('document_id');
 
         return YcTransaction::query()
             ->from('yc_transactions as t')
             ->leftJoin('yc_records as r', 't.record_id', '=', 'r.record_id')
             ->leftJoinSub($storageMasters, 'st', function ($join) {
-                $join->on('t.document_id', '=', 'st.document_id')
-                    ->where('t.record_id', 0);
+                $join->on('t.document_id', '=', 'st.document_id');
             })
             ->where('t.company_id', $companyId)
             ->whereBetween('t.date', [$start, $end])
-            ->selectRaw('COALESCE(t.master_id, r.staff_id, st.master_id) as master_id')
+            ->whereNotNull(DB::raw('COALESCE(st.master_id, t.master_id, r.staff_id)'))
+            ->selectRaw('COALESCE(st.master_id, t.master_id, r.staff_id) as master_id')
             ->selectRaw('SUM(CASE WHEN t.expense_id IN (6, 12) THEN ABS(t.amount) ELSE 0 END) as transaction_loyalty')
             ->selectRaw('SUM(CASE WHEN t.expense_id IN (7) THEN ABS(t.amount) ELSE 0 END) as transaction_sales')
-            ->groupByRaw('COALESCE(t.master_id, r.staff_id, st.master_id)')
+            ->groupByRaw('COALESCE(st.master_id, t.master_id, r.staff_id)')
             ->get()
-            ->filter(fn ($stat) => !is_null($stat->master_id))
             ->keyBy('master_id');
     }
 
