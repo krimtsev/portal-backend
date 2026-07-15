@@ -26,10 +26,10 @@ final class StorageDTO extends ValidateResponse
 
     protected static function build(array $validated): static
     {
-        $clean = array_map(fn($value) => $value === '' ? null : $value, $validated);
+        $clean = array_map(fn ($value) => $value === '' ? null : $value, $validated);
 
         return new self(
-            id:    isset($clean['id'])    ? (int) $clean['id'] : null,
+            id: isset($clean['id']) ? (int) $clean['id'] : null,
             title: isset($clean['title']) ? (string) $clean['title'] : null,
         );
     }

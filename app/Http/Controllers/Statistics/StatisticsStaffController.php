@@ -16,16 +16,16 @@ use App\Http\Resources\Statistics\StatisticsStaffResource;
 use App\Http\Resources\Statistics\StatisticsTotalCompareResource;
 use App\Models\Partner\Partner;
 use App\Responses\JsonResponse;
-use App\Services\Statistics\StaffDetailsStatisticsService;
-use App\Services\Statistics\StaffStatisticsService;
-use App\Services\Statistics\StaffTotalStatisticsService;
+use App\Services\Statistics\StatisticsStaffDetailsService;
+use App\Services\Statistics\StatisticsStaffService;
+use App\Services\Statistics\StatisticsStaffTotalService;
 
-final class StaffStatisticsController extends Controller
+final class StatisticsStaffController extends Controller
 {
     public function __construct(
-        private readonly StaffStatisticsService $staffStatisticsService,
-        private readonly StaffTotalStatisticsService $staffTotalStatisticsService,
-        private readonly StaffDetailsStatisticsService $staffDetailsStatisticsService,
+        private readonly StatisticsStaffService $staffStatisticsService,
+        private readonly StatisticsStaffTotalService $staffTotalStatisticsService,
+        private readonly StatisticsStaffDetailsService $staffDetailsStatisticsService,
     ) {}
 
     public function list(StatisticsStaffRequest $request)

@@ -5,7 +5,7 @@ return [
     'partner_token' => env('YCLIENTS_PARTNER_TOKEN', ''),
 
     'job' => [
-        'throttle' => (bool) env('YCLIENTS_JOB_THROTTLE', false),
+        'throttle'       => (bool) env('YCLIENTS_JOB_THROTTLE', false),
         'throttle_sleep' => (float) env('YCLIENTS_JOB_THROTTLE_SLEEP', 1.0),
     ],
 

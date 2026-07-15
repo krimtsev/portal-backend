@@ -12,7 +12,7 @@ use App\Models\Yclients\YcCompanyStat;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 
-final class PartnerStatisticsService
+final class StatisticsPartnerService
 {
     /**
      * Получает статистику доходов компании за динамическое количество месяцев от указанной даты.

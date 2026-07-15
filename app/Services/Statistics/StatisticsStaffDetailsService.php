@@ -12,7 +12,7 @@ use App\Models\Yclients\YcStaffStat;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
-final class StaffDetailsStatisticsService
+final class StatisticsStaffDetailsService
 {
     public function getStaffDetails(Partner $partner, int $staffId, string $date): array
     {

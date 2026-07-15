@@ -7,13 +7,13 @@ namespace App\Http\Controllers\App;
 use App\Http\Controllers\Controller;
 use App\Responses\JsonResponse;
 use App\Services\Message\MessageService;
-use App\Services\Statistics\PartnerStatisticsService;
+use App\Services\Statistics\StatisticsPartnerService;
 use Illuminate\Support\Facades\Auth;
 
 final class AppController extends Controller
 {
     public function __construct(
-        private readonly PartnerStatisticsService $statisticsService,
+        private readonly StatisticsPartnerService $statisticsService,
         private readonly MessageService $messageService
     ) {}
 

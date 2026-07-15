@@ -10,12 +10,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Statistics\StatisticsPartnerRequest;
 use App\Models\Partner\Partner;
 use App\Responses\JsonResponse;
-use App\Services\Statistics\PartnerStatisticsService;
+use App\Services\Statistics\StatisticsPartnerService;
 
-final class PartnerStatisticsController extends Controller
+final class StatisticsPartnerController extends Controller
 {
     public function __construct(
-        private readonly PartnerStatisticsService $statisticsService
+        private readonly StatisticsPartnerService $statisticsService
     ) {}
 
     /**

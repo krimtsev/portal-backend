@@ -14,7 +14,7 @@ use Carbon\Carbon;
 use DB;
 use Illuminate\Support\Collection;
 
-final class StaffStatisticsService
+final class StatisticsStaffService
 {
     public function getMonthlyStats(Partner $partner, string $date): Collection
     {

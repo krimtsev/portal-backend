@@ -54,18 +54,18 @@ final class AuthController extends Controller
             [
                 'data' => [
                     'user' => [
-                        'login'   => $user->login,
-                        'role'    => $user->role,
-                        'name'    => $user->name,
-                        'avatar'  => $user->avatar,
-                        'email'   => $user->email,
+                        'login'  => $user->login,
+                        'role'   => $user->role,
+                        'name'   => $user->name,
+                        'avatar' => $user->avatar,
+                        'email'  => $user->email,
                     ],
                     'partner' => $partner,
-                    'access' => [
+                    'access'  => [
                         'location_map' => $user->access->location_map,
                     ],
                     'timeZoneName' => $user->timeZoneName,
-                ]
+                ],
             ]
         );
     }

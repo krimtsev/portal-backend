@@ -13,7 +13,7 @@ use Carbon\Carbon;
 use DB;
 use Illuminate\Support\Collection;
 
-final class StaffTotalStatisticsService
+final class StatisticsStaffTotalService
 {
     /**
      * @return array<string, mixed> Возвращаем массив со строгим набором ключей

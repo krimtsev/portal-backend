@@ -23,8 +23,8 @@ Route::prefix('v1/profile')
 
         Route::prefix('statistics')
             ->group(function () {
-                Route::get('staff/compare', [Controllers\Statistics\StaffStatisticsController::class, 'compare']);
-                Route::get('staff/details', [Controllers\Statistics\StaffStatisticsController::class, 'staffDetails']);
-                Route::get('staff/total-compare', [Controllers\Statistics\StaffStatisticsController::class, 'totalCompare']);
+                Route::get('staff/compare', [Controllers\Statistics\StatisticsStaffController::class, 'compare']);
+                Route::get('staff/details', [Controllers\Statistics\StatisticsStaffController::class, 'staffDetails']);
+                Route::get('staff/total-compare', [Controllers\Statistics\StatisticsStaffController::class, 'totalCompare']);
             });
     });

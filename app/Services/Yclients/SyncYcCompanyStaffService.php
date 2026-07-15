@@ -10,8 +10,9 @@ use App\Models\Yclients\YcCompanyStaff;
 
 final readonly class SyncYcCompanyStaffService
 {
-    private const DEFAULT_NAME = "no_name";
-    private const DEFAULT_SPECIALIZATION = "no_specialization";
+    private const DEFAULT_NAME = 'no_name';
+
+    private const DEFAULT_SPECIALIZATION = 'no_specialization';
 
     public function __construct(
         private YclientsApi $yclients
