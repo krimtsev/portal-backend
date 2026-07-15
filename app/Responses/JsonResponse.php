@@ -22,11 +22,17 @@ class JsonResponse
         return response()->json($content, $code);
     }
 
-    public static function Created(): \Illuminate\Http\JsonResponse
+    public static function Created(?array $data): \Illuminate\Http\JsonResponse
     {
-        return response()->json([
+        $content = [
             'message' => 'Created',
-        ], Response::HTTP_CREATED);
+        ];
+
+        if ($data) {
+            $content = array_merge($content, $data);
+        }
+
+        return response()->json($content, Response::HTTP_CREATED);
     }
 
     public static function Updated(): \Illuminate\Http\JsonResponse

@@ -153,9 +153,9 @@ final class CloudController extends Controller
 
         Cache::flush(CloudFolder::CACHE_TAG);
 
-        return JsonResponse::Send([
+        return JsonResponse::Created([
             'data' => new CloudResource($folder),
-        ], 201);
+        ]);
     }
 
     public function update(CloudUpdateRequest $request, CloudFolder $folder): \Illuminate\Http\JsonResponse
