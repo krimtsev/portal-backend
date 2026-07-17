@@ -2,6 +2,7 @@
 
 namespace App\Models\User;
 
+use App\Enums\User\UserRole;
 use App\Models\Department\Department;
 use App\Models\Partner\Partner;
 use App\Observers\User\UserObserver;
@@ -81,6 +82,11 @@ class User extends Authenticatable
         return Attribute::make(
             get: fn () => $this->name ?: $this->login,
         );
+    }
+
+    public function hasRole(string $role): bool
+    {
+        return $this->role === $role;
     }
 
     public function departments(): BelongsToMany

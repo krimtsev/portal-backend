@@ -9,7 +9,6 @@ use App\Helpers\Pagination\Pagination;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Royalty\RoyaltyListRequest;
 use App\Http\Resources\Royalty\RoyaltyListResource;
-use App\Models\Partner\Partner;
 use App\Responses\JsonResponse;
 use App\Services\Royalty\RoyaltyService;
 
@@ -38,27 +37,7 @@ final class RoyaltyController extends Controller
         $startDate = $monthInput->copy()->startOfMonth()->format('Y-m-d');
         $endDate = $monthInput->copy()->endOfMonth()->format('Y-m-d');
 
-        $query = Partner::withRoyalty()
-            ->select(
-                'partners.id',
-                'partners.name',
-                'partners.yclients_id',
-                'partners.start_at',
-                'partners.opened_at',
-            )
-            ->leftJoin('yc_company_stats as stats', function ($join) use ($startDate, $endDate) {
-                $join->on('stats.company_id', '=', 'partners.yclients_id')
-                    ->where('stats.start_date', $startDate)
-                    ->where('stats.end_date', $endDate);
-            })
-            ->selectRaw('COALESCE(SUM(stats.income_total), 0) as income_total')
-            ->groupBy(
-                'partners.id',
-                'partners.name',
-                'partners.yclients_id',
-                'partners.start_at',
-                'partners.opened_at'
-            );
+        $query = $this->royaltyService->getPartnersWithStatsQuery($startDate, $endDate);
 
         $result = Pagination::paginate(
             $query,

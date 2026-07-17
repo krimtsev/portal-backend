@@ -6,6 +6,7 @@ namespace App\Services\Royalty;
 
 use App\Models\Partner\Partner;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
 final class RoyaltyService
@@ -18,12 +19,37 @@ final class RoyaltyService
 
     private const MAX_ROYALTY_PERCENT = 5;
 
+    public function getPartnersWithStatsQuery(string $startDate, string $endDate): Builder
+    {
+        return Partner::withRoyalty()
+            ->select(
+                'partners.id',
+                'partners.name',
+                'partners.yclients_id',
+                'partners.start_at',
+                'partners.opened_at',
+            )
+            ->leftJoin('yc_company_stats as stats', function ($join) use ($startDate, $endDate) {
+                $join->on('stats.company_id', '=', 'partners.yclients_id')
+                    ->where('stats.start_date', $startDate)
+                    ->where('stats.end_date', $endDate);
+            })
+            ->selectRaw('COALESCE(SUM(stats.income_total), 0) as income_total')
+            ->groupBy(
+                'partners.id',
+                'partners.name',
+                'partners.yclients_id',
+                'partners.start_at',
+                'partners.opened_at'
+            );
+    }
+
     public function transform(
         Collection $partners,
         Carbon $monthInput,
     ): Collection {
         return $partners->map(
-            function (Partner $partner) use ($monthInput) {
+            function ($partner) use ($monthInput) {
 
                 $grossRevenue = round((float) $partner->income_total, 2);
 

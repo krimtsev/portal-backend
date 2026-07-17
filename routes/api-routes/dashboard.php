@@ -9,6 +9,12 @@ Route::prefix('v1/dashboard')
         'dashboard.context',
     ])
     ->group(function () {
+        Route::prefix('panel')
+            ->middleware(['role:admin,sysadmin'])
+            ->group(function () {
+                Route::get('analytics', [Controllers\Panel\PanelController::class, 'analytics']);
+            });
+
         Route::prefix('partners')
             ->middleware(['role:admin,sysadmin'])
             ->group(function () {
