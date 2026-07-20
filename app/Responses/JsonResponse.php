@@ -22,7 +22,7 @@ class JsonResponse
         return response()->json($content, $code);
     }
 
-    public static function Created(?array $data): \Illuminate\Http\JsonResponse
+    public static function Created(?array $data = null): \Illuminate\Http\JsonResponse
     {
         $content = [
             'message' => 'Created',
