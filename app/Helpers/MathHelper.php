@@ -24,19 +24,19 @@ final class MathHelper
 
     public static function calculateGrowth(float $current, float $previous): ?int
     {
-        if ($current === 0 && $previous === 0) {
+        if ($current === 0.0 && $previous === 0.0) {
             return 0;
         }
 
         if ($current >= $previous) {
-            if ($current === 0) {
+            if ($current === 0.0) {
                 return 0;
             }
 
             return (int) round((1 - ($previous / $current)) * 100);
         }
 
-        if ($previous === 0) {
+        if ($previous === 0.0) {
             return 0;
         }
 

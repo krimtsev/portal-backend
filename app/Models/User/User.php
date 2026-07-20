@@ -2,7 +2,6 @@
 
 namespace App\Models\User;
 
-use App\Enums\User\UserRole;
 use App\Models\Department\Department;
 use App\Models\Partner\Partner;
 use App\Observers\User\UserObserver;
