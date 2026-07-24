@@ -6,6 +6,8 @@ use App\Helpers\Pagination\Pagination;
 use App\Http\Requests\EventCalendar\EventCalendarListRequest;
 use App\Models\EventCalendar\EventCalendar;
 use App\Models\User\User;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -89,5 +91,43 @@ class EventCalendarService
         return DB::transaction(function () use ($event) {
             return $event->delete();
         });
+    }
+
+    public function getEventsForPeriod(
+        int $startMonths = 3,
+        int $endMonths = 2
+    )
+    {
+        $startDate = Carbon::now()->subMonths($startMonths);
+        $endDate = Carbon::now()->addMonths($endMonths);
+
+        return EventCalendar::query()
+            ->with([
+                'user:id,name',
+                'responsibleUsers:id,name',
+            ])
+            ->select([
+                'id',
+                'title',
+                'description',
+                'start_at',
+                'end_at',
+                'department_id',
+                'user_id',
+            ])
+            ->whereBetween('start_at', [$startDate, $endDate])
+            ->get()
+            ->map(function ($event) {
+                return [
+                    'id'                => $event->id,
+                    'title'             => $event->title,
+                    'description'       => $event->description,
+                    'start_at'          => $event->start_at,
+                    'end_at'            => $event->end_at,
+                    'department_id'     => $event->department_id,
+                    'user'              => $event->user?->name,
+                    'responsible_users' => $event->responsibleUsers->pluck('name'),
+                ];
+            });
     }
 }
