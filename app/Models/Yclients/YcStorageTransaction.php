@@ -4,7 +4,7 @@ namespace App\Models\Yclients;
 
 use Illuminate\Database\Eloquent\Model;
 
-class YcStorageTransaction extends Model
+final class YcStorageTransaction extends Model
 {
     /**
      * @var string

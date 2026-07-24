@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('timeZoneName')->nullable()->after('avatar');
+            $table->string('time_zone_name')->nullable()->after('avatar');
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('timeZoneName');
+            $table->dropColumn('time_zone_name');
         });
     }
 };

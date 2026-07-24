@@ -5,7 +5,7 @@ namespace App\Models\Yclients;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class YcRecordGoodsTransaction extends Model
+final class YcRecordGoodsTransaction extends Model
 {
     protected $table = 'yc_record_goods_transactions';
 

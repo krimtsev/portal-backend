@@ -4,7 +4,7 @@ namespace App\Models\Cloud;
 
 use Illuminate\Database\Eloquent\Model;
 
-class CloudFile extends Model
+final class CloudFile extends Model
 {
     protected $table = 'cloud_files';
 

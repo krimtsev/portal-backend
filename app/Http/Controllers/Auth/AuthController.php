@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Auth;
 
+use App\Constants\Timezone\Timezone;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Models\Partner\Partner;
@@ -64,7 +65,7 @@ final class AuthController extends Controller
                     'access'  => [
                         'location_map' => $user->access->location_map,
                     ],
-                    'timeZoneName' => $user->timeZoneName,
+                    'timeZoneName' => $user->time_zone_name ?? Timezone::DEFAULT_TIMEZONE,
                 ],
             ]
         );

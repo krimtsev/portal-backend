@@ -2,10 +2,12 @@
 
 namespace App\Models\User;
 
+use App\Enums\User\UserRole;
 use App\Models\Department\Department;
 use App\Models\Partner\Partner;
 use App\Observers\User\UserObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -15,7 +17,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 #[ObservedBy([UserObserver::class])]
-class User extends Authenticatable
+final class User extends Authenticatable
 {
     use HasApiTokens, Notifiable;
 
@@ -31,7 +33,7 @@ class User extends Authenticatable
         'partner_id',
         'disabled',
         'avatar',
-        'timeZoneName',
+        'time_zone_name',
         'last_activity',
         'email',
         'notes',
@@ -88,6 +90,11 @@ class User extends Authenticatable
         return $this->role === $role;
     }
 
+    public function isSysAdmin(): bool
+    {
+        return $this->role === UserRole::Sysadmin->value;
+    }
+
     public function departments(): BelongsToMany
     {
         return $this->belongsToMany(
@@ -105,5 +112,23 @@ class User extends Authenticatable
             ->whereHas('departments', function ($q) use ($departmentId) {
                 $q->where('departments.id', $departmentId);
             });
+    }
+
+    /**
+     * Получение активных пользователей с выборкой динамических полей
+     *
+     * @param  Builder  $query
+     * @param  array  $fields  - какие поля вернуть
+     */
+    public function scopeActiveWhere($query, array $fields = ['id', 'name']): Builder
+    {
+        $query->where('disabled', 0);
+
+        $selectFields = array_filter(
+            $fields,
+            fn ($field) => in_array($field, $this->fillable) || $field === 'id'
+        );
+
+        return $query->select($selectFields);
     }
 }

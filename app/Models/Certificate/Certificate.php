@@ -4,7 +4,7 @@ namespace App\Models\Certificate;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Certificate extends Model
+final class Certificate extends Model
 {
     protected $table = 'certificates';
 

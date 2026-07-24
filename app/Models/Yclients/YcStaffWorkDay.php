@@ -6,7 +6,7 @@ namespace App\Models\Yclients;
 
 use Illuminate\Database\Eloquent\Model;
 
-class YcStaffWorkDay extends Model
+final class YcStaffWorkDay extends Model
 {
     protected $table = 'yc_staff_work_days';
 

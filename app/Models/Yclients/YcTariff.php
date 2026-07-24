@@ -6,7 +6,7 @@ namespace App\Models\Yclients;
 
 use Illuminate\Database\Eloquent\Model;
 
-class YcTariff extends Model
+final class YcTariff extends Model
 {
     protected $table = 'yc_tariffs';
 

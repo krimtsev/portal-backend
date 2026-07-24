@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class CloudFolder extends Model
+final class CloudFolder extends Model
 {
     use HasBreadcrumbs;
 

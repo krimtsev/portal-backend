@@ -19,10 +19,19 @@ final class RoyaltyService
 
     private const MAX_ROYALTY_PERCENT = 5;
 
-    public function getPartnersWithStatsQuery(string $startDate, string $endDate): Builder
+    public function getPartnersWithStatsQuery(
+        string $startDate,
+        string $endDate,
+        bool $applyRoyaltyScope = true
+    ): Builder
     {
-        return Partner::withRoyalty()
-            ->select(
+        $query = Partner::query();
+
+        if ($applyRoyaltyScope) {
+            $query->withRoyalty();
+        }
+
+        return $query->select(
                 'partners.id',
                 'partners.name',
                 'partners.yclients_id',

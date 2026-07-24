@@ -7,7 +7,7 @@ namespace App\Models\Yclients;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class YcRecord extends Model
+final class YcRecord extends Model
 {
     /**
      * @var string

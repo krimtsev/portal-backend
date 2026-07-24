@@ -6,7 +6,7 @@ namespace App\Models\Yclients;
 
 use Illuminate\Database\Eloquent\Model;
 
-class YcComment extends Model
+final class YcComment extends Model
 {
     /**
      * @var string

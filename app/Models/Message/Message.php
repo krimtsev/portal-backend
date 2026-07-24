@@ -7,7 +7,7 @@ use App\Models\User\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Message extends Model
+final class Message extends Model
 {
     protected $fillable = [
         'title',

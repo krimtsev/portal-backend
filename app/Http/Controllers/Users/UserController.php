@@ -149,4 +149,15 @@ final class UserController extends Controller
 
         return UserExportResource::collection($users)->resolve();
     }
+
+    public function options(): \Illuminate\Http\JsonResponse
+    {
+        $list = User::activeWhere(['id', 'name', 'login'])
+            ->orderBy('name')
+            ->get();
+
+        return JsonResponse::Send([
+            'list' => $list,
+        ]);
+    }
 }

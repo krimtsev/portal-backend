@@ -6,7 +6,7 @@ namespace App\Models\Yclients;
 
 use Illuminate\Database\Eloquent\Model;
 
-class YcCompanyStaff extends Model
+final class YcCompanyStaff extends Model
 {
     /**
      * @var string

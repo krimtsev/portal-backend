@@ -4,7 +4,7 @@ namespace App\Models\Ticket;
 
 use Illuminate\Database\Eloquent\Model;
 
-class TicketFile extends Model
+final class TicketFile extends Model
 {
     protected $table = 'tickets_files';
 

@@ -7,7 +7,7 @@ namespace App\Models\Yclients;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
-class YcCompanyStat extends Model
+final class YcCompanyStat extends Model
 {
     /**
      * @var string

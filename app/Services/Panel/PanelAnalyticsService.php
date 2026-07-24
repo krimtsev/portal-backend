@@ -129,17 +129,10 @@ final readonly class PanelAnalyticsService
     /**
      * Расчет эффективности.
      */
-    private function getEfficiencyMetrics(int $totalCount): array
+    private function getEfficiencyMetrics(): array
     {
+        $dateLimit = Carbon::now()->subDays(30);
         $successState = TicketState::Success->value;
-
-        $successCount = Ticket::query()
-            ->where('state', $successState)
-            ->count();
-
-        $successRate = $totalCount > 0
-            ? round(($successCount / $totalCount) * 100, 2)
-            : 0.0;
 
         $closureStates = [
             TicketState::Closed->value,
@@ -147,12 +140,22 @@ final readonly class PanelAnalyticsService
             $successState,
         ];
 
-        $avgMinutes = Ticket::query()
-            ->whereIn('state', $closureStates)
-            ->whereNotNull('updated_at')
-            ->whereNotNull('created_at')
-            ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, created_at, updated_at)) as avg_duration')
-            ->value('avg_duration');
+        $ticketStats = Ticket::query()
+            ->where('created_at', '>=', $dateLimit)
+            ->selectRaw('
+                COUNT(*) as period_total,
+                COUNT(CASE WHEN state = ? THEN 1 END) as period_success,
+                AVG(CASE WHEN state IN (' . implode(',', array_fill(0, count($closureStates), '?')) . ') THEN TIMESTAMPDIFF(MINUTE, created_at, updated_at) END) as avg_duration
+            ', array_merge([$successState], $closureStates))
+            ->first();
+
+        $totalCount = (int) ($ticketStats->period_total ?? 0);
+        $successCount = (int) ($ticketStats->period_success ?? 0);
+        $avgMinutes = $ticketStats->avg_duration;
+
+        $successRate = $totalCount > 0
+            ? round(($successCount / $totalCount) * 100, 2)
+            : 0.0;
 
         return [
             'success_rate_percentage'      => $successRate,
@@ -173,7 +176,6 @@ final readonly class PanelAnalyticsService
             $endDate = $monthInput->copy()->endOfMonth()->format('Y-m-d');
 
             $partners = $this->royaltyService->getPartnersWithStatsQuery($startDate, $endDate)->get();
-
             $processedCollection = $this->royaltyService->transform($partners, $monthInput);
 
             $incomeTotal = 0;
@@ -184,9 +186,19 @@ final readonly class PanelAnalyticsService
                 $royaltyTotal += $item['royalty_amount'] ?? 0;
             }
 
+            $allPartners = $this->royaltyService->getPartnersWithStatsQuery($startDate, $endDate, false)->get();
+            $processedAllCollection = $this->royaltyService->transform($allPartners, $monthInput);
+
+            $allIncomeTotal = 0;
+
+            foreach ($processedAllCollection as $item) {
+                $allIncomeTotal += $item['gross_revenue'] ?? $item['income_total'] ?? 0;
+            }
+
             $results[] = [
                 'month'          => $monthInput->format('Y-m'),
                 'income_total'   => (int) round($incomeTotal),
+                'all_income_total' => (int) round($allIncomeTotal),
                 'royalty_amount' => (int) round($royaltyTotal),
             ];
         }

@@ -5,7 +5,7 @@ namespace App\Models\Partner;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class PartnerTelnum extends Model
+final class PartnerTelnum extends Model
 {
     protected $table = 'partner_telnums';
 

@@ -7,7 +7,7 @@ namespace App\Models\Yclients;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class YcRecordDocument extends Model
+final class YcRecordDocument extends Model
 {
     /**
      * @var string

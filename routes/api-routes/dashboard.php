@@ -66,6 +66,7 @@ Route::prefix('v1/dashboard')
                 Route::post('user/{user}', [Controllers\Users\UserController::class, 'create']);
                 Route::put('user/{user}', [Controllers\Users\UserController::class, 'update']);
                 Route::get('export', [Controllers\Users\UserController::class, 'export']);
+                Route::get('options', [Controllers\Users\UserController::class, 'options']);
             });
 
         Route::prefix('cloud')
@@ -96,5 +97,15 @@ Route::prefix('v1/dashboard')
             ->group(function () {
                 Route::get('staff/list', [Controllers\Statistics\StatisticsStaffController::class, 'list']);
                 Route::get('partner/income', [Controllers\Statistics\StatisticsPartnerController::class, 'income']);
+            });
+
+        Route::prefix('event-calendar')
+            ->middleware(['role:admin,sysadmin'])
+            ->group(function () {
+                Route::get('list', [Controllers\EventCalendar\EventCalendarController::class, 'list']);
+                Route::post('batch', [Controllers\EventCalendar\EventCalendarController::class, 'create']);
+                Route::get('batch/{batch}', [Controllers\EventCalendar\EventCalendarController::class, 'get']);
+                Route::put('batch/{batch}', [Controllers\EventCalendar\EventCalendarController::class, 'update']);
+                Route::delete('batch/{batch}', [Controllers\EventCalendar\EventCalendarController::class, 'remove']);
             });
     });
