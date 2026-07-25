@@ -42,7 +42,7 @@ class EventCalendarService
             $query,
             $request,
             ['title'],
-            ['id'],
+            ['start_at', 'end_at'],
             [],
         );
     }
