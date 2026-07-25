@@ -95,7 +95,7 @@ class EventCalendarService
 
     public function getEventsForPeriod(
         int $startMonths = 3,
-        int $endMonths = 2
+        int $endMonths = 6
     )
     {
         $startDate = Carbon::now()->subMonths($startMonths);
