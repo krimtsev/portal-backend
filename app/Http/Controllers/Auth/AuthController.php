@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Auth;
 
-use App\Constants\Timezone\Timezone;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
-use App\Models\Partner\Partner;
+use App\Http\Resources\User\UserDataResource;
 use App\Models\User\User;
 use App\Responses\JsonResponse;
+use App\Services\Maintenance\MaintenanceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,7 +19,7 @@ final class AuthController extends Controller
     {
         $request->authenticate();
 
-        return self::userData();
+        return $this->userData();
     }
 
     public function logout(Request $request): \Illuminate\Http\JsonResponse
@@ -45,29 +45,19 @@ final class AuthController extends Controller
             return JsonResponse::Forbidden();
         }
 
-        $partner = Partner::select('id', 'name', 'disabled')
-            ->where('id', $user->partner_id)
-            ->first();
+        $user->load(['access', 'partner']);
 
-        $user->load('access');
+        $responseData = [
+            'data' => (new UserDataResource($user))->resolve(),
+        ];
 
-        return JsonResponse::Send(
-            [
-                'data' => [
-                    'user' => [
-                        'login'  => $user->login,
-                        'role'   => $user->role,
-                        'name'   => $user->name,
-                        'avatar' => $user->avatar,
-                        'email'  => $user->email,
-                    ],
-                    'partner' => $partner,
-                    'access'  => [
-                        'location_map' => $user->access->location_map,
-                    ],
-                    'timeZoneName' => $user->time_zone_name ?? Timezone::DEFAULT_TIMEZONE,
-                ],
-            ]
-        );
+        $isMaintenance = (new MaintenanceService())->isEnabled();
+        if ($isMaintenance) {
+            $responseData['maintenance'] = [
+                'enabled' => $isMaintenance
+            ];
+        }
+
+        return JsonResponse::Send($responseData);
     }
 }
