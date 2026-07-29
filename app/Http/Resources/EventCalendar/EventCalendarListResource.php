@@ -10,10 +10,10 @@ class EventCalendarListResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'          => $this->id,
-            'title'       => $this->title,
-            'start_at'    => $this->start_at?->format('Y-m-d'),
-            'end_at'      => $this->end_at?->format('Y-m-d'),
+            'id'       => $this->id,
+            'title'    => $this->title,
+            'start_at' => $this->start_at?->format('Y-m-d'),
+            'end_at'   => $this->end_at?->format('Y-m-d'),
 
             'user' => $this->whenLoaded('user', function () {
                 return $this->user ? [

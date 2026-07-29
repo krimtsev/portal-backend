@@ -11,8 +11,8 @@ use App\Http\Resources\EventCalendar\EventCalendarResource;
 use App\Models\EventCalendar\EventCalendar;
 use App\Responses\JsonResponse;
 use App\Services\EventCalendar\EventCalendarService;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 final class EventCalendarController extends Controller
 {

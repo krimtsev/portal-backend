@@ -2,7 +2,6 @@
 
 namespace App\Models\EventCalendar;
 
-use App\Models\Partner\Partner;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 

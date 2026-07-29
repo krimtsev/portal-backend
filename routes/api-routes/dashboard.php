@@ -7,7 +7,7 @@ Route::prefix('v1/dashboard')
     ->middleware([
         'auth:sanctum',
         'dashboard.context',
-        'maintenance'
+        'maintenance',
     ])
     ->group(function () {
         Route::prefix('panel')

@@ -196,10 +196,10 @@ final readonly class PanelAnalyticsService
             }
 
             $results[] = [
-                'month'          => $monthInput->format('Y-m'),
-                'income_total'   => (int) round($incomeTotal),
+                'month'            => $monthInput->format('Y-m'),
+                'income_total'     => (int) round($incomeTotal),
                 'all_income_total' => (int) round($allIncomeTotal),
-                'royalty_amount' => (int) round($royaltyTotal),
+                'royalty_amount'   => (int) round($royaltyTotal),
             ];
         }
 

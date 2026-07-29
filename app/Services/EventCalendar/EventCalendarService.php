@@ -6,7 +6,6 @@ use App\Helpers\Pagination\Pagination;
 use App\Http\Requests\EventCalendar\EventCalendarListRequest;
 use App\Models\EventCalendar\EventCalendar;
 use App\Models\User\User;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -96,8 +95,7 @@ class EventCalendarService
     public function getEventsForPeriod(
         int $startMonths = 3,
         int $endMonths = 6
-    )
-    {
+    ) {
         $startDate = Carbon::now()->subMonths($startMonths);
         $endDate = Carbon::now()->addMonths($endMonths);
 

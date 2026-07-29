@@ -23,8 +23,7 @@ final class RoyaltyService
         string $startDate,
         string $endDate,
         bool $applyRoyaltyScope = true
-    ): Builder
-    {
+    ): Builder {
         $query = Partner::query();
 
         if ($applyRoyaltyScope) {
@@ -32,12 +31,12 @@ final class RoyaltyService
         }
 
         return $query->select(
-                'partners.id',
-                'partners.name',
-                'partners.yclients_id',
-                'partners.start_at',
-                'partners.opened_at',
-            )
+            'partners.id',
+            'partners.name',
+            'partners.yclients_id',
+            'partners.start_at',
+            'partners.opened_at',
+        )
             ->leftJoin('yc_company_stats as stats', function ($join) use ($startDate, $endDate) {
                 $join->on('stats.company_id', '=', 'partners.yclients_id')
                     ->where('stats.start_date', $startDate)

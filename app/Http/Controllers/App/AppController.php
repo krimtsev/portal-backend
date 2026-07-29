@@ -27,8 +27,8 @@ final class AppController extends Controller
             'data' => [
                 'finances' => $this->statisticsService->getPartnerFinanceService($user),
                 'messages' => $this->messageService->getActiveMessagesForUser($user),
-                'events' => $this->eventCalendarService->getEventsForPeriod(),
-            ]
+                'events'   => $this->eventCalendarService->getEventsForPeriod(),
+            ],
         ]);
     }
 }

@@ -35,7 +35,6 @@ return new class extends Migration
             $table->date('start_at');
             $table->date('end_at');
 
-
             $table->timestamps();
         });
 
