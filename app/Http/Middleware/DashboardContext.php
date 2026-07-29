@@ -7,7 +7,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 
-final class DashboardContext
+final readonly class DashboardContext
 {
     public function handle(Request $request, Closure $next)
     {

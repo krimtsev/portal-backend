@@ -8,13 +8,16 @@ use App\Responses\JsonResponse;
 use Closure;
 use Illuminate\Http\Request;
 
-final class TokenAuth
+final readonly class TokenAuth
 {
     /**
      * Handle an incoming request.
      */
     public function handle(Request $request, Closure $next): \Illuminate\Http\JsonResponse
     {
+        /**
+         * TODO: ПЕРЕНЕСТИ ПОТОМ В КОНФИГ
+         */
         $token = env('DEBUG_QUERY_API_KEY');
         $requestToken = $request->query('token');
 

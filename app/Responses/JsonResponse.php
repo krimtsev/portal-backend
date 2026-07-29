@@ -89,4 +89,12 @@ class JsonResponse
             'message' => 'Invalid credentials',
         ], Response::HTTP_UNAUTHORIZED);
     }
+
+    public static function Maintenance(): \Illuminate\Http\JsonResponse
+    {
+        return response()->json([
+            'message' => 'Service Unavailable',
+            'reason'  => 'maintenance',
+        ], Response::HTTP_SERVICE_UNAVAILABLE);
+    }
 }

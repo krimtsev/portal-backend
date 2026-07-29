@@ -4,7 +4,7 @@ use App\Http\Controllers;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1/profile')
-    ->middleware(['auth:sanctum'])
+    ->middleware(['auth:sanctum', 'maintenance'])
     ->group(function () {
         Route::prefix('user-profile')->group(function () {
             Route::get('/', [Controllers\Users\UserProfileController::class, 'show']);

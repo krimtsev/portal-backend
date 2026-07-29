@@ -7,6 +7,7 @@ Route::prefix('v1/dashboard')
     ->middleware([
         'auth:sanctum',
         'dashboard.context',
+        'maintenance'
     ])
     ->group(function () {
         Route::prefix('panel')
@@ -107,5 +108,12 @@ Route::prefix('v1/dashboard')
                 Route::get('batch/{batch}', [Controllers\EventCalendar\EventCalendarController::class, 'get']);
                 Route::put('batch/{batch}', [Controllers\EventCalendar\EventCalendarController::class, 'update']);
                 Route::delete('batch/{batch}', [Controllers\EventCalendar\EventCalendarController::class, 'remove']);
+            });
+
+        Route::prefix('settings')
+            ->middleware(['role:sysadmin'])
+            ->group(function () {
+                Route::get('maintenance', [Controllers\Maintenance\MaintenanceController::class, 'get']);
+                Route::put('maintenance', [Controllers\Maintenance\MaintenanceController::class, 'update']);
             });
     });

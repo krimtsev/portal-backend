@@ -8,13 +8,10 @@ use App\Http\Requests\EventCalendar\EventCalendarListRequest;
 use App\Http\Requests\EventCalendar\EventCalendarUpdateRequest;
 use App\Http\Resources\EventCalendar\EventCalendarListResource;
 use App\Http\Resources\EventCalendar\EventCalendarResource;
-use App\Http\Resources\Partner\PartnerResource;
 use App\Models\EventCalendar\EventCalendar;
-use App\Models\Partner\Partner;
-use App\Models\User\User;
 use App\Responses\JsonResponse;
 use App\Services\EventCalendar\EventCalendarService;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 final class EventCalendarController extends Controller

@@ -8,7 +8,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final class CheckRole
+final readonly class CheckRole
 {
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
