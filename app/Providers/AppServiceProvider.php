@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Integrations\Telegram\TelegramManager;
+use App\Integrations\Telegram\Transport\TelegramTransport;
 use App\Integrations\Yclients\YclientsApi;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +18,12 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(YclientsApi::class);
+
+        $this->app->singleton(TelegramManager::class, function () {
+            $config = config('telegram');
+            $transport = new TelegramTransport($config['proxy'] ?? []);
+            return new TelegramManager($config, $transport);
+        });
     }
 
     /**

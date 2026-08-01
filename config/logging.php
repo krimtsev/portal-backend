@@ -139,6 +139,12 @@ return [
             'path'   => storage_path('logs/yclients.log'),
             'level'  => 'debug',
         ],
+
+        'telegram' => [
+            'driver' => 'single',
+            'path'   => storage_path('logs/telegram.log'),
+            'level'  => 'debug',
+        ],
     ],
 
 ];
