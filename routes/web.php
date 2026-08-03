@@ -2,7 +2,6 @@
 
 use App\Integrations\Telegram\TelegramManager;
 use Carbon\Carbon;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () { return 'Hello World'; });
@@ -21,11 +20,10 @@ Route::prefix('debug')->group(function () {
         ]);
     });
 
-
     Route::get('/telegram/msg', function (TelegramManager $telegram) {
         $response = $telegram->sendMessage([
             'chat_id' => '-1001993054003',
-            'text'    => 'hello'
+            'text'    => 'hello',
         ]);
 
         return response()->json($response);
@@ -43,7 +41,6 @@ Route::prefix('debug')->group(function () {
             'document' => $filePath,
             'caption'  => 'file',
         ]);
-
 
         return response()->json($response);
     });

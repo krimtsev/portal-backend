@@ -2,7 +2,6 @@
 
 namespace App\Integrations\Telegram\DTO;
 
-
 readonly class TelegramResponse
 {
     public function __construct(

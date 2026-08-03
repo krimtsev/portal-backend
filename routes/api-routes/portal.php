@@ -7,7 +7,6 @@ Route::prefix('v1')->group(function () {
     Route::post('login', [Controllers\Auth\AuthController::class, 'login']);
     Route::post('logout', [Controllers\Auth\AuthController::class, 'logout']);
 
-
     Route::middleware(['auth:sanctum', 'maintenance'])->group(function () {
         Route::get('home', [Controllers\App\AppController::class, 'homeData']);
 

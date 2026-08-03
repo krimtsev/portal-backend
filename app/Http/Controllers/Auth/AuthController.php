@@ -54,7 +54,7 @@ final class AuthController extends Controller
         $isMaintenance = (new MaintenanceService())->isEnabled();
         if ($isMaintenance) {
             $responseData['maintenance'] = [
-                'enabled' => $isMaintenance
+                'enabled' => $isMaintenance,
             ];
         }
 

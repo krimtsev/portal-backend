@@ -9,7 +9,7 @@ use App\Integrations\Telegram\Transport\TelegramTransport;
 final readonly class TelegramBot
 {
     public function __construct(
-        private string            $token,
+        private string $token,
         private TelegramTransport $transport
     ) {}
 

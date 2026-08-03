@@ -44,7 +44,7 @@ class TelegramTransport
     {
         $client = $this->request();
 
-        $uri = sprintf("bot%s/%s", $token, $method);
+        $uri = sprintf('bot%s/%s', $token, $method);
 
         [$data, $multipart] = $this->extractMultipart($payload);
 
@@ -80,7 +80,7 @@ class TelegramTransport
         $proxyIp = $this->proxyConfig['list'][array_rand($this->proxyConfig['list'])];
         $username = $this->proxyConfig['username'] ?? null;
         $password = $this->proxyConfig['password'] ?? null;
-        $scheme   = $this->proxyConfig['scheme'] ?? 'http';
+        $scheme = $this->proxyConfig['scheme'] ?? 'http';
 
         $auth = ($username && $password) ? "{$username}:{$password}@" : '';
 
@@ -122,9 +122,11 @@ class TelegramTransport
 
     private function logRequest(string $token, string $method, array $payload, ?array $response): void
     {
-        if (!config('telegram.http.debug')) return;
+        if (!config('telegram.http.debug')) {
+            return;
+        }
 
-        $cleanPayload = collect($payload)->map(fn($v) => is_resource($v) || $v instanceof UploadedFile ? '[FILE]' : $v)->toArray();
+        $cleanPayload = collect($payload)->map(fn ($v) => is_resource($v) || $v instanceof UploadedFile ? '[FILE]' : $v)->toArray();
         $maskedToken = substr($token, 0, 8) . '***';
 
         Log::channel($this->logChannel)->debug("API Call: {$method}", [

@@ -11,6 +11,11 @@
  */
 
 /**
+ * Fixme: с 5:00 - 7:00 MSK
+ * Задачи не ставим, на ISP проводятся технические работы
+ */
+
+/**
  * Обновление сертификатов из Google Sheets
  */
 Schedule::command('certificates:sync')
@@ -49,14 +54,27 @@ Schedule::command('yclients:sync-transactions')
  * Синхронизация основных показателей компании с выбором за месяц из YClients (Royalty)
  */
 Schedule::command('yclients:sync-company-month-stats')
-    ->monthlyOn(1, '05:00')
+    ->monthlyOn(1, '09:00')
     ->timezone('Europe/Moscow');
 
 /**
  * Синхронизация статистики по сотрудникам с выбором за месяц из YClients
  */
 Schedule::command('yclients:sync-staff-month-stats')
-    ->monthlyOn(1, '06:00')
+    ->monthlyOn(1, '09:30')
+    ->timezone('Europe/Moscow');
+
+/**
+ * Синхронизация статистики данных сотрудников из YClients
+ * временно, до добавления наблюдения изменений.
+ */
+Schedule::command('yclients:sync-company-staff')
+    ->monthlyOn(1, '10:00')
+    ->timezone('Europe/Moscow');
+
+// Удаляем задачи которые старшее 30 дней
+Schedule::command('queue:prune-batches --hours=720')
+    ->dailyAt('11:00')
     ->timezone('Europe/Moscow');
 
 /**
@@ -72,16 +90,3 @@ Schedule::command('yclients:sync-staff-month-stats')
 // Schedule::command('yclients:sync-company-daily-stats')
 // ->dailyAt('05:00')
 // ->timezone('Europe/Moscow');
-
-/**
- * Синхронизация статистики данных сотрудников из YClients
- * временно, до добавления наблюдения изменений.
- */
-Schedule::command('yclients:sync-company-staff')
-    ->monthlyOn(1, '08:00')
-    ->timezone('Europe/Moscow');
-
-// Удаляем задачи которые старшее 30 дней
-Schedule::command('queue:prune-batches --hours=720')
-    ->dailyAt('09:00')
-    ->timezone('Europe/Moscow');

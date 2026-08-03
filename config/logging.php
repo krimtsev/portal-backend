@@ -127,6 +127,13 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        'scheduler' => [
+            'driver' => 'daily',
+            'path'   => storage_path('logs/scheduler.log'),
+            'level'  => 'error',
+            'days'   => 30,
+        ],
+
         'mail' => [
             'driver'               => 'single',
             'path'                 => storage_path('logs/mail.log'),
