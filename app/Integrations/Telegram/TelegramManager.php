@@ -5,7 +5,7 @@ namespace App\Integrations\Telegram;
 use App\Integrations\Telegram\Transport\TelegramTransport;
 use InvalidArgumentException;
 
-class TelegramManager
+final class TelegramManager
 {
     /** @var array<string, TelegramBot> */
     private array $bots = [];

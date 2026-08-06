@@ -38,7 +38,7 @@ final class SyncYcStaffMonthStatsJob implements ShouldQueue
 
     public function middleware(): array
     {
-        return [new ThrottleJobSleep()];
+        return [ThrottleJobSleep::forYclients()];
     }
 
     /**

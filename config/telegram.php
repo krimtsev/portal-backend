@@ -19,11 +19,23 @@ return [
         'main' => [
             'token' => env('TELEGRAM_MAIN_BOT_TOKEN'),
         ],
-        'notifications' => [
-            'token' => env('TELEGRAM_NOTIFY_BOT_TOKEN'),
+        'notification' => [
+            'token' => env('TELEGRAM_NOTIFICATION_BOT_TOKEN'),
         ],
-        'support' => [
-            'token' => env('TELEGRAM_SUPPORT_BOT_TOKEN'),
+        'monitoring' => [
+            'token' => env('TELEGRAM_MONITORING_BOT_TOKEN'),
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Целевые каналы и чаты (Channels / Target Chats)
+    |--------------------------------------------------------------------------
+    */
+    'channels' => [
+        'staff_updates' => [
+            'chat_id' => env('TELEGRAM_STAFF_UPDATES_CHAT_ID'),
+            'bot'     => 'notification',
         ],
     ],
 
@@ -38,7 +50,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Настройки  умолчанию
+    | Настройки ограничения очереди задач
+    |--------------------------------------------------------------------------
+    */
+    'queue' => [
+        'throttle' => [
+            'enabled' => (bool) env('TELEGRAM_QUEUE_THROTTLE_ENABLED', false),
+            'sleep' => (float) env('TELEGRAM_QUEUE_THROTTLE_SLEEP', 1.0),
+        ]
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Настройки HTTP
     |--------------------------------------------------------------------------
     */
     'http' => [

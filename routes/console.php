@@ -11,11 +11,6 @@
  */
 
 /**
- * Fixme: с 5:00 - 7:00 MSK
- * Задачи не ставим, на ISP проводятся технические работы
- */
-
-/**
  * Обновление сертификатов из Google Sheets
  */
 Schedule::command('certificates:sync')
@@ -49,6 +44,11 @@ Schedule::command('yclients:sync-storage-transactions')
 Schedule::command('yclients:sync-transactions')
     ->dailyAt('04:30')
     ->timezone('Europe/Moscow');
+
+/**
+ * Fixme: с 5:00 - 7:00 MSK
+ * Задачи не ставим, на ISP проводятся технические работы
+ */
 
 /**
  * Синхронизация основных показателей компании с выбором за месяц из YClients (Royalty)

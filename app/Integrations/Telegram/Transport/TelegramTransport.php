@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class TelegramTransport
+final class TelegramTransport
 {
     private string $baseUrl = 'https://api.telegram.org';
 
@@ -32,7 +32,7 @@ class TelegramTransport
             ]);
 
         if (config('telegram.http.use_retry')) {
-            $http->retry(1, 5000);
+            $http->retry(2, 5000);
         }
 
         $this->applyProxy($http);
@@ -45,6 +45,12 @@ class TelegramTransport
         $client = $this->request();
 
         $uri = sprintf('bot%s/%s', $token, $method);
+
+        array_walk_recursive($payload, function (&$item) {
+            if (is_string($item)) {
+                $item = mb_convert_encoding($item, 'UTF-8', 'UTF-8');
+            }
+        });
 
         [$data, $multipart] = $this->extractMultipart($payload);
 
@@ -73,14 +79,18 @@ class TelegramTransport
 
     private function applyProxy(PendingRequest $client): void
     {
-        if (empty($this->proxyConfig['enabled']) || empty($this->proxyConfig['list'])) {
+        $proxy = $this->proxyConfig['proxy'] ?? [];
+        $enabled = (bool) ($proxy['enabled'] ?? false);
+        $list = array_filter($proxy['list'] ?? []);
+
+        if (!$enabled || empty($list)) {
             return;
         }
 
-        $proxyIp = $this->proxyConfig['list'][array_rand($this->proxyConfig['list'])];
-        $username = $this->proxyConfig['username'] ?? null;
-        $password = $this->proxyConfig['password'] ?? null;
-        $scheme = $this->proxyConfig['scheme'] ?? 'http';
+        $proxyIp = $list[array_rand($list)];
+        $username = $proxy['username'] ?? null;
+        $password = $proxy['password'] ?? null;
+        $scheme = $proxy['scheme'] ?? 'http';
 
         $auth = ($username && $password) ? "{$username}:{$password}@" : '';
 
@@ -112,7 +122,7 @@ class TelegramTransport
                 ];
             } else {
                 $data[$key] = is_array($value)
-                    ? json_encode($value)
+                    ? json_encode($value, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE)
                     : $value;
             }
         }

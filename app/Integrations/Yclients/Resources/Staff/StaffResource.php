@@ -18,7 +18,7 @@ final class StaffResource extends ApiResource
     }
 
     /**
-     * Получить список сотрудников
+     * Получить информацию по сотруднику
      *
      * @throws YclientsException
      */

@@ -42,10 +42,18 @@ Route::prefix('v1/dashboard')
             ->middleware(['role:sysadmin'])
             ->group(function () {
                 Route::post('list', [Controllers\Partners\PartnerGroupController::class, 'list']);
-                Route::get('partner-group/{partnerGroup}', [Controllers\Partners\PartnerGroupController::class, 'get']);
-                Route::post('partner-group/{partnerGroup}', [Controllers\Partners\PartnerGroupController::class, 'create']);
-                Route::put('partner-group/{partnerGroup}', [Controllers\Partners\PartnerGroupController::class, 'update']);
-                Route::delete('partner-group/{partnerGroup}', [Controllers\Partners\PartnerGroupController::class, 'remove']);
+                Route::get('group/{partnerGroup}', [Controllers\Partners\PartnerGroupController::class, 'get']);
+                Route::post('group/{partnerGroup}', [Controllers\Partners\PartnerGroupController::class, 'create']);
+                Route::put('group/{partnerGroup}', [Controllers\Partners\PartnerGroupController::class, 'update']);
+                Route::delete('group/{partnerGroup}', [Controllers\Partners\PartnerGroupController::class, 'remove']);
+            });
+
+        Route::prefix('partner-notifications')
+            ->middleware(['role:sysadmin'])
+            ->group(function () {
+                Route::post('list', [Controllers\Partners\PartnerNotificationsController::class, 'list']);
+                Route::get('partner/{partner}', [Controllers\Partners\PartnerNotificationsController::class, 'get']);
+                Route::put('partner/{partner}', [Controllers\Partners\PartnerNotificationsController::class, 'update']);
             });
 
         Route::prefix('tickets')

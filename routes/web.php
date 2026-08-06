@@ -1,8 +1,10 @@
 <?php
 
 use App\Integrations\Telegram\TelegramManager;
+use App\Models\Yclients\YcCompanyStaff;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Http;
 
 Route::get('/', function () { return 'Hello World'; });
 
@@ -43,5 +45,43 @@ Route::prefix('debug')->group(function () {
         ]);
 
         return response()->json($response);
+    });
+
+    Route::get('/telegram/send-photo', function () {
+        $token = '6987304578:AAHh45TiX5gFWXPhlD7SqMW_RHKPkY7qGZU';
+        $chatId = '-1001993054003';
+
+        $staffList = YcCompanyStaff::query()
+            ->whereNotNull('avatar_big')
+            ->where('avatar_big', '!=', '')
+            ->where('avatar_big', '!=', 'https://be.cdn.yclients.com/images/no-master.png')
+            ->orderByDesc('staff_id')
+            ->limit(15)
+            ->get();
+
+        $results = [];
+
+        foreach ($staffList as $staff) {
+            $caption = "Изменены данные сотрудника:\n\n"
+                . "Имя: {$staff->name}\n"
+                . "Специализация: " . ($staff->specialization ?? 'Не указана') . "\n"
+                . "Телефон: " . ($staff->phone ?? 'Не указан') . "\n"
+                . "Статус: " . ($staff->fired ? 'Уволен' : 'Работает');
+
+            $response = Http::withoutVerifying()->post("https://api.telegram.org/bot{$token}/sendPhoto", [
+                'chat_id' => $chatId,
+                'photo'   => $staff->avatar_big,
+                'caption' => $caption,
+            ]);
+
+            $results[] = [
+                'id'       => $staff->id,
+                'staff_id' => $staff->staff_id,
+                'status'   => $response->status(),
+                'response' => $response->json(),
+            ];
+        }
+
+        return response()->json($results);
     });
 });

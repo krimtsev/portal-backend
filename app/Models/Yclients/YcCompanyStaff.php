@@ -26,6 +26,7 @@ final class YcCompanyStaff extends Model
         'name',
         'firstname',
         'surname',
+        'phone',
         'specialization',
         'fired',
         'dismissal_date',

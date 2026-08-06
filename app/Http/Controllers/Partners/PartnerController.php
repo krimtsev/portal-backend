@@ -13,51 +13,24 @@ use App\Http\Resources\Partner\PartnerListResource;
 use App\Http\Resources\Partner\PartnerResource;
 use App\Models\Partner\Partner;
 use App\Responses\JsonResponse;
+use App\Services\Partners\PartnerService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 final class PartnerController extends Controller
 {
+    public function __construct(
+        private readonly PartnerService $partnerService,
+    ) {}
+
     /**
      * Получение списка партнеров доступных пользователю
      * Учитываем partner_id и partner_groups
      */
     public function getUserPartners(Request $request): \Illuminate\Http\JsonResponse
     {
-        $user = $request->user();
-        $partnerId = $user->partner_id;
+        $result = $this->partnerService->getUserPartnersData($request->user());
 
-        if (!$partnerId) {
-            return JsonResponse::Send([
-                'partner_id' => null,
-                'partners'   => [],
-            ]);
-        }
-
-        $partner = Partner::with(['group.partners' => function ($query) {
-            $query->orderBy('name');
-        }])->findOrFail($partnerId);
-
-        if ($partner->group) {
-            $partners = $partner->group->partners->map(function ($partner) {
-                return [
-                    'partner_id' => $partner->id,
-                    'name'       => $partner->name,
-                ];
-            });
-        } else {
-            $partners = collect([
-                [
-                    'partner_id' => $partner->id,
-                    'name'       => $partner->name,
-                ],
-            ]);
-        }
-
-        return JsonResponse::Send([
-            'partner_id' => $partnerId,
-            'partners'   => $partners,
-        ]);
+        return JsonResponse::Send($result);
     }
 
     public function options(): \Illuminate\Http\JsonResponse
@@ -120,43 +93,14 @@ final class PartnerController extends Controller
 
     public function create(PartnerCreateRequest $request): \Illuminate\Http\JsonResponse
     {
-        $data = $request->validated();
-
-        DB::transaction(function () use ($data) {
-            $partner = Partner::create($data);
-
-            if (!empty($data['telnums'])) {
-                $partner->telnums()->createMany($data['telnums']);
-            }
-        });
+        $this->partnerService->create($request->validated());
 
         return JsonResponse::Created();
     }
 
     public function update(PartnerUpdateRequest $request, Partner $partner): \Illuminate\Http\JsonResponse
     {
-        $data = $request->validated();
-
-        DB::transaction(function () use ($data, $partner) {
-            $partner->update($data);
-
-            if (isset($data['telnums'])) {
-                $telnumsData = collect($data['telnums']);
-
-                $idsToKeep = $telnumsData->pluck('id')->filter()->toArray();
-                $partner->telnums()->whereNotIn('id', $idsToKeep)->delete();
-
-                foreach ($telnumsData as $telnumItem) {
-                    $partner->telnums()->updateOrCreate(
-                        ['id' => $telnumItem['id'] ?? null],
-                        [
-                            'name'   => $telnumItem['name'] ?? null,
-                            'number' => $telnumItem['number'],
-                        ]
-                    );
-                }
-            }
-        });
+        $this->partnerService->update($partner, $request->validated());
 
         return JsonResponse::Updated();
     }

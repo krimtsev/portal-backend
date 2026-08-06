@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 final class Partner extends Model
@@ -60,6 +61,22 @@ final class Partner extends Model
     public function group(): BelongsTo
     {
         return $this->belongsTo(PartnerGroup::class, 'group_id');
+    }
+
+    /**
+     * Настройки отчетов
+     */
+    public function reportSettings(): HasOne
+    {
+        return $this->hasOne(PartnerReportSetting::class, 'partner_id');
+    }
+
+    /**
+     * Каналы уведомлений
+     */
+    public function notificationChannel(): HasOne
+    {
+        return $this->hasOne(PartnerNotificationChannel::class, 'partner_id');
     }
 
     /**

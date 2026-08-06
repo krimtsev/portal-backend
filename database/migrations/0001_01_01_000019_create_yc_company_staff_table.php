@@ -25,6 +25,8 @@ return new class extends Migration
 
             $table->string('surname')->nullable();
 
+            $table->string('phone', 20)->nullable();
+
             // Специализация
             $table->string('specialization');
 

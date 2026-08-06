@@ -37,7 +37,7 @@ final class ProcessPartnerStaffMonthStatsJob implements ShouldQueue
 
     public function middleware(): array
     {
-        return [new ThrottleJobSleep()];
+        return [ThrottleJobSleep::forYclients()];
     }
 
     public function uniqueId(): string
