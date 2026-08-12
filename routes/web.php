@@ -3,8 +3,8 @@
 use App\Integrations\Telegram\TelegramManager;
 use App\Models\Yclients\YcCompanyStaff;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () { return 'Hello World'; });
 
@@ -64,9 +64,9 @@ Route::prefix('debug')->group(function () {
         foreach ($staffList as $staff) {
             $caption = "Изменены данные сотрудника:\n\n"
                 . "Имя: {$staff->name}\n"
-                . "Специализация: " . ($staff->specialization ?? 'Не указана') . "\n"
-                . "Телефон: " . ($staff->phone ?? 'Не указан') . "\n"
-                . "Статус: " . ($staff->fired ? 'Уволен' : 'Работает');
+                . 'Специализация: ' . ($staff->specialization ?? 'Не указана') . "\n"
+                . 'Телефон: ' . ($staff->phone ?? 'Не указан') . "\n"
+                . 'Статус: ' . ($staff->fired ? 'Уволен' : 'Работает');
 
             $response = Http::withoutVerifying()->post("https://api.telegram.org/bot{$token}/sendPhoto", [
                 'chat_id' => $chatId,

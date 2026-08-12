@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Jobs\Telegram;
+namespace App\Jobs\Reports;
 
+use App\Integrations\Telegram\Support\TelegramTargetResolver;
 use App\Integrations\Telegram\TelegramManager;
 use App\Jobs\Middleware\ThrottleJobSleep;
 use Illuminate\Bus\Queueable;
@@ -58,20 +59,14 @@ final class SendStaffNotificationJob implements ShouldQueue
 
     public function handle(TelegramManager $telegram): void
     {
-        $config = config('telegram.channels.staff_updates');
-        $chatId = $config['chat_id'] ?? null;
-        $channelName = $config['bot'] ?? null;
+        $target = TelegramTargetResolver::resolve(
+            channelName: 'staff_updates'
+        );
 
-        if (!$chatId || !$channelName) {
-            throw new RuntimeException(
-                'Telegram channel [staff_updates.chat_id] is not configured.'
-            );
-        }
-
-        $bot = $telegram->bot($channelName);
+        $bot = $telegram->bot($target->botName);
 
         $response = $bot->sendMessage([
-            'chat_id' => $chatId,
+            'chat_id' => $target->chatId,
             'text'    => $this->message,
         ]);
 

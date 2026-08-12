@@ -12,8 +12,8 @@ return [
     'queue' => [
         'throttle' => [
             'enabled' => (bool) env('YCLIENTS_QUEUE_THROTTLE_ENABLED', false),
-            'sleep' => (float) env('YCLIENTS_QUEUE_THROTTLE_SLEEP', 1.0),
-        ]
+            'sleep'   => (float) env('YCLIENTS_QUEUE_THROTTLE_SLEEP', 1.0),
+        ],
     ],
 
     /*

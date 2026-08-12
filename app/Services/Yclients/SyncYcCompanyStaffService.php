@@ -6,10 +6,10 @@ namespace App\Services\Yclients;
 
 use App\Integrations\Yclients\Resources\Staff\DTO\StaffResponse;
 use App\Integrations\Yclients\YclientsApi;
-use App\Jobs\Telegram\SendStaffNotificationJob;
+use App\Jobs\Reports\SendStaffNotificationJob;
 use App\Models\Partner\Partner;
 use App\Models\Yclients\YcCompanyStaff;
-use App\Services\Telegram\Formatters\StaffTelegramFormatter;
+use App\Services\Formatters\CompanyStaffFormatter;
 
 final readonly class SyncYcCompanyStaffService
 {
@@ -19,7 +19,7 @@ final readonly class SyncYcCompanyStaffService
 
     public function __construct(
         private YclientsApi $yclients,
-        private StaffTelegramFormatter $telegramFormatter,
+        private CompanyStaffFormatter $telegramFormatter,
     ) {}
 
     public function sync(int $companyId): void

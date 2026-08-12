@@ -2,6 +2,7 @@
 
 namespace App\Models\Partner;
 
+use App\Enums\NotificationChannel;
 use App\Models\User\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -112,5 +113,20 @@ final class Partner extends Model
     {
         return $query->whereNotNull('yclients_id')
             ->where('disabled', false);
+    }
+
+    /**
+     * Универсальный Scope для проверки доступности канала связи
+     */
+    public function scopeHasReadyNotificationChannel(
+        Builder $query,
+        NotificationChannel $channel = NotificationChannel::TELEGRAM
+    ): Builder {
+        return $query->where('disabled', false)
+            ->whereHas('notificationChannel', function (Builder $q) use ($channel) {
+                $q->where($channel->flagColumn(), true)
+                    ->whereNotNull($channel->identifierColumn())
+                    ->hasActiveSubscription();
+            });
     }
 }

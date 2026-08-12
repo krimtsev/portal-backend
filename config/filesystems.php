@@ -77,6 +77,13 @@ return [
             'throw'      => false,
             'report'     => false,
         ],
+
+        'reports' => [
+            'driver' => 'local',
+            'root'   => storage_path('app/private/reports'),
+            'throw'  => false,
+            'report' => false,
+        ],
     ],
 
     /*

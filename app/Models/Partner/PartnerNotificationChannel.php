@@ -2,6 +2,7 @@
 
 namespace App\Models\Partner;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -50,5 +51,19 @@ class PartnerNotificationChannel extends Model
         return $this->send_telegram
             && $this->telegram_chat_id !== null
             && $this->isPaid();
+    }
+
+    /**
+     * Scope: Проверка наличия активной подписки (или бесплатного использования)
+     */
+    public function scopeHasActiveSubscription(Builder $query): Builder
+    {
+        return $query->where(function (Builder $q) {
+            $q->where('check_payment', false)
+                ->orWhere(function (Builder $sq) {
+                    $sq->where('check_payment', true)
+                        ->whereDate('payment_date', '>', now());
+                });
+        });
     }
 }

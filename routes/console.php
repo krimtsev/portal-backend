@@ -25,22 +25,30 @@ Schedule::command('yclients:sync-staff-work-days')
     ->dailyAt('01:30')
     ->timezone('Europe/Moscow');
 
-// Синхронизация списка записей компании из YClients
+/**
+ * Синхронизация списка записей компании из YClients
+ */
 Schedule::command('yclients:sync-records')
     ->dailyAt('03:00')
     ->timezone('Europe/Moscow');
 
-// Синхронизация комментариев из YClients
+/**
+ * Синхронизация комментариев из YClients
+ */
 Schedule::command('yclients:sync-comments')
     ->dailyAt('03:30')
     ->timezone('Europe/Moscow');
 
-// Синхронизация товарных транзакций компании из YClients
+/**
+ * Синхронизация товарных транзакций компании из YClients
+ */
 Schedule::command('yclients:sync-storage-transactions')
     ->dailyAt('04:00')
     ->timezone('Europe/Moscow');
 
-// Синхронизация транзакций компании из YClients
+/**
+ * Синхронизация транзакций компании из YClients
+ */
 Schedule::command('yclients:sync-transactions')
     ->dailyAt('04:30')
     ->timezone('Europe/Moscow');
@@ -66,27 +74,36 @@ Schedule::command('yclients:sync-staff-month-stats')
 
 /**
  * Синхронизация статистики данных сотрудников из YClients
- * временно, до добавления наблюдения изменений.
+ * Рассылка изменений данных сотрудников
  */
 Schedule::command('yclients:sync-company-staff')
-    ->monthlyOn(1, '10:00')
+    ->hourly()
     ->timezone('Europe/Moscow');
 
-// Удаляем задачи которые старшее 30 дней
+/**
+ * Рассылка отчетов по новым клиентам
+ */
+Schedule::command('report:new-clients')
+    ->dailyAt('10:00')
+    ->timezone('Europe/Moscow');
+
+/**
+ * Рассылка отчетов по вернувшимся клиентам
+ */
+Schedule::command('report:returned-clients')
+    ->dailyAt('10:15')
+    ->timezone('Europe/Moscow');
+
+/**
+ * Рассылка отчетов по потерянным клиентам
+ */
+Schedule::command('report:lost-clients')
+    ->dailyAt('10:30')
+    ->timezone('Europe/Moscow');
+
+/**
+ * Удаляем задачи, которые зависли старшее 30 дней
+ */
 Schedule::command('queue:prune-batches --hours=720')
     ->dailyAt('11:00')
     ->timezone('Europe/Moscow');
-
-/**
- * Синхронизация статистики по сотрудникам из YClients
- */
-// Schedule::command('yclients:sync-staff-daily-stats')
-// ->dailyAt('06:00')
-// ->timezone('Europe/Moscow');
-
-/**
- * Синхронизация основных показателей компании за сутки из YClients (Royalty)
- */
-// Schedule::command('yclients:sync-company-daily-stats')
-// ->dailyAt('05:00')
-// ->timezone('Europe/Moscow');

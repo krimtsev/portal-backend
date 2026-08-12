@@ -12,6 +12,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Настройки debug (Перехват сообщений)
+    |--------------------------------------------------------------------------
+    */
+    'debug' => [
+        'enabled' => (bool) env('TELEGRAM_DEBUG_ENABLED', false),
+        'chat_id' => env('TELEGRAM_DEBUG_CHAT_ID'),
+        'bot'     => env('TELEGRAM_DEBUG_BOT', 'debug'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Настройки ботов (Мультитокен)
     |--------------------------------------------------------------------------
     */
@@ -24,6 +35,9 @@ return [
         ],
         'monitoring' => [
             'token' => env('TELEGRAM_MONITORING_BOT_TOKEN'),
+        ],
+        'debug' => [
+            'token' => env('TELEGRAM_DEBUG_BOT_TOKEN'),
         ],
     ],
 
@@ -56,8 +70,8 @@ return [
     'queue' => [
         'throttle' => [
             'enabled' => (bool) env('TELEGRAM_QUEUE_THROTTLE_ENABLED', false),
-            'sleep' => (float) env('TELEGRAM_QUEUE_THROTTLE_SLEEP', 1.0),
-        ]
+            'sleep'   => (float) env('TELEGRAM_QUEUE_THROTTLE_SLEEP', 1.0),
+        ],
     ],
 
     /*

@@ -11,6 +11,7 @@
         "laravel/framework": "^12.53",
         "laravel/sanctum": "^4.3.1",
         "laravel/tinker": "^2.11.1",
+        "phpoffice/phpspreadsheet": "^5.9",
         "predis/predis": "^3.4.1"
     },
     "require-dev": {
