@@ -6,6 +6,7 @@ namespace App\Services\Reports;
 
 use App\Enums\Report\ClientReportType;
 use App\Exports\Reports\ClientReportExcelExport;
+use App\Helpers\FileHelper;
 use App\Integrations\Telegram\Support\TelegramTargetResolver;
 use App\Integrations\Telegram\TelegramManager;
 use App\Models\Partner\Partner;
@@ -13,6 +14,7 @@ use App\Models\Yclients\YcRecord;
 use App\Services\Formatters\ClientReportFormatter;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 
 final readonly class ClientReportService
@@ -56,6 +58,7 @@ final readonly class ClientReportService
         $query = YcRecord::query()
             ->with('services')
             ->where('company_id', $partner->yclients_id)
+            ->where('attendance', '=', 1)
             ->whereDate('datetime', $targetDate);
 
         if ($type === ClientReportType::NEW_CLIENTS) {
@@ -113,9 +116,9 @@ final readonly class ClientReportService
                 $branchName = $partnerBranchNames->get($latestVisit->company_id);
 
                 $processed->push([
-                    'record'            => $record,
-                    'other_branch_name' => $branchName,
-                    'other_branch_date' => $latestVisit->datetime,
+                    'record'                => $record,
+                    'other_branch_name'     => $branchName,
+                    'other_branch_date'     => $latestVisit->datetime,
                     'other_branch_services' => $latestVisit->services,
                 ]);
             }
@@ -147,8 +150,21 @@ final readonly class ClientReportService
         Carbon $targetDate,
         int $days
     ): void {
-        $fileName = sprintf('report_%s_%s.xlsx', $type->value, now()->format('Y-m-d'));
-        $absolutePath = $this->exporter->generate($partner, $items, $fileName, $type->label());
+        $fileName = sprintf('%s_%s.xlsx',
+            $partner->name,
+            now()->format('Y-m-d H:i:s'),
+        );
+
+        $fileName = FileHelper::safeFileName($fileName);
+
+        $absolutePath = $this->exporter->generate(
+            $partner,
+            $items,
+            $fileName,
+            $type->label(),
+            $days,
+            $targetDate
+        );
 
         try {
             $caption = ClientReportFormatter::format(
@@ -167,9 +183,7 @@ final readonly class ClientReportService
                 ]);
             });
         } finally {
-            if (file_exists($absolutePath)) {
-                @unlink($absolutePath);
-            }
+            Storage::disk('reports')->delete($fileName);
         }
     }
 

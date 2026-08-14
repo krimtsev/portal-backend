@@ -81,6 +81,13 @@ Schedule::command('yclients:sync-company-staff')
     ->timezone('Europe/Moscow');
 
 /**
+ * Синхронизация черного списка номеров из Mango
+ */
+Schedule::command('mango:sync-blacklist')
+    ->hourly()
+    ->timezone('Europe/Moscow');
+
+/**
  * Рассылка отчетов по новым клиентам
  */
 Schedule::command('report:new-clients')

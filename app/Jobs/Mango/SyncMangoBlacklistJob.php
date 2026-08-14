@@ -1,0 +1,61 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Jobs\Mango;
+
+use App\Services\Mango\MangoBlacklistService;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
+use Throwable;
+
+final class SyncMangoBlacklistJob implements ShouldBeUnique, ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    /** Количество попыток выполнения */
+    public int $tries = 3;
+
+    /** Таймаут выполнения */
+    public int $timeout = 60;
+
+    public function __construct() {}
+
+    /**
+     * Уникальный ID задачи для предотвращения race conditions.
+     */
+    public function uniqueId(): string
+    {
+        return "mango_blacklist";
+    }
+
+    /**
+     * Стратегия ожидания между повторами (Exponential/Step Backoff).
+     * Первая ошибка — ждем 10 сек, вторая — 60 сек, третья — 120 сек.
+     */
+    public function backoff(): array
+    {
+        return [10, 60, 120];
+    }
+
+    public function handle(MangoBlacklistService $service): void
+    {
+        $service->sync();
+    }
+
+    /**
+     * Метод срабатывает, когда все попытки завершились неудачей
+     */
+    public function failed(Throwable $exception): void
+    {
+        Log::channel('mango')
+            ->critical('Синхронизация Mango Blacklist завершилась.', [
+                'error'      => $exception->getMessage(),
+            ]);
+    }
+}

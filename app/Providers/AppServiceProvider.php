@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Integrations\Mango\MangoApi;
 use App\Integrations\Telegram\TelegramManager;
 use App\Integrations\Telegram\Transport\TelegramTransport;
 use App\Integrations\Yclients\YclientsApi;
@@ -27,6 +28,8 @@ class AppServiceProvider extends ServiceProvider
 
             return new TelegramManager($config, $transport);
         });
+
+        $this->app->singleton(MangoApi::class);
     }
 
     /**

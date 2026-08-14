@@ -6,6 +6,7 @@ namespace App\Exports\Reports;
 
 use App\Models\Partner\Partner;
 use App\Models\Yclients\YcRecord;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -21,13 +22,19 @@ final readonly class ClientReportExcelExport
      *
      * @param  Collection<int, array{record: YcRecord, other_branch_name?: string, other_branch_date?: string}>  $items
      */
-    public function generate(Partner $partner, Collection $items, string $fileName, string $reportType = ''): string
-    {
+    public function generate(
+        Partner $partner,
+        Collection $items,
+        string $fileName,
+        string $reportType,
+        int $days,
+        Carbon $targetDate
+    ): string {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle(__('reports.clients.table.sheet_title'));
 
-        $this->buildReportInfo($sheet, $partner, $reportType);
+        $this->buildReportInfo($sheet, $partner, $reportType, $days, $targetDate);
         $this->buildHeaders($sheet);
         $this->populateRows($sheet, $partner, $items);
         $this->autoFitColumns($sheet);
@@ -35,23 +42,28 @@ final readonly class ClientReportExcelExport
         return $this->saveToDisk($spreadsheet, $fileName);
     }
 
-    private function buildReportInfo(Worksheet $sheet, Partner $partner, string $reportType): void
+    private function buildReportInfo(Worksheet $sheet, Partner $partner, string $reportType, int $days, Carbon $targetDate): void
     {
         $sheet->setCellValue('A1', __('reports.clients.title') . ': ' . $reportType);
-        $sheet->setCellValue('A2', __('reports.clients.date') . ': ' . now()->format('d.m.Y'));
-        $sheet->setCellValue('A3', __('reports.clients.branch') . ': ' . $partner->name);
+        $sheet->setCellValue('A2', __('reports.clients.branch') . ': ' . $partner->name);
+
+        $daysText = trans_choice('reports.clients.days', $days);
+        $periodText = __('reports.clients.period', ['count' => $daysText]);
+
+        $sheet->setCellValue('A3', __('reports.clients.date') . ': ' . $targetDate->format('Y-m-d') . ' (' . $periodText . ')');
     }
 
     private function buildHeaders(Worksheet $sheet): void
     {
+        // Порядок колонок как на скриншоте
         $headers = [
             __('reports.clients.table.header.name'),
             __('reports.clients.table.header.phone'),
-            __('reports.clients.table.header.date'),
             __('reports.clients.table.header.services'),
-            __('reports.clients.table.header.partner'),
-            __('reports.clients.table.header.other_branch_services'),
             __('reports.clients.table.header.link'),
+            __('reports.clients.table.header.partner'),
+            __('reports.clients.table.header.date'),
+            __('reports.clients.table.header.other_branch_services'),
         ];
 
         $sheet->fromArray($headers, null, 'A5');
@@ -96,7 +108,7 @@ final readonly class ClientReportExcelExport
             ?? $record->client['name']
             ?? __('reports.clients.table.no_name');
 
-        // Услуги основного филиала (выбранного)
+        // Услуги основного филиала
         $mainServicesStr = $record->services
             ?->pluck('title')
             ->filter()
@@ -106,7 +118,15 @@ final readonly class ClientReportExcelExport
             ? $mainServicesStr
             : __('reports.clients.table.no_data');
 
-        // Услуги дополнительного филиала (если клиент ушел в другой филиал)
+        // 1. Название филиала (выводим только если был визит в другой филиал)
+        $branchName = $item['other_branch_name'] ?? __('reports.clients.table.no_data');
+
+        // 2. Дата посещения (выводим только если был визит в другой филиал)
+        $visitDate = isset($item['other_branch_date'])
+            ? $item['other_branch_date']?->format('Y-m-d H:i')
+            : __('reports.clients.table.no_data');
+
+        // 3. Услуги в другом филиале (выводим только если они есть)
         $otherServicesStr = isset($item['other_branch_services'])
             ? $item['other_branch_services']->pluck('title')->filter()->implode(', ')
             : '';
@@ -115,17 +135,13 @@ final readonly class ClientReportExcelExport
             ? $otherServicesStr
             : __('reports.clients.table.no_data');
 
-        $branchName = $item['other_branch_name'] ?? $partner->name;
-
-        $visitDate = ($item['other_branch_date'] ?? $record->datetime)?->format('Y-m-d H:i')
-            ?? __('reports.clients.table.no_data');
-
+        // Заполнение ячеек
         $sheet->setCellValue("A{$rowIndex}", $clientName);
         $sheet->setCellValue("B{$rowIndex}", $record->client_phone ?? __('reports.clients.table.no_data'));
-        $sheet->setCellValue("C{$rowIndex}", $visitDate);
-        $sheet->setCellValue("D{$rowIndex}", $mainBranchServices);
+        $sheet->setCellValue("C{$rowIndex}", $mainBranchServices);
         $sheet->setCellValue("E{$rowIndex}", $branchName);
-        $sheet->setCellValue("F{$rowIndex}", $otherBranchServices);
+        $sheet->setCellValue("F{$rowIndex}", $visitDate);
+        $sheet->setCellValue("G{$rowIndex}", $otherBranchServices);
 
         if (!empty($record->client_id)) {
             $yclientsUrl = sprintf(
@@ -134,18 +150,20 @@ final readonly class ClientReportExcelExport
                 urlencode((string) $record->client_id)
             );
 
-            $sheet->setCellValue("G{$rowIndex}", $yclientsUrl);
-            $sheet->getCell("G{$rowIndex}")
+            $sheet->setCellValue("D{$rowIndex}", 'Карточка клиента');
+            $sheet->getCell("D{$rowIndex}")
                 ->getHyperlink()
                 ->setUrl($yclientsUrl)
                 ->setTooltip(__('reports.clients.table.link_tooltip'));
 
-            $sheet->getStyle("G{$rowIndex}")->applyFromArray([
+            $sheet->getStyle("D{$rowIndex}")->applyFromArray([
                 'font' => [
                     'color'     => ['rgb' => '0000FF'],
                     'underline' => true,
                 ],
             ]);
+        } else {
+            $sheet->setCellValue("D{$rowIndex}", __('reports.clients.table.no_data'));
         }
     }
 

@@ -12,9 +12,10 @@ final class PartnerNotificationListResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'     => $this->id,
-            'name'   => $this->name,
-            'status' => $this->disabled,
+            'id'          => $this->id,
+            'name'        => $this->name,
+            'yclients_id' => $this->yclients_id,
+            'status'      => $this->disabled,
 
             'notification_channel' => [
                 'send_telegram'    => $this->notificationChannel?->send_telegram ?? false,

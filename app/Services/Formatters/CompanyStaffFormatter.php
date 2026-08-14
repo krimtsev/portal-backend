@@ -18,9 +18,10 @@ final class CompanyStaffFormatter
         $phone = $staffData['phone'] ?: __('reports.company_staff.not_specified');
         $specialization = $staffData['specialization'] ?: __('reports.company_staff.specialization_not_specified');
         $name = $staffData['name'];
+        $header = __('reports.company_staff.created_header');
 
         return implode("\n", [
-            __('reports.company_staff.created_header'),
+            "🟢 {$header}",
             '',
             __('reports.company_staff.branch', ['branch' => $branchName]),
             __('reports.company_staff.name', ['name' => $name]),
@@ -39,6 +40,10 @@ final class CompanyStaffFormatter
      */
     public function formatUpdated(array $staffData, string $branchName, array $changes): string
     {
+        $isFired = $staffData['fired'] || (!empty($changes['fired']['new']));
+        $icon = $isFired ? '🔴' : '🟡';
+        $header = __('reports.company_staff.updated_header');
+
         $fields = [
             'name' => [
                 'label'   => __('reports.company_staff.fields.name'),
@@ -60,14 +65,14 @@ final class CompanyStaffFormatter
                 'current' => $staffData['fired']
                     ? __('reports.company_staff.status.fired')
                     : __('reports.company_staff.status.working'),
-                'format'  => fn ($val) => $val
+                'format' => fn ($val) => $val
                     ? __('reports.company_staff.status.fired')
                     : __('reports.company_staff.status.working'),
             ],
         ];
 
         $lines = [
-            __('reports.company_staff.updated_header'),
+            "{$icon} {$header}",
             '',
             __('reports.company_staff.branch', ['branch' => $branchName]),
         ];

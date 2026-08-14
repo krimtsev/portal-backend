@@ -19,10 +19,11 @@ final class SyncCertificatesCommand extends Command
             return self::SUCCESS;
         }
 
-        match ($this->option('now')) {
-            true  => $this->runSynchronously(),
-            false => $this->runInQueue(),
-        };
+        if ($this->option('now')) {
+            $this->runSynchronously();
+        } else {
+            $this->runInQueue();
+        }
 
         return self::SUCCESS;
     }

@@ -1,5 +1,7 @@
 <?php
 
+use App\Integrations\Mango\MangoApi;
+use App\Integrations\Mango\Resources\CallsStats\DTO\CallsStatsRequestFilters;
 use App\Integrations\Telegram\TelegramManager;
 use App\Models\Yclients\YcCompanyStaff;
 use Carbon\Carbon;
@@ -83,5 +85,30 @@ Route::prefix('debug')->group(function () {
         }
 
         return response()->json($results);
+    });
+
+    Route::get('mango/bwlists', function (MangoApi $mango) {
+        $result = $mango->bwlists()->getBwlists();
+
+        return response()->json($result);
+    });
+
+    Route::get('mango/stats/request', function (MangoApi $mango) {
+        $filters = new CallsStatsRequestFilters(
+            start_date: now()->subDays(7)->format('d.m.Y 00:00:00'),
+            end_date: now()->format('d.m.Y H:i:s'),
+            limit: 100,
+            context_type: 1,
+        );
+
+        $result = $mango->callsStats()->statsCallsRequest($filters);
+
+        return response()->json($result);
+    });
+
+    Route::get('mango/stats/result/{key}', function (MangoApi $mango, string $key) {
+        $result = $mango->callsStats()->statsCallsResult($key);
+
+        return response()->json($result);
     });
 });

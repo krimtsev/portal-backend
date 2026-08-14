@@ -152,6 +152,12 @@ return [
             'path'   => storage_path('logs/telegram.log'),
             'level'  => 'debug',
         ],
+
+        'mango' => [
+            'driver' => 'single',
+            'path'   => storage_path('logs/mango.log'),
+            'level'  => 'debug',
+        ],
     ],
 
 ];

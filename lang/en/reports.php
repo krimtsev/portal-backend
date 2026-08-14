@@ -12,14 +12,15 @@ return [
             'sheet_title' => 'Client Report',
             'no_name' => 'No name',
             'no_data' => '—',
-            'link_tooltip' => 'Open card in YClients',
+            'link_tooltip' => 'Open client card',
             'header' => [
                 'name' => 'Name',
                 'phone' => 'Phone',
                 'services' => 'Services',
-                'partner' => 'Branch',
+                'other_branch_services' => 'Other branch services',
                 'date' => 'Visit date',
-                'link' => 'YClients link',
+                'partner' => 'Branch',
+                'link' => 'Client card link',
             ],
         ],
     ],
@@ -47,5 +48,5 @@ return [
             'fired' => 'Fired',
             'working' => 'Active',
         ],
-    ]
+    ],
 ];

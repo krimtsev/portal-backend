@@ -26,7 +26,7 @@ final class PartnerNotificationsController extends Controller
     public function list(Request $request): \Illuminate\Http\JsonResponse
     {
         $query = Partner::query()
-            ->select('id', 'name', 'disabled')
+            ->select('id', 'name', 'yclients_id', 'disabled')
             ->with(['notificationChannel', 'reportSettings']);
 
         $result = Pagination::paginate(

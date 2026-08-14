@@ -13,6 +13,9 @@ return [
     // Доступность задач синхронизации с Yclients
     'yclients' => (bool) env('JOB_YCLIENTS', true),
 
+    // Доступность задач синхронизации с Mango
+    'mango' => (bool) env('JOB_MANGO', true),
+
     // Уведомление об изменении данных сотрудников
     'staff_notifications' => (bool) env('JOB_STAFF_NOTIFICATIONS', true),
 

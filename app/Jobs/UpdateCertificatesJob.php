@@ -23,6 +23,6 @@ final class UpdateCertificatesJob implements ShouldBeUnique, ShouldQueue
 
     public function uniqueId(): string
     {
-        return 'update-certificates';
+        return 'update_certificates';
     }
 }
