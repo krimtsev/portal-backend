@@ -10,7 +10,7 @@ enum MangoContextStatus: int
     public function label(): string
     {
         return match ($this) {
-            self::FAILED => 'Неуспешный',
+            self::FAILED  => 'Неуспешный',
             self::SUCCESS => 'Успешный',
         };
     }

@@ -27,6 +27,9 @@ return new class extends Migration
             // Новые клиенты
             $table->unsignedSmallInteger('new_clients_days')->default(0);
 
+            // Отправлять отчеты о пропущенных звонках
+            $table->boolean('send_missed_calls')->default(false);
+
             $table->timestamps();
         });
 

@@ -29,6 +29,7 @@ final class PartnerNotificationListResource extends JsonResource
                 'lost_clients_days'     => $this->reportSettings?->lost_clients_days ?? 0,
                 'returned_clients_days' => $this->reportSettings?->returned_clients_days ?? 0,
                 'new_clients_days'      => $this->reportSettings?->new_clients_days ?? 0,
+                'send_missed_calls'     => $this->reportSettings?->send_missed_calls ?? false,
             ],
         ];
     }

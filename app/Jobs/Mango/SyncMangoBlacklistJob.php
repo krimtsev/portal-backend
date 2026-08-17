@@ -31,7 +31,7 @@ final class SyncMangoBlacklistJob implements ShouldBeUnique, ShouldQueue
      */
     public function uniqueId(): string
     {
-        return "mango_blacklist";
+        return 'mango_blacklist';
     }
 
     /**
@@ -55,7 +55,7 @@ final class SyncMangoBlacklistJob implements ShouldBeUnique, ShouldQueue
     {
         Log::channel('mango')
             ->critical('Синхронизация Mango Blacklist завершилась.', [
-                'error'      => $exception->getMessage(),
+                'error' => $exception->getMessage(),
             ]);
     }
 }

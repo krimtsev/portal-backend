@@ -26,6 +26,7 @@ final class PartnerUpdateNotificationRequest extends FormRequest
             'report_settings.lost_clients_days'     => ['sometimes', 'integer', 'min:0', 'max:365'],
             'report_settings.returned_clients_days' => ['sometimes', 'integer', 'min:0', 'max:365'],
             'report_settings.new_clients_days'      => ['sometimes', 'integer', 'min:0', 'max:365'],
+            'report_settings.send_missed_calls'     => ['sometimes', 'boolean'],
         ];
     }
 }

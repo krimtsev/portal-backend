@@ -24,10 +24,10 @@ return new class extends Migration
             $table->unsignedTinyInteger('context_status');
 
             // Номер, с которого звонят
-            $table->string('caller_number', 30)->nullable();
+            $table->string('caller_number', 255)->nullable();
 
             // Номер, на который звонят
-            $table->string('called_number', 30)->nullable();
+            $table->string('called_number', 255)->nullable();
 
             // Дата/время начала звонка, время в формате UTC.
             $table->datetime('context_start_time');

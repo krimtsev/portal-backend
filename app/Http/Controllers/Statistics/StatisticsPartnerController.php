@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Statistics;
 
-use App\Constants\Statistics\StatisticsCache;
+use App\Constants\Cache\StatisticsCache;
 use App\Helpers\Cache;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Statistics\StatisticsPartnerRequest;

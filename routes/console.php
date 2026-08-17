@@ -109,6 +109,12 @@ Schedule::command('report:lost-clients')
     ->timezone('Europe/Moscow');
 
 /**
+ * Собираем статистику по звонкам из Манго телефонии
+ */
+Schedule::command('mango:sync-calls')
+    ->everyThreeMinutes();
+
+/**
  * Удаляем задачи, которые зависли старшее 30 дней
  */
 Schedule::command('queue:prune-batches --hours=720')

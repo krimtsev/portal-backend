@@ -2,11 +2,13 @@
 
 namespace App\Services\Mango;
 
+use App\Constants\Cache\MangoCache;
+use App\Helpers\Cache;
 use App\Integrations\Mango\MangoApi;
 use App\Models\Mango\MangoBlacklist;
 use Illuminate\Support\Facades\DB;
 
-readonly class MangoBlacklistService
+final readonly class MangoBlacklistService
 {
     public function __construct(
         private MangoApi $api,
@@ -41,5 +43,7 @@ readonly class MangoBlacklistService
                 ['number', 'number_type', 'comment']
             );
         });
+
+        Cache::flush(MangoCache::MANGO_BLACKLIST_PATTERNS);
     }
 }

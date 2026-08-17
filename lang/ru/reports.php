@@ -49,4 +49,11 @@ return [
             'working' => 'Работает',
         ],
     ],
+    'missed_call' => [
+        'title' => 'Найдет пропущенный звонок!',
+        'branch' => 'Куда звонили: :branch',
+        'caller' => 'Кто звонил: :phone :name',
+        'datetime' => 'Время звонка :datetime',
+        'duration' => 'Длительность звонка: :duration сек.',
+    ],
 ];

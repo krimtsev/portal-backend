@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Constants\Statistics;
+namespace App\Constants\Cache;
 
 final class StatisticsCache
 {

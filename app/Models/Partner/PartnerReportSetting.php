@@ -12,12 +12,14 @@ class PartnerReportSetting extends Model
         'lost_clients_days',
         'returned_clients_days',
         'new_clients_days',
+        'send_missed_calls',
     ];
 
     protected $casts = [
         'lost_clients_days'     => 'integer',
         'returned_clients_days' => 'integer',
         'new_clients_days'      => 'integer',
+        'send_missed_calls'     => 'boolean',
     ];
 
     /**

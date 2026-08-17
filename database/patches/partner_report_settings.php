@@ -19,6 +19,7 @@ try {
                     'lost_clients_days'     => 0,
                     'returned_clients_days' => 0,
                     'new_clients_days'      => 0,
+                    'send_missed_calls'     => false,
                 ]
             );
 
@@ -64,6 +65,7 @@ try {
                             'lost_clients_days'     => (int) ($oldData->lost_client_days ?? 0),
                             'returned_clients_days' => (int) ($oldData->repeat_client_days ?? 0),
                             'new_clients_days'      => (int) ($oldData->new_client_days ?? 0),
+                            'send_missed_calls'     => false,
                         ]);
                 }
             });
