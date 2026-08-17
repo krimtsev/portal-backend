@@ -32,17 +32,19 @@ final class SyncMangoCallsCommand extends Command
             $from = $targetDate->copy()->startOfDay();
             $to = $targetDate->copy()->endOfDay();
             $skipNotifications = true;
+            $limit = 5000;
 
             $this->info("Запуск синхронизации за сутки: {$dateOption}. Уведомления отключены.");
         } else {
             $to = Carbon::now();
             $from = $to->copy()->subMinutes(30);
             $skipNotifications = $isSilent;
+            $limit = 1000;
 
             $this->info('Запуск синхронизации.');
         }
 
-        RequestMangoCallStatsJob::dispatch($from, $to, $skipNotifications);
+        RequestMangoCallStatsJob::dispatch($from, $to, $skipNotifications, $limit);
 
         return self::SUCCESS;
     }

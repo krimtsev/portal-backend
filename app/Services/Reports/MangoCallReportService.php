@@ -5,14 +5,14 @@ namespace App\Services\Reports;
 use App\Helpers\PhoneNumber;
 use App\Integrations\Telegram\Support\TelegramTargetResolver;
 use App\Integrations\Telegram\TelegramManager;
-use App\Models\Partner\Traits\HasMissedCallNotification;
+use App\Models\Partner\Traits\HasMangoCalls;
 use App\Models\Yclients\YcRecord;
 use Illuminate\Support\Carbon;
 use RuntimeException;
 
 final readonly class MangoCallReportService
 {
-    use HasMissedCallNotification;
+    use HasMangoCalls;
 
     public function __construct(
         private TelegramManager $telegram,
@@ -25,7 +25,7 @@ final readonly class MangoCallReportService
         int $duration
     ): void
     {
-        $partner = $this->getTargetPartnerForMissedCall($calledNumber);
+        $partner = $this->getPartnerForMissedCall($calledNumber);
 
         if (!$partner) {
             return;

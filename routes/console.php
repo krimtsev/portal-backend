@@ -120,3 +120,10 @@ Schedule::command('mango:sync-calls')
 Schedule::command('queue:prune-batches --hours=720')
     ->dailyAt('11:00')
     ->timezone('Europe/Moscow');
+
+/**
+ * Рассылка ежедневных отчетов о пропущенных звонках
+ */
+Schedule::command('report:send-daily-missed-calls')
+    ->dailyAt('22:00')
+    ->timezone('Europe/Moscow');

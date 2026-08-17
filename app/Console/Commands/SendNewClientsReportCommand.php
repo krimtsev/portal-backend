@@ -18,7 +18,7 @@ final class SendNewClientsReportCommand extends Command
     public function handle(): int
     {
         if (!config('jobs.partner_reports')) {
-            $this->warn('Синхронизация отключена в конфигурации.');
+            $this->warn('Отчеты отключены в конфигурации.');
 
             return self::SUCCESS;
         }
