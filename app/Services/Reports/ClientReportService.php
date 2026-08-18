@@ -152,7 +152,7 @@ final readonly class ClientReportService
     ): void {
         $fileName = sprintf('%s_%s.xlsx',
             $partner->name,
-            now()->format('Y-m-d H:i:s'),
+            now()->format('Y-m-d_H-i-s'),
         );
 
         $fileName = FileHelper::safeFileName($fileName);
