@@ -61,7 +61,7 @@ final class TelegramTransport
                 }
                 $response = $client->post($uri, $data);
             } else {
-                $response = $client->asJson()->post($uri, $data);
+                $response = $client->asForm()->post($uri, $data);
             }
 
             $this->logRequest($token, $method, $payload, $response->json());
@@ -90,13 +90,24 @@ final class TelegramTransport
         $proxyIp = $list[array_rand($list)];
         $username = $proxy['username'] ?? null;
         $password = $proxy['password'] ?? null;
-        $scheme = $proxy['scheme'] ?? 'http';
+        $scheme = strtolower($proxy['scheme'] ?? 'http');
+        $proxyType = $proxy['type'] ?? CURLPROXY_SOCKS5_HOSTNAME;
 
-        $auth = ($username && $password) ? "{$username}:{$password}@" : '';
+        $proxyUrl = "{$scheme}://{$proxyIp}";
 
-        $proxyUrl = "{$scheme}://{$auth}{$proxyIp}";
+        $curlOptions = [
+            CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
+            CURLOPT_PROXYTYPE => $proxyType
+        ];
 
-        $client->withOptions(['proxy' => $proxyUrl]);
+        if ($username !== null && $password !== null) {
+            $curlOptions[CURLOPT_PROXYUSERPWD] = "{$username}:{$password}";
+        }
+
+        $client->withOptions([
+            'proxy' => $proxyUrl,
+            'curl'  => $curlOptions,
+        ]);
     }
 
     private function extractMultipart(array $payload): array

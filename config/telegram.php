@@ -95,7 +95,9 @@ return [
     'proxy' => [
         'enabled' => (bool) env('TELEGRAM_PROXY_ENABLED', false),
 
-        'scheme' => env('TELEGRAM_PROXY_SCHEME', 'http'),
+        'scheme' => env('TELEGRAM_PROXY_SCHEME', 'socks5h'),
+
+        'types'  => env('TELEGRAM_PROXY_TYPE', 'CURLPROXY_SOCKS5_HOSTNAME'),
 
         'username' => env('TELEGRAM_PROXY_USER'),
         'password' => env('TELEGRAM_PROXY_PASS'),
@@ -105,4 +107,9 @@ return [
             '85.137.166.136:8678',
         ],
     ],
+
+    'report_type' => [
+        // Включение отправки
+        'as_document' => (bool) env('TELEGRAM_REPORT_DOCUMENT', false),
+    ]
 ];
