@@ -6,7 +6,7 @@ use App\Enums\Mango\MangoContextStatus;
 use App\Jobs\Reports\SendDailyMissedCallsReportJob;
 use App\Models\Mango\MangoCall;
 use App\Models\Partner\Traits\HasMangoCalls;
-use App\Services\Formatters\MangoMissedCallFormatter;
+use App\Services\Formatters\MangoCallFormatter;
 use Illuminate\Support\Carbon;
 
 final class MangoDailyReportService
@@ -58,7 +58,7 @@ final class MangoDailyReportService
         }
 
         foreach ($reportsGroupedByChat as $chatId => $reports) {
-            $messageText = MangoMissedCallFormatter::formatDailyReport($reports, $date);
+            $messageText = MangoCallFormatter::formatDailyReport($reports, $date);
 
             SendDailyMissedCallsReportJob::dispatch($chatId, $messageText);
         }

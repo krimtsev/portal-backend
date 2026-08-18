@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services\Formatters;
 
+use App\Helpers\PhoneNumber;
 use Illuminate\Support\Carbon;
 
-final class MangoMissedCallFormatter
+final class MangoCallFormatter
 {
     public static function formatDailyReport(array $reports, Carbon $date): string
     {
@@ -25,5 +26,27 @@ final class MangoMissedCallFormatter
         }
 
         return trim(implode("\n", $lines));
+    }
+
+    public static function formatMissedCall(
+        string $partnerName,
+        string $callerNumber,
+        string $clientName,
+        string $callDateTime,
+        string $duration,
+    ): string
+    {
+        $message = [
+            __('reports.missed_call.title'),
+            __('reports.missed_call.branch', ['branch' => "<b>{$partnerName}</b>"]),
+            __('reports.missed_call.caller', [
+                'phone' => PhoneNumber::format($callerNumber),
+                'name'  => $clientName ? "<b>({$clientName})</b>" : '',
+            ]),
+            __('reports.missed_call.datetime', ['datetime' => $callDateTime]),
+            __('reports.missed_call.duration', ['duration' => $duration]),
+        ];
+
+        return implode("\n", $message);
     }
 }

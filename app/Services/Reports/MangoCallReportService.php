@@ -7,6 +7,7 @@ use App\Integrations\Telegram\Support\TelegramTargetResolver;
 use App\Integrations\Telegram\TelegramManager;
 use App\Models\Partner\Traits\HasMangoCalls;
 use App\Models\Yclients\YcRecord;
+use App\Services\Formatters\MangoCallFormatter;
 use Illuminate\Support\Carbon;
 use RuntimeException;
 
@@ -38,18 +39,13 @@ final readonly class MangoCallReportService
         $callDateTime = Carbon::createFromTimestamp($contextStartTime)
             ->setTimezone(config('mango.timezone'))->toDateTimeString();
 
-        $messageLines = [
-            __('reports.missed_call.title'),
-            __('reports.missed_call.branch', ['branch' => "<b>{$partner->name}</b>"]),
-            __('reports.missed_call.caller', [
-                'phone' => PhoneNumber::format($callerNumber),
-                'name'  => $clientName ? "<b>({$clientName})</b>" : '',
-            ]),
-            __('reports.missed_call.datetime', ['datetime' => $callDateTime]),
-            __('reports.missed_call.duration', ['duration' => $duration]),
-        ];
-
-        $text = implode("\n", $messageLines);
+        $text = MangoCallFormatter::formatMissedCall(
+            $partner->name,
+            $callerNumber,
+            $clientName,
+            $callDateTime,
+            $duration,
+        );
 
         $target = TelegramTargetResolver::resolve(
             defaultChatId: $partner->notificationChannel->telegram_chat_id
