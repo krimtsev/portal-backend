@@ -77,7 +77,7 @@ Schedule::command('yclients:sync-staff-month-stats')
  * Рассылка изменений данных сотрудников
  */
 Schedule::command('yclients:sync-company-staff')
-    ->hourly()
+    ->cron('0 10,14,18,22 * * *')
     ->timezone('Europe/Moscow');
 
 /**
@@ -112,7 +112,7 @@ Schedule::command('report:lost-clients')
  * Собираем статистику по звонкам из Манго телефонии
  */
 Schedule::command('mango:sync-calls')
-    ->everyThreeMinutes();
+    ->everyTwoMinutes();
 
 /**
  * Удаляем задачи, которые зависли старшее 30 дней
