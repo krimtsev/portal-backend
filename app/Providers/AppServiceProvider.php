@@ -6,11 +6,13 @@ use App\Integrations\Mango\MangoApi;
 use App\Integrations\Telegram\TelegramManager;
 use App\Integrations\Telegram\Transport\TelegramTransport;
 use App\Integrations\Yclients\YclientsApi;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Console\Events\ScheduledTaskFailed;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -48,6 +50,12 @@ class AppServiceProvider extends ServiceProvider
                 ]);
             });
         }
+
+        /** Ограничения кол-ва писем за час */
+        RateLimiter::for('external_mailer', function (object $job) {
+            $limit = config('mail.rate_limit.per_hour', 100);
+            return Limit::perHour($limit);
+        });
 
         /** Ошибки запуска команд по расписанию */
         Event::listen(ScheduledTaskFailed::class, function (ScheduledTaskFailed $event) {
