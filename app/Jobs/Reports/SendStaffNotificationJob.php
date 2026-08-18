@@ -65,7 +65,9 @@ final class SendStaffNotificationJob implements ShouldQueue
 
         $bot = $telegram->bot($target->botName);
 
-        if (config('telegram.report_type.as_document')) {
+        $sendAsPhoto = (bool) config('telegram.report_type.as_photo');
+
+        if ($sendAsPhoto) {
             $response = $bot->sendPhoto([
                 'chat_id' => $target->chatId,
                 'photo'   => $this->photoUrl,

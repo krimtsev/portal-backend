@@ -109,7 +109,7 @@ return [
     ],
 
     'report_type' => [
-        // Включение отправки
-        'as_document' => (bool) env('TELEGRAM_REPORT_DOCUMENT', false),
+        // Включение отправки уведомлений о сотрудниках как
+        'as_photo' => (bool) env('TELEGRAM_REPORT_AS_PHOTO', false),
     ]
 ];
