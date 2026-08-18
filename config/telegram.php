@@ -97,7 +97,7 @@ return [
 
         'scheme' => env('TELEGRAM_PROXY_SCHEME', 'socks5h'),
 
-        'types'  => env('TELEGRAM_PROXY_TYPE', 'CURLPROXY_SOCKS5_HOSTNAME'),
+        'type'   => env('TELEGRAM_PROXY_TYPE', 'socks5_hostname'),
 
         'username' => env('TELEGRAM_PROXY_USER'),
         'password' => env('TELEGRAM_PROXY_PASS'),
@@ -107,9 +107,4 @@ return [
             '85.137.166.136:8678',
         ],
     ],
-
-    'report_type' => [
-        // Включение отправки уведомлений о сотрудниках как
-        'as_photo' => (bool) env('TELEGRAM_REPORT_AS_PHOTO', false),
-    ]
 ];

@@ -2,6 +2,7 @@
 
 namespace App\Integrations\Telegram\Transport;
 
+use App\Helpers\ProxyHelper;
 use App\Integrations\Telegram\DTO\TelegramResponse;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\UploadedFile;
@@ -90,22 +91,19 @@ final class TelegramTransport
         $proxyIp = $list[array_rand($list)];
         $username = $proxy['username'] ?? null;
         $password = $proxy['password'] ?? null;
-        $scheme = strtolower($proxy['scheme'] ?? 'http');
-        $proxyType = $proxy['type'] ?? CURLPROXY_SOCKS5_HOSTNAME;
-
-        $proxyUrl = "{$scheme}://{$proxyIp}";
+        $scheme = strtolower($proxy['scheme'] ?? 'socks5h');
 
         $curlOptions = [
             CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
-            CURLOPT_PROXYTYPE => $proxyType
+            CURLOPT_PROXYTYPE => ProxyHelper::getProxyType($proxy['type'] ?? null),
         ];
 
-        if ($username !== null && $password !== null) {
+        if (!empty($username) && !empty($password)) {
             $curlOptions[CURLOPT_PROXYUSERPWD] = "{$username}:{$password}";
         }
 
         $client->withOptions([
-            'proxy' => $proxyUrl,
+            'proxy' => "{$scheme}://{$proxyIp}",
             'curl'  => $curlOptions,
         ]);
     }
