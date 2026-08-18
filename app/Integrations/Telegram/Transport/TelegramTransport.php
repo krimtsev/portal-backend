@@ -80,7 +80,7 @@ final class TelegramTransport
 
     private function applyProxy(PendingRequest $client): void
     {
-        $proxy = $this->proxyConfig['proxy'] ?? [];
+        $proxy = $this->proxyConfig ?? [];
         $enabled = (bool) ($proxy['enabled'] ?? false);
         $list = array_filter($proxy['list'] ?? []);
 

@@ -72,7 +72,7 @@ final class SendStaffNotificationJob implements ShouldQueue
 
         if (!$response->ok) {
             throw new RuntimeException(
-                "Failed to send Telegram photo (Code: {$response->errorCode}): {$response->errorDescription}"
+                "Failed to send Telegram message (Code: {$response->errorCode}): {$response->errorDescription}"
             );
         }
     }
