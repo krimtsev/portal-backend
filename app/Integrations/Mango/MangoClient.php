@@ -13,9 +13,9 @@ class MangoClient
 
     private readonly MangoConfig $config;
 
-    public function __construct(?MangoConfig $config = null)
+    public function __construct()
     {
-        $this->config = $config ?? new MangoConfig(
+        $this->config = new MangoConfig(
             apiKey: config('mango.api.key'),
             apiSalt: config('mango.api.salt'),
         );
