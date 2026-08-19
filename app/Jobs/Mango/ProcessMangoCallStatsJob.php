@@ -53,7 +53,7 @@ final class ProcessMangoCallStatsJob implements ShouldQueue
             'request', 'work' => $this->release(15),
             'complete' => $this->processCompletedReport($service, $response),
             'cancel', 'error', 'not-found' => throw new RuntimeException("Mango API вернул статус ошибки: {$status}"),
-            default => throw new RuntimeException("Неизвестный статус отчета Mango API: " . json_encode($status)),
+            default => throw new RuntimeException("Неизвестный статус отчета Mango API: " . json_encode($response)),
         };
     }
 
