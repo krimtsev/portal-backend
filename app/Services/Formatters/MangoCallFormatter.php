@@ -12,7 +12,7 @@ final class MangoCallFormatter
     public static function formatDailyReport(array $reports, Carbon $date): string
     {
         $lines = [];
-        $lines[] = __('reports.daily_missed_call.title', ['date' => $date->format('d.m.Y')]);
+        $lines[] = sprintf('📞 %s', __('reports.daily_missed_call.title', ['date' => $date->format('d.m.Y')]));
         $lines[] = '';
 
         foreach ($reports as $report) {

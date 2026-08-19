@@ -20,8 +20,14 @@ final readonly class ClientReportFormatter
         $daysText = trans_choice('reports.clients.days', $days);
         $periodText = __('reports.clients.period', ['count' => $daysText]);
 
+        $icon = match ($type) {
+            ClientReportType::NEW_CLIENTS      => '✨',
+            ClientReportType::RETURNED_CLIENTS => '🔄',
+            ClientReportType::LOST_CLIENTS     => '⚠️',
+        };
+
         $lines = [
-            sprintf('<b>%s:</b> %s', __('reports.clients.title'), e($type->label())),
+            sprintf('<b>%s:</b> %s %s', __('reports.clients.title'), $icon, e($type->label())),
             sprintf('<b>%s:</b> %s', __('reports.clients.branch'), e($partner->name)),
             sprintf('<b>%s:</b> %s (%s)', __('reports.clients.date'), $targetDate->format('Y-m-d'), $periodText),
         ];
