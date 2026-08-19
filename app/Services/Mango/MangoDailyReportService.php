@@ -69,13 +69,13 @@ final class MangoDailyReportService
     /**
      * Получить статистику сразу по массиву номеров (Избавляемся от N+1)
      *
-     * @param string[] $telnums
+     * @param  string[]  $telnums
      * @return array<string, array{total: int, accepted: int, missed: int}>
      */
     private function getBulkDailyStats(array $telnums, Carbon $date): array
     {
         $startOfDay = $date->copy()->startOfDay();
-        $endOfDay   = $date->copy()->endOfDay();
+        $endOfDay = $date->copy()->endOfDay();
 
         $stats = MangoCall::query()
             ->incoming()
@@ -89,7 +89,7 @@ final class MangoDailyReportService
                 SUM(CASE WHEN context_status = ? THEN 1 ELSE 0 END) as missed
             ', [
                 MangoContextStatus::SUCCESS->value,
-                MangoContextStatus::FAILED->value
+                MangoContextStatus::FAILED->value,
             ])
             ->groupBy('called_number')
             ->get();

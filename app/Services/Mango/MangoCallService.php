@@ -120,8 +120,6 @@ final readonly class MangoCallService
 
     /**
      * Метод проверки номера в чермном списке
-     * @param string $number
-     * @return bool
      */
     protected function isNumberBlacklisted(string $number): bool
     {

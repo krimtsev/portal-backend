@@ -57,8 +57,8 @@ return [
         'duration' => 'Длительность звонка: :duration сек.',
     ],
     'daily_missed_call' => [
-        'title'  => 'Отчет по входящим звонкам за :date',
+        'title' => 'Отчет по входящим звонкам за :date',
         'branch' => 'Филиал: :branch',
-        'stats'  => 'Принято: :accepted / Пропущено: :missed / Всего звонков: :total',
+        'stats' => 'Принято: :accepted / Пропущено: :missed / Всего звонков: :total',
     ],
 ];

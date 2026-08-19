@@ -24,13 +24,13 @@ final class ProcessMangoCallStatsJob implements ShouldQueue
 
     public function __construct(
         public readonly string $key,
-        public readonly bool   $skipNotifications,
+        public readonly bool $skipNotifications,
         public readonly Carbon $from,
         public readonly Carbon $to,
-        public readonly int    $limit = 1000,
-        public readonly int    $offset = 0,
-        public readonly bool   $isProtected = false
-    ){}
+        public readonly int $limit = 1000,
+        public readonly int $offset = 0,
+        public readonly bool $isProtected = false
+    ) {}
 
     public function uniqueId(): string
     {
@@ -52,10 +52,10 @@ final class ProcessMangoCallStatsJob implements ShouldQueue
             $status = $response['status'] ?? null;
 
             match ($status) {
-                'request', 'work' => $this->handlePendingReport(),
-                'complete' => $this->processCompletedReport($service, $response),
-                'cancel', 'error', 'not-found' => throw new RuntimeException("Mango API вернул статус ошибки: " . json_encode($response)),
-                default => throw new RuntimeException("Неизвестный статус отчета Mango API: " . json_encode($response)),
+                'request', 'work'              => $this->handlePendingReport(),
+                'complete'                     => $this->processCompletedReport($service, $response),
+                'cancel', 'error', 'not-found' => throw new RuntimeException('Mango API вернул статус ошибки: ' . json_encode($response)),
+                default                        => throw new RuntimeException('Неизвестный статус отчета Mango API: ' . json_encode($response)),
             };
         } catch (Throwable $exception) {
             Log::channel('mango')
@@ -110,7 +110,7 @@ final class ProcessMangoCallStatsJob implements ShouldQueue
     {
         Log::channel('mango')
             ->critical('Обработка отчета ProcessMangoCallStats завершилась ошибкой.', [
-                'key' => $this->key,
+                'key'   => $this->key,
                 'error' => $exception->getMessage(),
             ]);
     }

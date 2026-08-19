@@ -21,4 +21,7 @@ return [
 
     // Отчеты партнеров по аналитике
     'partner_reports' => (bool) env('JOB_PARTNER_REPORTS', false),
+
+    // Отчеты партнеров по аналитике
+    'partner_reminders' => (bool) env('JOB_PARTNER_REMINDERS', false),
 ];

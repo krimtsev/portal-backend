@@ -2,7 +2,6 @@
 
 namespace App\Services\Reports;
 
-use App\Helpers\PhoneNumber;
 use App\Integrations\Telegram\Support\TelegramTargetResolver;
 use App\Integrations\Telegram\TelegramManager;
 use App\Models\Partner\Traits\HasMangoCalls;
@@ -24,8 +23,7 @@ final readonly class MangoCallReportService
         string $callerNumber,
         string $contextStartTime,
         int $duration
-    ): void
-    {
+    ): void {
         $partner = $this->getPartnerForMissedCall($calledNumber);
 
         if (!$partner) {

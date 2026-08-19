@@ -97,7 +97,7 @@ return [
 
         'scheme' => env('TELEGRAM_PROXY_SCHEME', 'socks5h'),
 
-        'type'   => env('TELEGRAM_PROXY_TYPE', 'socks5_hostname'),
+        'type' => env('TELEGRAM_PROXY_TYPE', 'socks5_hostname'),
 
         'username' => env('TELEGRAM_PROXY_USER'),
         'password' => env('TELEGRAM_PROXY_PASS'),
