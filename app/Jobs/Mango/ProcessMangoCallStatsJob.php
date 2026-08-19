@@ -17,7 +17,10 @@ final class ProcessMangoCallStatsJob implements ShouldQueue
     use Queueable;
 
     /** Количество попыток выполнения */
-    public int $tries = 10;
+    public int $tries = 2;
+
+    /** Таймаут выполнения */
+    public int $timeout = 120;
 
     public function __construct(
         public readonly string $key,
@@ -31,6 +34,14 @@ final class ProcessMangoCallStatsJob implements ShouldQueue
     public function uniqueId(): string
     {
         return "process_mango_call_stats_{$this->key}";
+    }
+
+    /**
+     * Стратегия ожидания между повторами (Exponential/Step Backoff).
+     */
+    public function backoff(): array
+    {
+        return [120, 240];
     }
 
     public function handle(MangoCallService $service): void

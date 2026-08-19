@@ -15,6 +15,9 @@ final class RequestMangoCallStatsJob implements ShouldQueue
 {
     use Queueable;
 
+    /** Количество попыток выполнения */
+    public int $tries = 1;
+
     public function __construct(
         public readonly Carbon $from,
         public readonly Carbon $to,

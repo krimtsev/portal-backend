@@ -62,7 +62,7 @@ final class TelegramTransport
                 }
                 $response = $client->post($uri, $data);
             } else {
-                $response = $client->asForm()->post($uri, $data);
+                $response = $client->asJson()->post($uri, $data);
             }
 
             $this->logRequest($token, $method, $payload, $response->json());
@@ -120,11 +120,12 @@ final class TelegramTransport
                     'filename' => $value->getClientOriginalName(),
                 ];
             } elseif (is_resource($value)) {
+                $meta = stream_get_meta_data($value);
                 $multipart[$key] = [
-                    'contents' => stream_get_contents($value),
-                    'filename' => basename(stream_get_meta_data($value)['uri'] ?? "file_{$key}"),
+                    'contents' => $value,
+                    'filename' => $meta['uri'] ?? "file_{$key}",
                 ];
-            } elseif (is_string($value) && file_exists($value) && is_file($value)) {
+            } elseif (is_string($value) && is_file($value)) {
                 $multipart[$key] = [
                     'contents' => file_get_contents($value),
                     'filename' => basename($value),
