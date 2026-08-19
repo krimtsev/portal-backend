@@ -40,6 +40,8 @@ final class SyncMangoBlacklistJob implements ShouldBeUnique, ShouldQueue
                 ->critical('Синхронизация Mango Blacklist завершилась с ошибкой.', [
                     'error' => $exception->getMessage(),
                 ]);
+
+            $this->delete();
         }
     }
 }

@@ -24,6 +24,7 @@ final class RequestMangoCallStatsJob implements ShouldQueue
         public readonly bool $skipNotifications = false,
         public readonly int $limit = 1000,
         public readonly int $offset = 0,
+        public readonly bool $isProtected = false,
     ) {}
 
     public function uniqueId(): string
@@ -39,37 +40,40 @@ final class RequestMangoCallStatsJob implements ShouldQueue
 
     public function handle(MangoCallService $service): void
     {
-        $key = $service->getStatsKey(
-            from: $this->from,
-            to: $this->to,
-            limit: $this->limit,
-            offset: $this->offset,
-        );
-
-        if ($key) {
-            $callStatsDelay = config('mango.call_stats_delay');
-
-            ProcessMangoCallStatsJob::dispatch(
-                key: $key,
-                skipNotifications: $this->skipNotifications,
+        try {
+            $key = $service->getStatsKey(
                 from: $this->from,
                 to: $this->to,
                 limit: $this->limit,
                 offset: $this->offset,
-            )->delay(now()->addSeconds($callStatsDelay));
-        }
-    }
+            );
 
-    /**
-     * Метод срабатывает, когда все попытки завершились неудачей
-     */
-    public function failed(Throwable $exception): void
-    {
-        Log::channel('mango')
-            ->critical('Запрос формирования отчета Mango завершился ошибкой.', [
-                'error'  => $exception->getMessage(),
-                'offset' => $this->offset,
-                'limit'  => $this->limit,
-            ]);
+            if ($key) {
+                $callStatsDelay = config('mango.call_stats_delay');
+
+                ProcessMangoCallStatsJob::dispatch(
+                    key: $key,
+                    skipNotifications: $this->skipNotifications,
+                    from: $this->from,
+                    to: $this->to,
+                    limit: $this->limit,
+                    offset: $this->offset,
+                    isProtected: $this->isProtected,
+                )->delay(now()->addSeconds($callStatsDelay));
+            }
+        } catch (Throwable $exception) {
+            Log::channel('mango')
+                ->critical('Запрос формирования отчета Mango завершился ошибкой.', [
+                    'error'  => $exception->getMessage(),
+                    'offset' => $this->offset,
+                    'limit'  => $this->limit,
+                ]);
+
+            if ($this->isProtected) {
+                throw $exception;
+            }
+
+            $this->delete();
+        }
     }
 }

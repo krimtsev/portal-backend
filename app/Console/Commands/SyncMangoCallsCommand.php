@@ -12,7 +12,8 @@ final class SyncMangoCallsCommand extends Command
 {
     protected $signature = 'mango:sync-calls
                             {--date= : Конкретный день в формате YYYY-MM-DD}
-                            {--silent : Не отправлять уведомления}';
+                            {--silent : Не отправлять уведомления}
+                            {--protected : Не удалять задачи в случае неудачи}';
 
     protected $description = 'Синхронизация звонков Mango.';
 
@@ -25,26 +26,33 @@ final class SyncMangoCallsCommand extends Command
         }
 
         $dateOption = $this->option('date');
-        $isSilent = (bool) $this->option('silent');
+        $skipNotifications = (bool) $this->option('silent');
+        $isProtected = (bool) $this->option('protected');
+
+        $limit = 1000;
 
         if ($dateOption) {
             $targetDate = Carbon::parse($dateOption);
             $from = $targetDate->copy()->startOfDay();
             $to = $targetDate->copy()->endOfDay();
-            $skipNotifications = true;
             $limit = 5000;
-
+            $skipNotifications = true;
+            $isProtected = true;
             $this->info("Запуск синхронизации за сутки: {$dateOption}. Уведомления отключены.");
         } else {
             $to = Carbon::now();
             $from = $to->copy()->subMinutes(30);
-            $skipNotifications = $isSilent;
-            $limit = 1000;
-
             $this->info('Запуск синхронизации.');
         }
 
-        RequestMangoCallStatsJob::dispatch($from, $to, $skipNotifications, $limit);
+        RequestMangoCallStatsJob::dispatch(
+            $from,
+            $to,
+            $skipNotifications,
+            $limit,
+            0,
+            $isProtected
+        );
 
         return self::SUCCESS;
     }

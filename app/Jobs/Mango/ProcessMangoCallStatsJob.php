@@ -20,7 +20,7 @@ final class ProcessMangoCallStatsJob implements ShouldQueue
     public int $tries = 2;
 
     /** Таймаут выполнения */
-    public int $timeout = 120;
+    public int $timeout = 60;
 
     public function __construct(
         public readonly string $key,
@@ -29,6 +29,7 @@ final class ProcessMangoCallStatsJob implements ShouldQueue
         public readonly Carbon $to,
         public readonly int    $limit = 1000,
         public readonly int    $offset = 0,
+        public readonly bool   $isProtected = false
     ){}
 
     public function uniqueId(): string
@@ -37,24 +38,48 @@ final class ProcessMangoCallStatsJob implements ShouldQueue
     }
 
     /**
-     * Стратегия ожидания между повторами (Exponential/Step Backoff).
+     * Пауза в 15 секунд перед повтором при ошибке
      */
-    public function backoff(): array
+    public function backoff(): int
     {
-        return [120, 240];
+        return 15;
     }
 
     public function handle(MangoCallService $service): void
     {
-        $response = $service->getReportResult($this->key);
-        $status = $response['status'] ?? null;
+        try {
+            $response = $service->getReportResult($this->key);
+            $status = $response['status'] ?? null;
 
-        match ($status) {
-            'request', 'work' => $this->release(15),
-            'complete' => $this->processCompletedReport($service, $response),
-            'cancel', 'error', 'not-found' => throw new RuntimeException("Mango API вернул статус ошибки: {$status}"),
-            default => throw new RuntimeException("Неизвестный статус отчета Mango API: " . json_encode($response)),
-        };
+            match ($status) {
+                'request', 'work' => $this->handlePendingReport(),
+                'complete' => $this->processCompletedReport($service, $response),
+                'cancel', 'error', 'not-found' => throw new RuntimeException("Mango API вернул статус ошибки: " . json_encode($response)),
+                default => throw new RuntimeException("Неизвестный статус отчета Mango API: " . json_encode($response)),
+            };
+        } catch (Throwable $exception) {
+            Log::channel('mango')
+                ->critical('Обработка отчета ProcessMangoCallStats завершилась ошибкой.', [
+                    'key'   => $this->key,
+                    'error' => $exception->getMessage(),
+                ]);
+
+            // Если осталась еще попытка — пробрасываем ошибку для выполнения повтора через 15 сек
+            if ($this->attempts() < $this->tries || $this->isProtected) {
+                throw $exception;
+            }
+
+            $this->delete();
+        }
+    }
+
+    private function handlePendingReport(): void
+    {
+        if ($this->attempts() < $this->tries) {
+            $this->release(20);
+        } else {
+            throw new RuntimeException('Превышено количество попыток ожидания отчета Mango (статус request/work).');
+        }
     }
 
     private function processCompletedReport(MangoCallService $service, array $response): void
@@ -73,6 +98,7 @@ final class ProcessMangoCallStatsJob implements ShouldQueue
                 skipNotifications: $this->skipNotifications,
                 limit: $this->limit,
                 offset: $this->offset + $this->limit,
+                isProtected: $this->isProtected
             );
         }
     }
