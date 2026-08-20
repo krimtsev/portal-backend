@@ -23,7 +23,7 @@ final class SendNewClientsReportCommand extends Command
             return self::SUCCESS;
         }
 
-        $partners = $this->getTargetPartners($this->option('company_id'));
+        $partners = $this->getTargetPartnersForNewClients($this->option('company_id'));
 
         if ($partners->isEmpty()) {
             $this->warn('Нет активных партнеров для рассылки.');

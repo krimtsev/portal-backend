@@ -50,7 +50,6 @@ return [
         ],
     ],
     'missed_call' => [
-        'title' => 'Найден пропущенный звонок!',
         'branch' => 'Куда звонили: :branch',
         'caller' => 'Кто звонил: :phone :name',
         'datetime' => 'Время звонка :datetime',

@@ -23,7 +23,7 @@ final class SendReturnedClientsReportCommand extends Command
             return self::SUCCESS;
         }
 
-        $partners = $this->getTargetPartners($this->option('company_id'));
+        $partners = $this->getTargetPartnersForReturnedClients($this->option('company_id'));
 
         if ($partners->isEmpty()) {
             $this->warn('Нет активных партнеров для рассылки.');

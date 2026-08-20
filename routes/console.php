@@ -14,14 +14,14 @@
  * Обновление сертификатов из Google Sheets
  */
 Schedule::command('certificates:sync')
-    ->dailyAt('01:00')
-    ->timezone('Europe/Moscow');
+    ->timezone('Europe/Moscow')
+    ->dailyAt('01:00');
 
 /**
  * Синхронизация пропущенных звонков из Mango API
  * Обновляем данные за прошедший день.
  */
-Schedule::command('mango:sync-calls --date=yesterday --silent --protected')
+Schedule::command('mango:sync-daily-calls')
     ->timezone('Europe/Moscow')
     ->dailyAt('01:15');
 
@@ -30,36 +30,36 @@ Schedule::command('mango:sync-calls --date=yesterday --silent --protected')
  * Должен быть всегда раньше запросов в выборке по сотрудникам
  */
 Schedule::command('yclients:sync-staff-work-days')
-    ->dailyAt('01:30')
-    ->timezone('Europe/Moscow');
+    ->timezone('Europe/Moscow')
+    ->dailyAt('01:30');
 
 /**
  * Синхронизация списка записей компании из YClients
  */
 Schedule::command('yclients:sync-records')
-    ->dailyAt('03:00')
-    ->timezone('Europe/Moscow');
+    ->timezone('Europe/Moscow')
+    ->dailyAt('03:00');
 
 /**
  * Синхронизация комментариев из YClients
  */
 Schedule::command('yclients:sync-comments')
-    ->dailyAt('03:30')
-    ->timezone('Europe/Moscow');
+    ->timezone('Europe/Moscow')
+    ->dailyAt('03:30');
 
 /**
  * Синхронизация товарных транзакций компании из YClients
  */
 Schedule::command('yclients:sync-storage-transactions')
-    ->dailyAt('04:00')
-    ->timezone('Europe/Moscow');
+    ->timezone('Europe/Moscow')
+    ->dailyAt('04:00');
 
 /**
  * Синхронизация транзакций компании из YClients
  */
 Schedule::command('yclients:sync-transactions')
-    ->dailyAt('04:30')
-    ->timezone('Europe/Moscow');
+    ->timezone('Europe/Moscow')
+    ->dailyAt('04:30');
 
 /**
  * Fixme: с 5:00 - 7:00 MSK
@@ -70,82 +70,82 @@ Schedule::command('yclients:sync-transactions')
  * Синхронизация основных показателей компании с выбором за месяц из YClients (Royalty)
  */
 Schedule::command('yclients:sync-company-month-stats')
-    ->monthlyOn(1, '09:00')
-    ->timezone('Europe/Moscow');
+    ->timezone('Europe/Moscow')
+    ->monthlyOn(1, '09:00');
 
 /**
  * Синхронизация статистики по сотрудникам с выбором за месяц из YClients
  */
 Schedule::command('yclients:sync-staff-month-stats')
-    ->monthlyOn(1, '09:30')
-    ->timezone('Europe/Moscow');
+    ->timezone('Europe/Moscow')
+    ->monthlyOn(1, '09:30');
 
 /**
  * Синхронизация статистики данных сотрудников из YClients
  * Рассылка изменений данных сотрудников
  */
 Schedule::command('yclients:sync-company-staff')
-    ->cron('0 10,14,18,22 * * *')
-    ->timezone('Europe/Moscow');
+    ->timezone('Europe/Moscow')
+    ->cron('0 10,14,18,22 * * *');
 
 /**
  * Синхронизация черного списка номеров из Mango
  */
 Schedule::command('mango:sync-blacklist')
-    ->hourly()
-    ->timezone('Europe/Moscow');
+    ->timezone('Europe/Moscow')
+    ->hourly();
 
 /**
  * Рассылка отчетов по новым клиентам
  */
 Schedule::command('report:new-clients')
-    ->dailyAt('10:00')
-    ->timezone('Europe/Moscow');
+    ->timezone('Europe/Moscow')
+    ->dailyAt('10:00');
 
 /**
  * Рассылка отчетов по вернувшимся клиентам
  */
 Schedule::command('report:returned-clients')
-    ->dailyAt('10:15')
-    ->timezone('Europe/Moscow');
+    ->timezone('Europe/Moscow')
+    ->dailyAt('10:15');
 
 /**
  * Рассылка отчетов по потерянным клиентам
  */
 Schedule::command('report:lost-clients')
-    ->dailyAt('10:30')
-    ->timezone('Europe/Moscow');
+    ->timezone('Europe/Moscow')
+    ->dailyAt('10:30');
 
 /**
  * Собираем статистику по звонкам из Манго телефонии
  */
-Schedule::command('mango:sync-calls')
+Schedule::command('mango:sync-recent-calls')
     ->everyTwoMinutes();
 
 /**
  * Удаляем задачи, которые зависли старшее 30 дней
  */
 Schedule::command('queue:prune-batches --hours=720')
-    ->dailyAt('11:00')
-    ->timezone('Europe/Moscow');
+    ->timezone('Europe/Moscow')
+    ->dailyAt('11:00');
 
 /**
  * Уведомление партнеров про видео отчеты
  */
 Schedule::command('reports:send-video-reminders')
-    ->dailyAt('11:00')
-    ->timezone('Europe/Moscow');
+    ->timezone('Europe/Moscow')
+    ->dailyAt('11:00');
 
 /**
  * Уведомление партнеров про WhatsApp
  */
 Schedule::command('reports:send-wahelp-reminders')
-    ->dailyAt('12:00')
-    ->timezone('Europe/Moscow');
+    ->timezone('Europe/Moscow')
+    ->dailyAt('12:00');
 
 /**
  * Рассылка ежедневных отчетов о пропущенных звонках
  */
 Schedule::command('report:send-daily-missed-calls')
-    ->dailyAt('22:00')
-    ->timezone('Europe/Moscow');
+    ->timezone('Europe/Moscow')
+    ->dailyAt('22:00');

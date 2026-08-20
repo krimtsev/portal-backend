@@ -23,7 +23,7 @@ final class SendLostClientsReportCommand extends Command
             return self::SUCCESS;
         }
 
-        $partners = $this->getTargetPartners($this->option('company_id'));
+        $partners = $this->getTargetPartnersForLostClients($this->option('company_id'));
 
         if ($partners->isEmpty()) {
             $this->warn('Нет активных партнеров для рассылки.');

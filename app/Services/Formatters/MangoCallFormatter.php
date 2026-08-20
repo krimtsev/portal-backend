@@ -36,7 +36,6 @@ final class MangoCallFormatter
         string $duration,
     ): string {
         $message = [
-            __('reports.missed_call.title'),
             __('reports.missed_call.branch', ['branch' => "<b>{$partnerName}</b>"]),
             __('reports.missed_call.caller', [
                 'phone' => PhoneNumber::format($callerNumber),
