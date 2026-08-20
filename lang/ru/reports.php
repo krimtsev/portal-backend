@@ -57,7 +57,7 @@ return [
     ],
     'daily_missed_call' => [
         'title' => 'Отчет по входящим звонкам за :date',
-        'branch' => 'Филиал: :branch',
-        'stats' => '✅ Принято: :accepted / ❌ Пропущено: :missed / 📊 Всего звонков: :total',
+        'header' => 'Филиал: Принято / Пропущено / Всего звонков',
+        'item' => ':branch: :accepted / :missed / :total',
     ],
 ];
