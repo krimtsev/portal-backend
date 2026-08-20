@@ -31,7 +31,7 @@ final class MangoCallFormatter
     public static function formatMissedCall(
         string $partnerName,
         string $callerNumber,
-        string $clientName,
+        ?string $clientName,
         string $callDateTime,
         string $duration,
     ): string {
