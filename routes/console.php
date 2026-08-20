@@ -18,6 +18,14 @@ Schedule::command('certificates:sync')
     ->timezone('Europe/Moscow');
 
 /**
+ * Синхронизация пропущенных звонков из Mango API
+ * Обновляем данные за прошедший день.
+ */
+Schedule::command('mango:sync-calls --date=yesterday --silent --protected')
+    ->timezone('Europe/Moscow')
+    ->dailyAt('01:15');
+
+/**
  * Синхронизация сотрудников из YClients
  * Должен быть всегда раньше запросов в выборке по сотрудникам
  */
@@ -119,6 +127,20 @@ Schedule::command('mango:sync-calls')
  */
 Schedule::command('queue:prune-batches --hours=720')
     ->dailyAt('11:00')
+    ->timezone('Europe/Moscow');
+
+/**
+ * Уведомление партнеров про видео отчеты
+ */
+Schedule::command('reports:send-video-reminders')
+    ->dailyAt('11:00')
+    ->timezone('Europe/Moscow');
+
+/**
+ * Уведомление партнеров про WhatsApp
+ */
+Schedule::command('reports:send-wahelp-reminders')
+    ->dailyAt('12:00')
     ->timezone('Europe/Moscow');
 
 /**
