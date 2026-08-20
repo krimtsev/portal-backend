@@ -94,12 +94,19 @@ php artisan mango:sync-blacklist
 ключи
 > --now : Запустить синхронизацию минуя очередь  
 
-### Синхронизация списка входящих звонков c Mango API
+### Синхронизация списка входящих звонков c Mango API за сутки
 ```
-php artisan mango:sync-calls
+php artisan mango:sync-daily-calls
 ```
 
 ключи
 > --date= : Конкретный день в формате YYYY-MM-DD  
-> --silent : Не отправлять уведомления  
-> --protected : Не удалять задачи в случае неудачи
+> 
+> 
+### Синхронизация списка входящих звонков c Mango API за N (30) минут
+```
+php artisan mango:sync-recent-calls
+```
+
+ключи
+> --silent : Не отправлять уведомления
