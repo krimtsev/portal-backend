@@ -130,7 +130,7 @@ class MangoClient
                 ]);
         }
 
-        if ($response->failed() || $response->status() !== 200) {
+        if ($response->status() !== 200) {
             throw new MangoException(
                 sprintf(
                     'HTTP request to [%s] failed with status [%d]. Response: %s',

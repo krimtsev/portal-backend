@@ -25,5 +25,16 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::get('user-partners', [Controllers\Partners\PartnerController::class, 'getUserPartners']);
+
+        Route::prefix('files')->group(function () {
+            Route::get('download/{category}/{fileName}', [Controllers\Files\FileController::class, 'download']);
+            Route::get('render/{category}/{fileName}', [Controllers\Files\FileController::class, 'render']);
+        });
     });
 });
+
+Route::get('media/{category}/{fileName}', [Controllers\Files\PublicFileController::class, 'show'])
+    ->where([
+        'category' => '[a-zA-Z0-9_\-]+',
+        'fileName' => '[a-zA-Z0-9_\-\.]+',
+    ]);

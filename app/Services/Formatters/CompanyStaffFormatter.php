@@ -23,7 +23,7 @@ final class CompanyStaffFormatter
         return implode("\n", [
             "🟢 {$header}",
             '',
-            __('reports.company_staff.branch', ['branch' => $branchName]),
+            __('reports.company_staff.branch', ['branch' => "<b>{$branchName}</b>"]),
             __('reports.company_staff.name', ['name' => $name]),
             __('reports.company_staff.specialization', ['specialization' => $specialization]),
             __('reports.company_staff.phone', ['phone' => $phone]),

@@ -84,6 +84,20 @@ return [
             'throw'  => false,
             'report' => false,
         ],
+
+        'partners_private' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private/_partners'),
+            'throw' => false,
+        ],
+
+        'partners_public' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/_partners'),
+            'url' => env('APP_URL').'/storage/_partners',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
     ],
 
     /*

@@ -35,7 +35,7 @@ final class SendVideoReportRemindersCommand extends Command
 
         $partner = config('partner.current', 'default');
         $caption = __("partner_notifications.{$partner}.video_report");
-        $photoPath = storage_path("app/private/partners/{$partner}/video_report.jpg");
+        $photoPath = storage_path("app/private/_partners/{$partner}/images/video_report.jpg");
 
         if (!File::exists($photoPath)) {
             $this->error("Файл изображения не найден: {$photoPath}");
