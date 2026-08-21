@@ -57,12 +57,18 @@ class MangoClient
             $requestId = Str::uuid()->toString();
 
             $http->beforeSending(function (Request $request) use ($requestId) {
+                $payload = $request->data();
+
+                if (isset($payload['vpbx_api_key'])) {
+                    $payload['vpbx_api_key'] = '********';
+                }
+
                 Log::channel($this->logChannel)
                     ->info('Mango HTTP Request', [
                         'request-id' => $requestId,
                         'method'     => $request->method(),
                         'url'        => $request->url(),
-                        'payload'    => $request->data(),
+                        'payload'    => $payload,
                     ]);
             });
 
@@ -108,12 +114,19 @@ class MangoClient
 
         if ($this->isHttpDebug) {
             $requestId = $response->header('X-Request-ID');
+            $payload = $response->json();
+
+            if (is_array($payload)) {
+                if (isset($payload['data'])) {
+                    $payload['data'] = '[REMOVED]';
+                }
+            }
 
             Log::channel($this->logChannel)
                 ->info('Mango HTTP Response', [
                     'request-id' => $requestId,
                     'status'     => $responseStatus,
-                    'body'       => $responseBody,
+                    'body'       => $payload ?? $responseBody,
                 ]);
         }
 
