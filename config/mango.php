@@ -12,6 +12,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'http' => [
+        'debug'           => (bool) env('MANGO_HTTP_DEBUG', false),
         'verify'          => (bool) env('MANGO_HTTP_VERIFY', false),
         'use_retry'       => (bool) env('MANGO_HTTP_USE_RETRY', false),
         'timeout'         => (int) env('MANGO_HTTP_TIMEOUT', 30),

@@ -4,7 +4,12 @@ namespace App\Integrations\Mango;
 
 use App\Integrations\Mango\Core\MangoConfig;
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Http\Client\Request;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
 class MangoClient
@@ -13,12 +18,19 @@ class MangoClient
 
     private readonly MangoConfig $config;
 
+    private string $logChannel = 'mango';
+
+    /** Записывать в лог все запросы и ответы */
+    private bool $isHttpDebug;
+
     public function __construct()
     {
         $this->config = new MangoConfig(
             apiKey: config('mango.api.key'),
             apiSalt: config('mango.api.salt'),
         );
+
+        $this->isHttpDebug = config('mango.http.debug');
     }
 
     public function request(): PendingRequest
@@ -39,6 +51,24 @@ class MangoClient
 
         if (config('mango.http.use_retry')) {
             $http->retry(2, 5000);
+        }
+
+        if ($this->isHttpDebug) {
+            $requestId = Str::uuid()->toString();
+
+            $http->beforeSending(function (Request $request) use ($requestId) {
+                Log::channel($this->logChannel)
+                    ->info('Mango HTTP Request', [
+                        'request-id' => $requestId,
+                        'method'     => $request->method(),
+                        'url'        => $request->url(),
+                        'payload'    => $request->data(),
+                    ]);
+            });
+
+            $http->withResponseMiddleware(function (ResponseInterface $response) use ($requestId) {
+                return $response->withHeader('X-Request-ID', $requestId);
+            });
         }
 
         return $http;
@@ -63,15 +93,42 @@ class MangoClient
                 'json'         => $jsonPayload,
             ]);
 
-            if ($response->status() !== 200) {
-                throw new MangoException(
-                    "Mango API error HTTP {$response->status()}: {$response->body()}"
-                );
-            }
-
-            return $response->json() ?? [];
         } catch (Throwable $e) {
             throw new MangoException('Connection Error: ' . $e->getMessage(), $e->getCode(), $e);
         }
+
+        return $this->handleResponse($response);
+    }
+
+    protected function handleResponse(Response $response): array
+    {
+        $responseBody = $response->body();
+        $responseStatus = $response->status();
+        $requestUrl = (string) $response->effectiveUri();
+
+        if ($this->isHttpDebug) {
+            $requestId = $response->header('X-Request-ID');
+
+            Log::channel($this->logChannel)
+                ->info('Mango HTTP Response', [
+                    'request-id' => $requestId,
+                    'status'     => $responseStatus,
+                    'body'       => $responseBody,
+                ]);
+        }
+
+        if ($response->failed() || $response->status() !== 200) {
+            throw new MangoException(
+                sprintf(
+                    'HTTP request to [%s] failed with status [%d]. Response: %s',
+                    $requestUrl,
+                    $response->status(),
+                    $responseBody
+                ),
+                $response->status()
+            );
+        }
+
+        return $response->json() ?? [];
     }
 }
