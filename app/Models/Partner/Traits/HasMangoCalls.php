@@ -41,6 +41,7 @@ trait HasMangoCalls
             })
             ->hasReadyNotificationChannel(NotificationChannel::TELEGRAM)
             ->when($companyId, fn (Builder $query, string $id) => $query->where('yclients_id', $id))
+            ->orderBy('name')
             ->get();
     }
 }
