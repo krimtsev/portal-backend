@@ -82,7 +82,8 @@ final class SendDailyMissedCallsReportJob implements ShouldQueue
         Log::channel('telegram')->critical(
             'Отправка ежедневной статистики пропущенных звонков в Telegram завершилась ошибкой.',
             [
-                'error' => $exception->getMessage(),
+                'chat_id' => $this->chatId,
+                'error'   => $exception->getMessage(),
             ]
         );
     }
