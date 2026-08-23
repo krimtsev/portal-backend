@@ -51,10 +51,11 @@ try {
             ->chunk(200, function ($records) {
                 foreach ($records as $oldData) {
                     $hasPaymentDate = !empty($oldData->tg_pay_end);
+                    $isSendTelegram = (bool) $oldData->tg_active;
 
                     PartnerNotificationChannel::where('partner_id', $oldData->new_partner_id)
                         ->update([
-                            'send_telegram'    => (bool) $oldData->tg_active,
+                            'send_telegram'    => $isSendTelegram,
                             'telegram_chat_id' => $oldData->tg_chat_id ?: null,
                             'check_payment'    => $hasPaymentDate,
                             'payment_date'     => $hasPaymentDate ? $oldData->tg_pay_end : null,
@@ -65,7 +66,7 @@ try {
                             'lost_clients_days'     => (int) ($oldData->lost_client_days ?? 0),
                             'returned_clients_days' => (int) ($oldData->repeat_client_days ?? 0),
                             'new_clients_days'      => (int) ($oldData->new_client_days ?? 0),
-                            'send_missed_calls'     => false,
+                            'send_missed_calls'     => $isSendTelegram,
                         ]);
                 }
             });
