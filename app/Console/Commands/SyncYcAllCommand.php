@@ -11,6 +11,7 @@ final class SyncYcAllCommand extends Command
 
     protected $signature = 'yclients:sync-all
                             {--date= : Конкретный день в формате YYYY-MM-DD}
+                            {--month= : Полный месяц в формате YYYY-MM}
                             {--company_id= : Конкретный ID компании из YClients (yclients_id)}';
 
     protected $description = 'Глобальный запуск всех задач синхронизации YClients за день';
@@ -43,7 +44,8 @@ final class SyncYcAllCommand extends Command
 
         try {
             $dates = $periodService->resolveFromParams(
-                date: $this->option('date')
+                date: $this->option('date'),
+                month: $this->option('month')
             );
         } catch (Throwable $e) {
             $this->error('Ошибка параметров: ' . $e->getMessage());
@@ -54,7 +56,8 @@ final class SyncYcAllCommand extends Command
         $companyId = $this->option('company_id');
 
         $this->info(sprintf(
-            'Начинаем глобальную синхронизацию. %s',
+            'Начинаем глобальную синхронизацию. Дней для обработки: %d. %s',
+            count($dates),
             $companyId ? "Фильтр по компании: {$companyId}" : 'Для всех активных компаний'
         ));
 
