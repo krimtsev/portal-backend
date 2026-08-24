@@ -29,6 +29,25 @@ final class PartnerNotificationsController extends Controller
             ->select('id', 'name', 'yclients_id', 'disabled')
             ->with(['notificationChannel', 'reportSettings']);
 
+        // Фильтруем по доступности рассылки
+        $filters = $request->input('filters', []);
+        if (isset($filters['receive_messages'])) {
+            $isActiveNow = filter_var(
+                $filters['receive_messages'],
+                FILTER_VALIDATE_BOOLEAN,
+                FILTER_NULL_ON_FAILURE
+            );
+
+            if ($isActiveNow === true) {
+                $query->hasReadyNotificationChannel();
+            } elseif ($isActiveNow === false) {
+                $query->whereNotIn(
+                    'id',
+                    Partner::hasReadyNotificationChannel()->select('id')
+                );
+            }
+        }
+
         $result = Pagination::paginate(
             $query,
             $request,

@@ -9,13 +9,13 @@ use Illuminate\Support\Facades\Artisan;
  * php artisan tinker database/scripts/yclients_sync.php
  */
 $commands = [
-    'yclients:sync-company-daily-stats',
     'yclients:sync-staff-work-days',
     'yclients:sync-comments',
-    'yclients:sync-staff-daily-stats',
-    'yclients:sync-transactions',
     'yclients:sync-records',
+    'yclients:sync-transactions',
     'yclients:sync-storage-transactions',
+    'yclients:sync-company-daily-stats',
+    'yclients:sync-staff-daily-stats',
 ];
 
 $months = ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06'];

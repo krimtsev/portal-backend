@@ -11,6 +11,7 @@ use Throwable;
 final class SyncYcCompanyDailyStatCommand extends Command
 {
     protected $signature = 'yclients:sync-company-daily-stats
+                            {--date= : Конкретный день в формате YYYY-MM-DD}
                             {--month= : Полный месяц в формате YYYY-MM}
                             {--company_id= : Конкретный ID компании из YClients (yclients_id)}';
 
