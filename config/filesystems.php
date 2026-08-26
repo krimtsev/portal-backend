@@ -98,6 +98,12 @@ return [
             'visibility' => 'public',
             'throw' => false,
         ],
+
+        'broadcasts' => [
+            'driver' => 'local',
+            'root'   => storage_path('app/broadcasts'),
+            'throw'  => false,
+        ],
     ],
 
     /*

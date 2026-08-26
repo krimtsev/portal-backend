@@ -56,6 +56,13 @@ Route::prefix('v1/dashboard')
                 Route::put('partner/{partner}', [Controllers\Partners\PartnerNotificationsController::class, 'update']);
             });
 
+        Route::prefix('partner-messages')
+            ->middleware(['role:sysadmin'])
+            ->group(function () {
+                Route::get('options', [Controllers\Partners\PartnerMessagesController::class, 'options']);
+                Route::post('send', [Controllers\Partners\PartnerMessagesController::class, 'send']);
+            });
+
         Route::prefix('tickets')
             ->middleware(['role:admin,sysadmin'])
             ->group(function () {

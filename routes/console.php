@@ -130,10 +130,11 @@ Schedule::command('queue:prune-batches --hours=720')
     ->dailyAt('11:00');
 
 /**
- * Уведомление партнеров про видео отчеты
+ * Уведомление партнеров про видео отчеты (только по понедельникам)
  */
 Schedule::command('reports:send-video-reminders')
     ->timezone('Europe/Moscow')
+    ->mondays()
     ->dailyAt('11:00');
 
 /**
@@ -149,3 +150,10 @@ Schedule::command('reports:send-wahelp-reminders')
 Schedule::command('report:send-daily-missed-calls')
     ->timezone('Europe/Moscow')
     ->dailyAt('22:00');
+
+/**
+ * Удаляем старые файлы добавленные в Рассылке сообщений
+ */
+Schedule::command('clear:broadcasts --days=120')
+    ->timezone('Europe/Moscow')
+    ->monthly();

@@ -22,6 +22,7 @@ trait HasPartnerReportDispatch
             ->hasReadyNotificationChannel(NotificationChannel::TELEGRAM)
             ->when($companyId, fn (Builder $query) => $query->where('yclients_id', $companyId))
             ->whereHas('reportSettings', fn (Builder $q) => $q->where($settingKey, '>', 0))
+            ->orderBy('name')
             ->get();
     }
 
