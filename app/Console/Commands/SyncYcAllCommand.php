@@ -27,8 +27,6 @@ final class SyncYcAllCommand extends Command
         'yclients:sync-records',
         'yclients:sync-transactions',
         'yclients:sync-storage-transactions',
-        'yclients:sync-company-month-stats',
-        'yclients:sync-staff-month-stats',
     ];
 
     /**
