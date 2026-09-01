@@ -64,8 +64,8 @@ final class PeriodResolutionService
             throw new InvalidArgumentException('Месяц должен быть в формате YYYY-MM');
         }
 
-        $start = Carbon::parse($month)->startOfMonth();
-        $end = Carbon::parse($month)->endOfMonth();
+        $start = Carbon::parse($month, self::BUSINESS_TIMEZONE)->startOfMonth();
+        $end = Carbon::parse($month, self::BUSINESS_TIMEZONE)->endOfMonth();
 
         $localNow = Carbon::now(self::BUSINESS_TIMEZONE)->startOfDay();
 
