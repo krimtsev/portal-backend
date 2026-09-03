@@ -24,7 +24,7 @@ Route::prefix('debug')->group(function () {
         ]);
     });
 
-    Route::get('/telegram/msg', function (TelegramManager $telegram) {
+    /*Route::get('/telegram/msg', function (TelegramManager $telegram) {
         $response = $telegram->sendMessage([
             'chat_id' => '-1001993054003',
             'text'    => 'hello',
@@ -110,5 +110,5 @@ Route::prefix('debug')->group(function () {
         $result = $mango->callsStats()->statsCallsResult($key);
 
         return response()->json($result);
-    });
+    });*/
 });

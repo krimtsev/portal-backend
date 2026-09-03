@@ -14,10 +14,10 @@ final class SyncYcAllCommand extends Command
                             {--month= : Полный месяц в формате YYYY-MM}
                             {--company_id= : Конкретный ID компании из YClients (yclients_id)}';
 
-    protected $description = 'Глобальный запуск всех задач синхронизации YClients за день';
+    protected $description = 'Глобальный запуск всех задач синхронизации YClients за день и месяц';
 
     /**
-     * Список команд для последовательного выполнения.
+     * Список команд для ежедневного выполнения.
      *
      * @var array<string>
      */
@@ -27,6 +27,16 @@ final class SyncYcAllCommand extends Command
         'yclients:sync-records',
         'yclients:sync-transactions',
         'yclients:sync-storage-transactions',
+    ];
+
+    /**
+     * Список команд для ежемесячного выполнения.
+     *
+     * @var array<string>
+     */
+    private array $monthlySyncCommands = [
+        'yclients:sync-company-month-stats',
+        'yclients:sync-staff-month-stats',
     ];
 
     /**
@@ -40,10 +50,13 @@ final class SyncYcAllCommand extends Command
             return self::SUCCESS;
         }
 
+        $month = $this->option('month');
+        $companyId = $this->option('company_id');
+
         try {
             $dates = $periodService->resolveFromParams(
                 date: $this->option('date'),
-                month: $this->option('month')
+                month: $month
             );
         } catch (Throwable $e) {
             $this->error('Ошибка параметров: ' . $e->getMessage());
@@ -51,14 +64,13 @@ final class SyncYcAllCommand extends Command
             return self::FAILURE;
         }
 
-        $companyId = $this->option('company_id');
-
         $this->info(sprintf(
             'Начинаем глобальную синхронизацию. Дней для обработки: %d. %s',
             count($dates),
             $companyId ? "Фильтр по компании: {$companyId}" : 'Для всех активных компаний'
         ));
 
+        // Ежедневные синхронизации
         foreach ($dates as $date) {
             $dateString = $date->toDateString();
             $this->warn("\n>>> Запуск за дату: {$dateString}");
@@ -67,6 +79,27 @@ final class SyncYcAllCommand extends Command
                 $this->line("Выполнение: {$command}...");
 
                 $params = ['--date' => $dateString];
+
+                if ($companyId) {
+                    $params['--company_id'] = $companyId;
+                }
+
+                $resultCode = $this->call($command, $params);
+
+                if ($resultCode !== self::SUCCESS) {
+                    $this->error("Ошибка при выполнении {$command} (код {$resultCode})");
+                }
+            }
+        }
+
+        // Ежемесячные синхронизации (запускаются только если передан --month)
+        if ($month) {
+            $this->warn("\n>>> Запуск ежемесячных задач за месяц: {$month}");
+
+            foreach ($this->monthlySyncCommands as $command) {
+                $this->line("Выполнение: {$command}...");
+
+                $params = ['--month' => $month];
 
                 if ($companyId) {
                     $params['--company_id'] = $companyId;
