@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Integrations\Yclients\Services\PeriodResolutionService;
+use App\Helpers\PeriodResolutionService;
 use App\Jobs\Yclients\SyncYcStorageTransactionsJob;
 use App\Models\Partner\Partner;
 use Illuminate\Console\Command;

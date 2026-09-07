@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Integrations\Yclients\Services\PeriodResolutionService;
+use App\Helpers\PeriodResolutionService;
 use App\Jobs\Mango\RequestMangoCallStatsJob;
 use Illuminate\Console\Command;
 

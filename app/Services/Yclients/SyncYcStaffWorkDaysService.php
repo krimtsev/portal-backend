@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Yclients;
 
+use App\Constants\Timezone\Timezone;
 use App\Models\Yclients\YcStaffWorkDay;
 use Carbon\Carbon;
 
@@ -22,7 +23,7 @@ final readonly class SyncYcStaffWorkDaysService
         }
 
         $upsertData = [];
-        $formattedDate = Carbon::parse($date)->toDateString();
+        $formattedDate = Carbon::parse($date, Timezone::YCLIENTS)->toDateString();
 
         foreach ($staffData as $data) {
             $upsertData[] = [

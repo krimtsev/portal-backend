@@ -28,7 +28,7 @@ class UserDataResource extends JsonResource
             'access' => [
                 'location_map' => $this->access?->location_map,
             ],
-            'timeZoneName' => $this->time_zone_name ?? Timezone::DEFAULT_TIMEZONE,
+            'timeZoneName' => $this->time_zone_name ?? Timezone::DEFAULT,
         ];
     }
 }

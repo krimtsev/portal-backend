@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Integrations\Yclients\Services\PeriodResolutionService;
+use App\Helpers\PeriodResolutionService;
 use App\Jobs\Yclients\SyncYcCompanyMonthStatJob;
 use App\Models\Partner\Partner;
 use Illuminate\Console\Command;
@@ -26,7 +26,9 @@ final class SyncYcCompanyMonthStatCommand extends Command
 
         try {
             $month = $this->option('month') ?? now()->subMonth()->startOfMonth()->format('Y-m');
-            [$startDate, $endDate] = $periodService->resolveMonthBounds($month);
+            [$startDate, $endDate] = $periodService->resolveMonthBounds(
+                month: $month
+            );
 
         } catch (Throwable $e) {
             $this->error('Ошибка параметров: ' . $e->getMessage());

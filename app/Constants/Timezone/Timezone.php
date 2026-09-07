@@ -4,5 +4,7 @@ namespace App\Constants\Timezone;
 
 final class Timezone
 {
-    public const DEFAULT_TIMEZONE = 'Europe/Moscow';
+    public const DEFAULT = 'Europe/Moscow';
+
+    public const YCLIENTS = 'Europe/Moscow';
 }

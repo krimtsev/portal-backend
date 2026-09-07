@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Integrations\Yclients\Services\PeriodResolutionService;
+use App\Helpers\PeriodResolutionService;
 use Illuminate\Console\Command;
 use Throwable;
 

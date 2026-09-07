@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Enums\QueueName;
+use App\Helpers\PeriodResolutionService;
 use App\Integrations\Yclients\Resources\Records\RecordsResource;
-use App\Integrations\Yclients\Services\PeriodResolutionService;
 use App\Jobs\Yclients\ProcessPartnerStaffDailyStatsJob;
 use App\Models\Partner\Partner;
 use Illuminate\Console\Command;
