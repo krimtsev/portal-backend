@@ -8,7 +8,7 @@ use App\Enums\QueueName;
 use App\Jobs\Middleware\ThrottleJobSleep;
 use App\Services\Yclients\SyncYcStaffWorkDaysService;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -16,7 +16,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-final class SyncYcStaffWorkDaysJob implements ShouldBeUnique, ShouldQueue
+final class SyncYcStaffWorkDaysJob implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -25,6 +25,9 @@ final class SyncYcStaffWorkDaysJob implements ShouldBeUnique, ShouldQueue
 
     /** Таймаут выполнения */
     public int $timeout = 60;
+
+    /** Время жизни уникального ключа */
+    public int $uniqueFor = 300;
 
     public float $minThrottleSleep = 1.0;
 
