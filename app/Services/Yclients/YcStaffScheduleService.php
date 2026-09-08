@@ -8,7 +8,9 @@ use App\Integrations\Yclients\Resources\Records\DTO\RecordsFilters;
 use App\Integrations\Yclients\Resources\StaffSchedule\DTO\StaffScheduleFilters;
 use App\Integrations\Yclients\Resources\StorageTransactions\DTO\StorageTransactionsFilters;
 use App\Integrations\Yclients\YclientsApi;
+use App\Integrations\Yclients\YclientsException;
 use App\Models\Yclients\YcStaffWorkDay;
+use RuntimeException;
 
 final readonly class YcStaffScheduleService
 {
@@ -82,6 +84,8 @@ final readonly class YcStaffScheduleService
 
     /**
      * Получает ID сотрудников из расписания.
+     *
+     * @throws YclientsException
      */
     public function getScheduleStaffIds(int $companyId, string $startDate, string $endDate): array
     {
@@ -93,7 +97,9 @@ final readonly class YcStaffScheduleService
             )
         );
 
-        return collect($rawResponse['data'] ?? [])
+        $data = $this->extractData($rawResponse);
+
+        return collect($data)
             ->pluck('staff_id')
             ->unique()
             ->values()
@@ -102,6 +108,8 @@ final readonly class YcStaffScheduleService
 
     /**
      * Получает ID сотрудников из записей (records).
+     *
+     * @throws YclientsException
      */
     public function getRecordStaffIds(int $companyId, string $startDate, string $endDate): array
     {
@@ -113,7 +121,9 @@ final readonly class YcStaffScheduleService
             )
         );
 
-        return collect($rawResponse['data'] ?? [])
+        $data = $this->extractData($rawResponse);
+
+        return collect($data)
             ->pluck('staff_id')
             ->filter()
             ->unique()
@@ -123,6 +133,8 @@ final readonly class YcStaffScheduleService
 
     /**
      * Получает ID сотрудников из складских транзакций.
+     *
+     * @throws YclientsException
      */
     public function getStorageStaffIds(int $companyId, string $startDate, string $endDate): array
     {
@@ -134,11 +146,31 @@ final readonly class YcStaffScheduleService
             )
         );
 
-        return collect($rawResponse['data'] ?? [])
+        $data = $this->extractData($rawResponse);
+
+        return collect($data)
             ->pluck('master.id')
             ->filter()
             ->unique()
             ->values()
             ->toArray();
+    }
+
+    /**
+     * Валидирует ответ от API и извлекает payload.
+     *
+     * @throws RuntimeException
+     */
+    private function extractData(mixed $response): array
+    {
+        if (!is_array($response) || !array_key_exists('data', $response) || !is_array($response['data'])) {
+            $errorMessage = $response['meta']['message']
+                ?? $response['message']
+                ?? 'Некорректная структура ответа или отсутствие ключа data';
+
+            throw new RuntimeException("Ошибка API YClients при запросе: {$errorMessage}");
+        }
+
+        return $response['data'];
     }
 }
