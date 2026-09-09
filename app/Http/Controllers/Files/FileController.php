@@ -38,7 +38,7 @@ class FileController extends Controller
         $targetPath = match (true) {
             $disk->exists($partnerPath) => $partnerPath,
             $disk->exists($defaultPath) => $defaultPath,
-            default => null,
+            default                     => null,
         };
 
         if (!$targetPath) {

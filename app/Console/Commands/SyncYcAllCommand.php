@@ -8,7 +8,6 @@ use Throwable;
 
 final class SyncYcAllCommand extends Command
 {
-
     protected $signature = 'yclients:sync-all
                             {--date= : Конкретный день в формате YYYY-MM-DD}
                             {--month= : Полный месяц в формате YYYY-MM}

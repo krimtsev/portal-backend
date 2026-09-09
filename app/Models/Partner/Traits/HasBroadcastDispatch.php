@@ -6,8 +6,8 @@ namespace App\Models\Partner\Traits;
 
 use App\Enums\NotificationChannel;
 use App\Models\Partner\Partner;
-use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 
 trait HasBroadcastDispatch
 {
@@ -25,8 +25,7 @@ trait HasBroadcastDispatch
     /**
      * Выполняет запрос и извлекает уникальные ID чатов.
      *
-     * @param Builder $query
-     * @param string[] $ignoreChatIds
+     * @param  string[]  $ignoreChatIds
      * @return Collection<int, string>
      */
     protected function pluckUniqueChatIds(Builder $query, array $ignoreChatIds = []): Collection
@@ -42,8 +41,7 @@ trait HasBroadcastDispatch
     /**
      * Метод-обертка для обратной совместимости с существующим кодом.
      *
-     * @param string[] $ignoreChatIds
-     * @param string|null $companyId
+     * @param  string[]  $ignoreChatIds
      * @return Collection<int, string>
      */
     protected function getBroadcastChatIds(array $ignoreChatIds = [], ?string $companyId = null): Collection

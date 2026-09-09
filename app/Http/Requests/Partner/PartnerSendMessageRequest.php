@@ -14,22 +14,22 @@ class PartnerSendMessageRequest extends FormRequest
             'partner_ids' => [
                 'required',
                 'array',
-                'min:1'
+                'min:1',
             ],
             'partner_ids.*' => [
                 'required',
-                'regex:/^(!all|!test|\d+)$/'
+                'regex:/^(!all|!test|\d+)$/',
             ],
             'message' => [
                 'required',
                 'string',
-                'max:4096'
+                'max:4096',
             ],
-            'file'  => [
+            'file' => [
                 'nullable',
                 'file',
                 'max:20480',
-                'mimes:jpg,jpeg,png,gif,pdf,doc,docx,xls,xlsx,zip,txt'
+                'mimes:jpg,jpeg,png,gif,pdf,doc,docx,xls,xlsx,zip,txt',
             ],
         ];
     }

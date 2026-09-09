@@ -16,8 +16,7 @@ final class PeriodResolutionService
         ?string $date = null,
         ?string $month = null,
         ?string $timezone = 'Europe/Moscow',
-    ): array
-    {
+    ): array {
         $dates = [];
 
         $yesterday = Carbon::now($timezone)->startOfDay()->subDay();
@@ -63,8 +62,7 @@ final class PeriodResolutionService
     public function resolveMonthBounds(
         string $month,
         ?string $timezone = 'Europe/Moscow',
-    ): array
-    {
+    ): array {
         if (!preg_match('/^\d{4}-\d{2}$/', $month)) {
             throw new InvalidArgumentException('Месяц должен быть в формате YYYY-MM');
         }

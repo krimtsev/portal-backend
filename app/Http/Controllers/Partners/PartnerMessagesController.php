@@ -34,8 +34,7 @@ final class PartnerMessagesController extends Controller
     public function send(
         PartnerSendMessageRequest $request,
         PartnerMessageService $service
-    ): \Illuminate\Http\JsonResponse
-    {
+    ): \Illuminate\Http\JsonResponse {
         $service->broadcast(
             $request->validated('partner_ids'),
             $request->validated('message'),

@@ -81,7 +81,7 @@ final class SendVideoReportRemindersJob implements ShouldQueue
             'Отправка напоминаний о видеоотчете в Telegram завершилась ошибкой.',
             [
                 'company_id' => $this->chatId,
-                'error' => $exception->getMessage(),
+                'error'      => $exception->getMessage(),
             ]
         );
     }

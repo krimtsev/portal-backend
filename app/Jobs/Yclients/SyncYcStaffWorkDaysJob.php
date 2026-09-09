@@ -16,7 +16,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-final class SyncYcStaffWorkDaysJob implements ShouldQueue, ShouldBeUniqueUntilProcessing
+final class SyncYcStaffWorkDaysJob implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 

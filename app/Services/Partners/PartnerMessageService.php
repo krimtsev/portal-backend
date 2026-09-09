@@ -53,7 +53,7 @@ final class PartnerMessageService
     /**
      * Резолв целевых Telegram chat_id в зависимости от режима.
      *
-     * @param array<string> $partnerIds
+     * @param  array<string>  $partnerIds
      * @return Collection<int, string>
      */
     private function resolveChatIds(array $partnerIds): Collection

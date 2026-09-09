@@ -60,7 +60,7 @@ final class SendWahelpReportRemindersJob implements ShouldQueue
 
         $response = $bot->sendMessage([
             'chat_id' => $target->chatId,
-            'text' => $this->text,
+            'text'    => $this->text,
         ]);
 
         if (!$response->ok) {
@@ -79,7 +79,7 @@ final class SendWahelpReportRemindersJob implements ShouldQueue
             'Отправка напоминаний о Wahelp Bot в Telegram завершилась ошибкой.',
             [
                 'company_id' => $this->chatId,
-                'error' => $exception->getMessage(),
+                'error'      => $exception->getMessage(),
             ]
         );
     }

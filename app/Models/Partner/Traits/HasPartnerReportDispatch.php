@@ -6,8 +6,8 @@ namespace App\Models\Partner\Traits;
 
 use App\Enums\NotificationChannel;
 use App\Models\Partner\Partner;
-use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 
 trait HasPartnerReportDispatch
 {

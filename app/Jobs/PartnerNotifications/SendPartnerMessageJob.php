@@ -39,6 +39,7 @@ final class SendPartnerMessageJob implements ShouldQueue
     public function uniqueId(): string
     {
         $messageHash = md5($this->message);
+
         return "send_partner_msg_{$messageHash}";
     }
 
