@@ -36,8 +36,11 @@ final class RoyaltyRecordsService
             ->where('yc_records.deleted', 0)
             ->whereBetween('yc_records.datetime', [$startDate, $endDate])
             ->where(function ($query) {
-                $query->whereNull('yc_company_staff.specialization')
-                    ->orWhereRaw("LOWER(yc_company_staff.specialization) NOT REGEXP 'admin|админ|лист'");
+                $query->whereRaw("LOWER(yc_company_staff.name) NOT REGEXP 'лист'")
+                    ->where(function ($q) {
+                        $q->whereNull('yc_company_staff.specialization')
+                            ->orWhereRaw("LOWER(yc_company_staff.specialization) NOT REGEXP 'admin|админ|лист'");
+                    });
             })
             ->groupBy([
                 'yc_company_staff.staff_id',
