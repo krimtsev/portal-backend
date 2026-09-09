@@ -27,7 +27,7 @@ final class SyncYcStaffWorkDaysJob implements ShouldQueue, ShouldBeUniqueUntilPr
     public int $timeout = 60;
 
     /** Время жизни уникального ключа */
-    public int $uniqueFor = 300;
+    public int $uniqueFor = 3600;
 
     public float $minThrottleSleep = 1.0;
 

@@ -105,7 +105,8 @@ Route::prefix('v1/dashboard')
         Route::prefix('royalty')
             ->middleware(['role:admin,sysadmin'])
             ->group(function () {
-                Route::post('list', [Controllers\Royalty\RoyaltyController::class, 'list']);
+                Route::post('percent/list', [Controllers\Royalty\RoyaltyController::class, 'list']);
+                Route::post('records/list', [Controllers\Royalty\RoyaltyRecordsController::class, 'list']);
             });
 
         Route::prefix('statistics')
@@ -118,7 +119,7 @@ Route::prefix('v1/dashboard')
         Route::prefix('event-calendar')
             ->middleware(['role:admin,sysadmin'])
             ->group(function () {
-                Route::get('list', [Controllers\EventCalendar\EventCalendarController::class, 'list']);
+                Route::post('list', [Controllers\EventCalendar\EventCalendarController::class, 'list']);
                 Route::post('batch', [Controllers\EventCalendar\EventCalendarController::class, 'create']);
                 Route::get('batch/{batch}', [Controllers\EventCalendar\EventCalendarController::class, 'get']);
                 Route::put('batch/{batch}', [Controllers\EventCalendar\EventCalendarController::class, 'update']);
