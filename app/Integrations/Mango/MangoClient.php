@@ -14,7 +14,7 @@ use Throwable;
 
 class MangoClient
 {
-    private string $baseUrl = 'https://app.mango-office.ru/vpbx/';
+    private string $baseUrl;
 
     private readonly MangoConfig $config;
 
@@ -30,6 +30,7 @@ class MangoClient
             apiSalt: config('mango.api.salt'),
         );
 
+        $this->baseUrl = rtrim(config('mango.api_url'), '/') . '/vpbx/';
         $this->isHttpDebug = config('mango.http.debug');
     }
 

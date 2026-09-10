@@ -6,6 +6,8 @@ return [
         'salt' => (string) env('MANGO_SALT', ''),
     ],
 
+    'api_url' => env('MANGO_API_URL', 'https://app.mango-office.ru'),
+
     /*
     |--------------------------------------------------------------------------
     | Настройки HTTP
