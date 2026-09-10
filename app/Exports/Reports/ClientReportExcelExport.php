@@ -144,8 +144,11 @@ final readonly class ClientReportExcelExport
         $sheet->setCellValue("G{$rowIndex}", $otherBranchServices);
 
         if (!empty($record->client_id)) {
+            $baseUrl = rtrim(config('yclients.url'), '/');
+
             $yclientsUrl = sprintf(
-                'https://yclients.com/clients/%s/base/?#open_card_client_id=%s',
+                '%s/clients/%s/base/?#open_card_client_id=%s',
+                $baseUrl,
                 $record->company_id,
                 urlencode((string) $record->client_id)
             );

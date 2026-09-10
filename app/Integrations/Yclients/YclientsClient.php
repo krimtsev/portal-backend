@@ -14,7 +14,7 @@ use Throwable;
 
 class YclientsClient
 {
-    private string $baseUrl = 'https://api.yclients.com/api/v1/';
+    private string $baseUrl;
 
     private string $logChannel = 'yclients';
 
@@ -29,6 +29,7 @@ class YclientsClient
 
     public function __construct()
     {
+        $this->baseUrl = rtrim(config('yclients.api_url'), '/') . '/api/v1/';
         $this->appToken = config('yclients.app_token');
         $this->partnerToken = config('yclients.partner_token');
         $this->isHttpDebug = config('yclients.http.debug');

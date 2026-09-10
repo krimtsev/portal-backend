@@ -4,6 +4,9 @@ return [
     'app_token'     => env('YCLIENTS_APP_TOKEN', ''),
     'partner_token' => env('YCLIENTS_PARTNER_TOKEN', ''),
 
+    'url'           => env('YCLIENTS_URL', 'https://yclients.ru'),
+    'api_url'       => env('YCLIENTS_API_URL', 'https://api.yclients.ru'),
+
     /*
     |--------------------------------------------------------------------------
     | Настройки ограничения очереди задач

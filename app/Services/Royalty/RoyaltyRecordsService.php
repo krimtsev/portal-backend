@@ -39,7 +39,7 @@ final class RoyaltyRecordsService
                 $query->whereRaw("LOWER(yc_company_staff.name) NOT REGEXP 'лист'")
                     ->where(function ($q) {
                         $q->whereNull('yc_company_staff.specialization')
-                            ->orWhereRaw("LOWER(yc_company_staff.specialization) NOT REGEXP 'admin|админ|лист'");
+                            ->orWhereRaw("LOWER(yc_company_staff.specialization) NOT REGEXP 'admin|админ'");
                     });
             })
             ->groupBy([
