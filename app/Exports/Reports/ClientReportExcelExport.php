@@ -173,7 +173,12 @@ final readonly class ClientReportExcelExport
     private function autoFitColumns(Worksheet $sheet): void
     {
         foreach (range('A', 'G') as $col) {
-            $sheet->getColumnDimension($col)->setAutoSize(true);
+            if ($col === 'B') {
+                $sheet->getColumnDimension($col)->setAutoSize(false);
+                $sheet->getColumnDimension($col)->setWidth(20);
+            } else {
+                $sheet->getColumnDimension($col)->setAutoSize(true);
+            }
         }
     }
 
