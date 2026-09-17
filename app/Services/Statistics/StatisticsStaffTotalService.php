@@ -96,7 +96,7 @@ final class StatisticsStaffTotalService
 
     private function getCompanyClientsByPeriod(int $companyId, string $start, string $end): Collection
     {
-        return YcRecord::query()
+        return DB::table('yc_records')
             ->where('company_id', $companyId)
             ->whereBetween('datetime', [$start, $end])
             ->where('attendance', 1)
@@ -118,7 +118,18 @@ final class StatisticsStaffTotalService
 
     private function getRecordStats(int $companyId, string $start, string $end): YcRecord
     {
+        $recordIds = DB::table('yc_records')
+            ->where('company_id', $companyId)
+            ->whereBetween('datetime', [$start, $end])
+            ->pluck('record_id');
+
+        if ($recordIds->isEmpty()) {
+            return new YcRecord();
+        }
+
         $servicesSub = DB::table('yc_record_services')
+            ->where('company_id', $companyId)
+            ->whereIn('record_id', $recordIds)
             ->select('record_id', DB::raw('SUM(amount) as services_count'))
             ->groupBy('record_id');
 
