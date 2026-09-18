@@ -7,4 +7,7 @@ return [
     'soda' => [
         'name' => 'SODA Franchisee Portal',
     ],
+    'lapki' => [
+        'name' => 'LAPKI Franchisee Portal',
+    ],
 ];
