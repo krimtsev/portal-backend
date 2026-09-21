@@ -132,4 +132,11 @@ Route::prefix('v1/dashboard')
                 Route::get('maintenance', [Controllers\Maintenance\MaintenanceController::class, 'get']);
                 Route::put('maintenance', [Controllers\Maintenance\MaintenanceController::class, 'update']);
             });
+
+        Route::prefix('payroll')
+            ->middleware(['role:sysadmin'])
+            ->group(function () {
+                Route::post('partner/list', [Controllers\Payroll\PayrollController::class, 'partners']);
+                Route::post('staff/list', [Controllers\Payroll\PayrollController::class, 'staff']);
+            });
     });
