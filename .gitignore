@@ -1,5 +1,7 @@
 *.log
 .DS_Store
+.env.soda
+.env.lapki
 .env
 .env.backup
 .env.production

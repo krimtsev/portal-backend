@@ -8,7 +8,7 @@ use App\Enums\QueueName;
 use App\Jobs\Middleware\ThrottleJobSleep;
 use App\Services\Yclients\SyncYcCompanyStaffService;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -16,7 +16,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-final class SyncYcCompanyStaffJob implements ShouldBeUnique, ShouldQueue
+final class SyncYcCompanyStaffJob implements ShouldBeUniqueUntilProcessing, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -26,8 +26,11 @@ final class SyncYcCompanyStaffJob implements ShouldBeUnique, ShouldQueue
     /** Таймаут выполнения */
     public int $timeout = 60;
 
+    /** Время жизни уникального ключа */
+    public int $uniqueFor = 3600;
+
     public function __construct(
-        public readonly int $companyId,
+        public readonly int $companyId
     ) {
         $this->onQueue(QueueName::YCLIENTS->value);
     }
