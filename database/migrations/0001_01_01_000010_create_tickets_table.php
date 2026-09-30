@@ -31,6 +31,9 @@ return new class extends Migration
             ['id' => 7, 'slug' => 'office_manager',    'title' => 'Office Manager'],
             ['id' => 8, 'slug' => 'it_department',     'title' => 'IT Department'],
             ['id' => 9, 'slug' => 'accounting',        'title' => 'Accounting'],
+            ['id' => 10, 'slug' => 'network_nail',     'title' => 'Network Nail'],
+            ['id' => 11, 'slug' => 'makeup_artist',    'title' => 'Makeup Artist'],
+            ['id' => 12, 'slug' => 'stylist',          'title' => 'Stylist'],
         ]);
 
         Schema::create('tickets', function (Blueprint $table) {

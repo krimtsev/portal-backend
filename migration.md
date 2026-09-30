@@ -234,7 +234,7 @@ INSERT INTO `tickets` (
     `id`,
     `title`,
     `type`,
-    `category_id`,
+    `department_id`,
     `partner_id`,
     `user_id`,
     `state`,
@@ -246,7 +246,7 @@ SELECT
     `id`,
     `title`,
     'general' AS `type`,
-    `category_id`,
+    `category_id` AS `department_id`,
     `partner_id`,
     `user_id`,
     `state`,
@@ -313,14 +313,14 @@ SELECT
     `updated_at`
 FROM
     `_tickets_files`;
-    
+
 UPDATE tickets_messages
 SET text = REPLACE(
     REPLACE(text, '<b>', ''),
     '</b>', ''
-    )
-WHERE text LIKE '%<b>%';    
-    
+)
+WHERE text LIKE '%<b>%';
+
 UPDATE tickets t
     JOIN _tickets s ON t.id = s.id
 SET t.deleted_at = s.deleted_at
@@ -328,4 +328,60 @@ WHERE t.deleted_at <> s.deleted_at OR (t.deleted_at IS NULL AND s.deleted_at IS 
 
 COMMIT;
 SET FOREIGN_KEY_CHECKS=1;
+```
+
+# Исправление настроек доступа пользователей
+``` sql 
+INSERT INTO user_access (user_id, location_map, created_at, updated_at)
+SELECT
+    id AS user_id,
+    0 AS location_map,
+    NOW() AS created_at,
+    NOW() AS updated_at
+FROM users;
+```
+
+# Настройки уведомлений Partners
+``` sql
+SET FOREIGN_KEY_CHECKS=0;
+START TRANSACTION;
+
+INSERT INTO `partner_report_settings` (
+    `id`,
+    `partner_id`,
+    `lost_clients_days`,
+    `returned_clients_days`,
+    `new_clients_days`
+)
+SELECT
+    `id`,
+    `id` as `partner_id`,
+    `lost_client_days` as `lost_clients_days`,
+    `repeat_client_days` as `returned_clients_days`,
+    `new_client_days` as `new_clients_days`
+FROM
+    `_partners`;
+
+COMMIT;
+SET FOREIGN_KEY_CHECKS=1;
+```
+
+# Обновляем статус пропущенных звонков 
+``` sql 
+UPDATE partner_report_settings prs
+JOIN _partners p ON prs.partner_id = p.id
+SET prs.send_missed_calls = CASE
+    WHEN (p.tg_active = 1 OR p.tg_active IS TRUE)
+        AND p.tg_chat_id IS NOT NULL
+        AND p.tg_chat_id != ''
+        AND (p.disabled = 0 OR p.disabled IS FALSE OR p.disabled IS NULL)
+        THEN TRUE
+    ELSE FALSE
+END
+WHERE prs.send_missed_calls != (
+    (p.tg_active = 1 OR p.tg_active IS TRUE)
+    AND p.tg_chat_id IS NOT NULL
+    AND p.tg_chat_id != ''
+    AND (p.disabled = 0 OR p.disabled IS FALSE OR p.disabled IS NULL)
+);
 ```
