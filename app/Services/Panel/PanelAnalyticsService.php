@@ -9,6 +9,7 @@ use App\Models\Partner\Partner;
 use App\Models\Ticket\Ticket;
 use App\Services\Royalty\RoyaltyService;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\DB;
 
 final readonly class PanelAnalyticsService
@@ -208,20 +209,17 @@ final readonly class PanelAnalyticsService
 
     private function getJobsStats(): array
     {
-        $totalJobs = DB::table('jobs')->count();
+        $defaultCount = Queue::size('default');
+        $yclientsCount = Queue::size('yclients');
 
-        $queueCounts = DB::table('jobs')
-            ->select('queue', DB::raw('count(*) as aggregate'))
-            ->whereIn('queue', ['default', 'yclients'])
-            ->groupBy('queue')
-            ->pluck('aggregate', 'queue');
+        $totalJobs = $defaultCount + $yclientsCount;
 
         $failedJobs = DB::table('failed_jobs')->count();
 
         return [
             'total_count'    => $totalJobs,
-            'default_count'  => (int) $queueCounts->get('default', 0),
-            'yclients_count' => (int) $queueCounts->get('yclients', 0),
+            'default_count'  => $defaultCount,
+            'yclients_count' => $yclientsCount,
             'failed_count'   => $failedJobs,
         ];
     }
