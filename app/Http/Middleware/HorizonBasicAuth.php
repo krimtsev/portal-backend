@@ -14,8 +14,8 @@ class HorizonBasicAuth
             return $next($request);
         }
 
-        $username = env('HORIZON_USERNAME', '');
-        $password = env('HORIZON_PASSWORD', '');
+        $username = config('horizon.username', '');
+        $password = config('horizon.password', '');
 
         if ($request->getUser() !== $username || $request->getPassword() !== $password) {
             return response('Unauthorized', 401, [
