@@ -32,10 +32,10 @@
 	2. center tag: for Gmail and Inbox mobile apps and web versions of Gmail, GSuite, Inbox, Yahoo, AOL, Libero, Comcast, freenet, Mail.ru, Orange.fr
 	3. mso conditional: For Windows 10 Mail
 -->
-<body width="100%" style="margin: 0; padding: 0 !important; mso-line-height-rule: exactly; background-color: #020202;" class="email-bg">
-  <center role="article" aria-roledescription="email" lang="en" style="width: 100%; background-color: #020202;" class="email-bg">
+<body width="100%" style="margin: 0; padding: 0 !important; mso-line-height-rule: exactly; background-color: transparent;" class="email-bg">
+  <center role="article" aria-roledescription="email" lang="en" style="width: 100%; background-color: #ffffff;" class="email-bg">
     <!--[if mso | IE]>
-    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #020202;" class="email-bg">
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: transparent;" class="email-bg">
     <tr>
     <td>
     <![endif]-->
@@ -72,11 +72,11 @@
             @include('emails.components.header')
             <!-- Email Header : END -->
 
-	        <!-- Email Body : BEGIN -->
-	        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: auto; border-radius: 32px; overflow: hidden;">
+            <!-- Email Body : BEGIN -->
+            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: auto;" >
                 <!-- 1 Column Text + Button : BEGIN -->
                 <tr>
-                    <td style="background-color: #ffffff;" class="darkmode-bg">
+                    <td class="email-content">
                         @yield('content')
                     </td>
                 </tr>
@@ -99,6 +99,6 @@
     </tr>
     </table>
     <![endif]-->
-    </center>
+  </center>
 </body>
 </html>

@@ -20,6 +20,7 @@
     * {
         -ms-text-size-adjust: 100%;
         -webkit-text-size-adjust: 100%;
+        color: #333333; /* Softer dark text color for light mode */
     }
 
     /* What it does: Centers email on Android 4.4 */
@@ -122,6 +123,12 @@
         border-color: #555555 !important;
     }
 
+    /* What it does: Adds a visible border around the main content container. */
+    .email-content {
+        background: #F4F4F4;
+        border-radius: 16px;
+    }
+
     /* Media Queries */
     @media screen and (max-width: 480px) {
         /* What it does: Forces table cells into full-width rows. */
@@ -158,10 +165,11 @@
     /* Dark Mode Styles : BEGIN */
     @media (prefers-color-scheme: dark) {
         .email-bg {
-            background: #020202 !important;
+            background: #ffffff !important;
         }
-        .darkmode-bg {
-            background: #020202 !important;
+        .email-content {
+            background: #F4F4F4;
+            border-radius: 16px;
         }
         h1,
         h2,
@@ -170,7 +178,7 @@
         li,
         .darkmode-text,
         .email-container a:not([class]) {
-            color: #F7F7F9 !important;
+            color: #333333 !important; /* Default dark text color for light mode */
         }
         td.button-td-primary,
         td.button-td-primary a {
