@@ -20,16 +20,16 @@ use Illuminate\Support\Facades\Log;
  *      )
  * );
  */
-
 final class QueryProfiler
 {
     /**
      * Замеряет время выполнения и профилирует SQL-запросы внутри $callback.
      *
      * @template T
-     * @param string $label Метка для лога
-     * @param Closure(): T $callback Выполняемый код
-     * @param int $take Количество самых медленных запросов
+     *
+     * @param  string  $label  Метка для лога
+     * @param  Closure(): T  $callback  Выполняемый код
+     * @param  int  $take  Количество самых медленных запросов
      * @return T
      */
     public static function profile(string $label, Closure $callback, int $take = 10): mixed

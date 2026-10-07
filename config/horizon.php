@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\HorizonBasicAuth;
 use Illuminate\Support\Str;
 
 return [
@@ -80,7 +81,7 @@ return [
 
     'prefix' => env(
         'HORIZON_PREFIX',
-        Str::slug(env('APP_NAME', 'laravel'), '_').'_horizon:'
+        Str::slug(env('APP_NAME', 'laravel'), '_') . '_horizon:'
     ),
 
     /*
@@ -96,7 +97,7 @@ return [
 
     'middleware' => [
         'web',
-        \App\Http\Middleware\HorizonBasicAuth::class,
+        HorizonBasicAuth::class,
     ],
 
     /*
@@ -126,12 +127,12 @@ return [
     */
 
     'trim' => [
-        'recent' => 60,
-        'pending' => 60,
-        'completed' => 60,
+        'recent'        => 60,
+        'pending'       => 60,
+        'completed'     => 60,
         'recent_failed' => 10080,
-        'failed' => 10080,
-        'monitored' => 10080,
+        'failed'        => 10080,
+        'monitored'     => 10080,
     ],
 
     /*
@@ -166,7 +167,7 @@ return [
 
     'metrics' => [
         'trim_snapshots' => [
-            'job' => 24,
+            'job'   => 24,
             'queue' => 24,
         ],
     ],
@@ -212,42 +213,42 @@ return [
 
     'defaults' => [
         'supervisor-1' => [
-            'connection' => 'redis',
-            'queue' => ['default'],
-            'balance' => 'auto',
+            'connection'          => 'redis',
+            'queue'               => ['default'],
+            'balance'             => 'auto',
             'autoScalingStrategy' => 'time',
-            'maxProcesses' => 1,
-            'maxTime' => 0,
-            'maxJobs' => 0,
-            'memory' => 128,
-            'tries' => 3,
-            'timeout' => 60,
-            'nice' => 0,
+            'maxProcesses'        => 1,
+            'maxTime'             => 0,
+            'maxJobs'             => 0,
+            'memory'              => 128,
+            'tries'               => 3,
+            'timeout'             => 60,
+            'nice'                => 0,
         ],
         'supervisor-2' => [
-            'connection' => 'redis',
-            'queue' => ['yclients'],
-            'balance' => 'auto',
+            'connection'          => 'redis',
+            'queue'               => ['yclients'],
+            'balance'             => 'auto',
             'autoScalingStrategy' => 'time',
-            'maxProcesses' => 1,
-            'maxTime' => 0,
-            'maxJobs' => 0,
-            'memory' => 128,
-            'tries' => 3,
-            'timeout' => 60,
-            'nice' => 0,
+            'maxProcesses'        => 1,
+            'maxTime'             => 0,
+            'maxJobs'             => 0,
+            'memory'              => 128,
+            'tries'               => 3,
+            'timeout'             => 60,
+            'nice'                => 0,
         ],
     ],
 
     'environments' => [
         'production' => [
             'supervisor-1' => [
-                'maxProcesses' => 2,
+                'maxProcesses'    => 2,
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
             ],
             'supervisor-2' => [
-                'maxProcesses' => 2,
+                'maxProcesses'    => 2,
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
             ],

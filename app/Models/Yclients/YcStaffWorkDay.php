@@ -15,14 +15,10 @@ final class YcStaffWorkDay extends Model
         'company_id',
         'date',
         'has_schedule',
-        'has_records',
-        'has_storage',
     ];
 
     protected $casts = [
         'date'         => 'date',
         'has_schedule' => 'boolean',
-        'has_records'  => 'boolean',
-        'has_storage'  => 'boolean',
     ];
 }

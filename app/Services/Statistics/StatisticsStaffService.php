@@ -8,7 +8,6 @@ use App\Models\Partner\Partner;
 use App\Models\Yclients\YcComment;
 use App\Models\Yclients\YcRecord;
 use App\Models\Yclients\YcStaffStat;
-use App\Models\Yclients\YcStaffWorkDay;
 use App\Models\Yclients\YcTransaction;
 use Carbon\Carbon;
 use DB;
@@ -206,15 +205,27 @@ final class StatisticsStaffService
      */
     private function getWorkDaysStats(int $companyId, string $start, string $end): Collection
     {
-        return YcStaffWorkDay::query()
+        // Выбираем дни, когда сотрудник был в расписании
+        $scheduleDays = clone DB::table('yc_staff_work_days')
+            ->select('staff_id', 'date')
             ->where('company_id', $companyId)
-            ->where(function ($query) {
-                $query->where('has_schedule', true)
-                    ->orWhere('has_records', true);
-            })
-            ->whereBetween('date', [$start, $end])
+            ->where('has_schedule', true)
+            ->whereBetween('date', [$start, $end]);
+
+        // Выбираем дни, когда у сотрудника были записи (отбрасываем время через DATE)
+        $recordDays = clone DB::table('yc_records')
+            ->select('staff_id', DB::raw('DATE(datetime) as date'))
+            ->where('company_id', $companyId)
+            ->whereBetween('datetime', [$start, $end]);
+
+        // Объединяем оба подзапроса
+        $combined = $scheduleDays->union($recordDays);
+
+        // Считаем уникальные даты для каждого сотрудника
+        return DB::query()
+            ->fromSub($combined, 'combined_days')
             ->select('staff_id')
-            ->selectRaw('COUNT(*) as work_days_count')
+            ->selectRaw('COUNT(DISTINCT date) as work_days_count')
             ->groupBy('staff_id')
             ->get()
             ->keyBy('staff_id');

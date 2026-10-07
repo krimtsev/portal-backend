@@ -21,8 +21,6 @@ return new class extends Migration
             $table->date('date');
 
             $table->boolean('has_schedule')->default(false);
-            $table->boolean('has_records')->default(false);
-            $table->boolean('has_storage')->default(false);
 
             $table->timestamps();
 

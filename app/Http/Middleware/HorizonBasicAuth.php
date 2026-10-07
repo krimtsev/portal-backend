@@ -19,7 +19,7 @@ class HorizonBasicAuth
 
         if ($request->getUser() !== $username || $request->getPassword() !== $password) {
             return response('Unauthorized', 401, [
-                'WWW-Authenticate' => 'Basic realm="Horizon Dashboard"'
+                'WWW-Authenticate' => 'Basic realm="Horizon Dashboard"',
             ]);
         }
 

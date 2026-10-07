@@ -29,8 +29,6 @@ final class SyncYcStaffWorkDaysJob implements ShouldBeUniqueUntilProcessing, Sho
     /** Время жизни уникального ключа */
     public int $uniqueFor = 3600;
 
-    public float $minThrottleSleep = 1.0;
-
     public function __construct(
         public readonly int $companyId,
         public readonly string $date

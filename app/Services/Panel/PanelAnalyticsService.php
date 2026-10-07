@@ -9,8 +9,8 @@ use App\Models\Partner\Partner;
 use App\Models\Ticket\Ticket;
 use App\Services\Royalty\RoyaltyService;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Queue;
 
 final readonly class PanelAnalyticsService
 {

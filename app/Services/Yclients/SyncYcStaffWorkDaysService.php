@@ -31,8 +31,6 @@ final readonly class SyncYcStaffWorkDaysService
                 'company_id'   => $companyId,
                 'date'         => $formattedDate,
                 'has_schedule' => $data['has_schedule'],
-                'has_records'  => $data['has_records'],
-                'has_storage'  => $data['has_storage'],
             ];
         }
 
@@ -44,10 +42,7 @@ final readonly class SyncYcStaffWorkDaysService
                 'date',
             ],
             [
-
                 'has_schedule',
-                'has_records',
-                'has_storage',
             ],
         );
     }
