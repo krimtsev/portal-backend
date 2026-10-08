@@ -43,12 +43,6 @@ final class SyncYcAllCommand extends Command
      */
     public function handle(PeriodResolutionService $periodService): int
     {
-        if (!config('jobs.yclients')) {
-            $this->warn('Синхронизация отключена в конфигурации.');
-
-            return self::SUCCESS;
-        }
-
         $month = $this->option('month');
         $companyId = $this->option('company_id');
 

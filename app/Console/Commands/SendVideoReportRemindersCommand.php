@@ -25,7 +25,7 @@ final class SendVideoReportRemindersCommand extends Command
 
     public function handle(): int
     {
-        if (!config('jobs.partner_reminders')) {
+        if (!config('jobs.partner.video_reminders')) {
             $this->warn('Отчеты отключены в конфигурации.');
 
             return self::SUCCESS;

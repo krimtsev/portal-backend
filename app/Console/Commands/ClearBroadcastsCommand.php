@@ -23,7 +23,6 @@ final class ClearBroadcastsCommand extends Command
 
     public function handle(): int
     {
-
         $subDays = (int) ($this->option('days') ?? 120);
 
         $disk = Storage::disk('broadcasts');

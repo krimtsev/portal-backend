@@ -16,7 +16,7 @@ final class SendDailyMissedCallsReportCommand extends Command
 
     public function handle(MangoDailyReportService $reportService): int
     {
-        if (!config('jobs.partner_reports')) {
+        if (!config('jobs.partner.daily_missed_calls')) {
             $this->warn('Синхронизация отключена в конфигурации.');
 
             return self::SUCCESS;

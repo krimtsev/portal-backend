@@ -19,7 +19,7 @@ final class SyncMangoRecentCallsCommand extends Command
 
     public function handle(): int
     {
-        if (!config('jobs.mango')) {
+        if (!config('jobs.mango.recent_calls')) {
             $this->warn('Синхронизация отключена в конфигурации.');
 
             return self::SUCCESS;

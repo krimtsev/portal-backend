@@ -15,7 +15,7 @@ final class SyncYcCompanyStaffCommand extends Command
 
     public function handle(): int
     {
-        if (!config('jobs.yclients')) {
+        if (!config('jobs.yclients.company_staff')) {
             $this->warn('Синхронизация отключена в конфигурации.');
 
             return self::SUCCESS;

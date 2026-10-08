@@ -19,7 +19,7 @@ final class SyncYcStorageTransactionsCommand extends Command
 
     public function handle(PeriodResolutionService $periodService): int
     {
-        if (!config('jobs.yclients')) {
+        if (!config('jobs.yclients.storage_transactions')) {
             $this->warn('Синхронизация отключена в конфигурации.');
 
             return self::SUCCESS;

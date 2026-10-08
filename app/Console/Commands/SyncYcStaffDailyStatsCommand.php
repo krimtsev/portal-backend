@@ -26,7 +26,7 @@ final class SyncYcStaffDailyStatsCommand extends Command
      */
     public function handle(PeriodResolutionService $periodService, RecordsResource $recordsResource): int
     {
-        if (!config('jobs.yclients')) {
+        if (!config('jobs.yclients.staff_daily_stats')) {
             $this->warn('Синхронизация отключена.');
 
             return self::SUCCESS;

@@ -19,7 +19,7 @@ final class SyncYcStaffWorkDaysCommand extends Command
 
     public function handle(PeriodResolutionService $periodService): int
     {
-        if (!config('jobs.yclients')) {
+        if (!config('jobs.yclients.staff_work_days')) {
             $this->warn('Синхронизация отключена в конфигурации.');
 
             return self::SUCCESS;

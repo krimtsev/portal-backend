@@ -8,7 +8,7 @@ use App\Models\Partner\Partner;
 use Illuminate\Console\Command;
 use Throwable;
 
-final class SyncYcCompanyDailyStatCommand extends Command
+final class SyncYcCompanyDailyStatsCommand extends Command
 {
     protected $signature = 'yclients:sync-company-daily-stats
                             {--date= : Конкретный день в формате YYYY-MM-DD}
@@ -19,7 +19,7 @@ final class SyncYcCompanyDailyStatCommand extends Command
 
     public function handle(PeriodResolutionService $periodService): int
     {
-        if (!config('jobs.yclients')) {
+        if (!config('jobs.yclients.company_daily_stat')) {
             $this->warn('Синхронизация отключена в конфигурации.');
 
             return self::SUCCESS;

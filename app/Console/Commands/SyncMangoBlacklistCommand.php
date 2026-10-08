@@ -13,7 +13,7 @@ final class SyncMangoBlacklistCommand extends Command
 
     public function handle(): int
     {
-        if (!config('jobs.mango')) {
+        if (!config('jobs.mango.blacklist')) {
             $this->warn('Синхронизация отключена в конфигурации.');
 
             return self::SUCCESS;

@@ -17,7 +17,7 @@ final class SendReturnedClientsReportCommand extends Command
 
     public function handle(): int
     {
-        if (!config('jobs.partner_reports')) {
+        if (!config('jobs.partner.returned_clients')) {
             $this->warn('Отчеты отключены в конфигурации.');
 
             return self::SUCCESS;

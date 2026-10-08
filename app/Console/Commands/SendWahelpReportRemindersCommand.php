@@ -24,7 +24,7 @@ final class SendWahelpReportRemindersCommand extends Command
 
     public function handle(): int
     {
-        if (!config('jobs.partner_reminders')) {
+        if (!config('jobs.partner.wahelp_report_reminders')) {
             $this->warn('Отчеты отключены в конфигурации.');
 
             return self::SUCCESS;

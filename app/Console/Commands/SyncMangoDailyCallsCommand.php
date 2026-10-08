@@ -17,7 +17,7 @@ final class SyncMangoDailyCallsCommand extends Command
 
     public function handle(PeriodResolutionService $periodResolutionService): int
     {
-        if (!config('jobs.mango')) {
+        if (!config('jobs.mango.daily_calls')) {
             $this->warn('Синхронизация отключена в конфигурации.');
 
             return self::SUCCESS;

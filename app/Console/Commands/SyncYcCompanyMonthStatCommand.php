@@ -18,7 +18,7 @@ final class SyncYcCompanyMonthStatCommand extends Command
 
     public function handle(PeriodResolutionService $periodService): int
     {
-        if (!config('jobs.yclients')) {
+        if (!config('jobs.yclients.company_month_stat')) {
             $this->warn('Синхронизация отключена в конфигурации.');
 
             return self::SUCCESS;
