@@ -126,6 +126,13 @@ Route::prefix('v1/dashboard')
                 Route::delete('batch/{batch}', [Controllers\EventCalendar\EventCalendarController::class, 'remove']);
             });
 
+        Route::prefix('telnums')
+            ->middleware(['role:admin,sysadmin'])
+            ->group(function () {
+                Route::post('incoming/list', [Controllers\Telnums\TelnumsIncomingController::class, 'list']);
+                Route::get('incoming/{partnerId}/hourly', [Controllers\Telnums\TelnumsIncomingController::class, 'partnerDay']);
+            });
+
         Route::prefix('settings')
             ->middleware(['role:sysadmin'])
             ->group(function () {

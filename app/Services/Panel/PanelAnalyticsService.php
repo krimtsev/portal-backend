@@ -4,18 +4,24 @@ declare(strict_types=1);
 
 namespace App\Services\Panel;
 
+use App\Constants\Timezone\Timezone;
+use App\Enums\Mango\MangoContextStatus;
 use App\Enums\Ticket\TicketState;
+use App\Models\Mango\MangoCall;
 use App\Models\Partner\Partner;
 use App\Models\Ticket\Ticket;
 use App\Services\Royalty\RoyaltyService;
+use App\Services\Telnums\TelnumsIncomingService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 
 final readonly class PanelAnalyticsService
 {
     public function __construct(
-        private RoyaltyService $royaltyService
+        private RoyaltyService $royaltyService,
+        private TelnumsIncomingService $telnumsIncomingService,
     ) {}
 
     /**
@@ -36,10 +42,12 @@ final readonly class PanelAnalyticsService
         $waitingCount = $stateCounts->get(TicketState::Waiting->value ?? 'waiting', 0);
 
         $periods = $this->getPeriodsMetrics();
-        $efficiency = $this->getEfficiencyMetrics($totalCount);
+        $efficiency = $this->getEfficiencyMetrics();
         $partnerStats = $this->getPartnerStats();
         $royaltyStats = $this->getRoyaltyStats();
         $jobsStats = $withJobs ? $this->getJobsStats() : null;
+
+        $mangoCallsStats = $this->getMangoCallsStats();
 
         return [
             'partners'      => $partnerStats,
@@ -50,6 +58,7 @@ final readonly class PanelAnalyticsService
             'efficiency'    => $efficiency,
             'royalty'       => $royaltyStats,
             'jobs'          => $jobsStats,
+            'mango_calls'   => $mangoCallsStats
         ];
     }
 
@@ -183,7 +192,7 @@ final readonly class PanelAnalyticsService
             $royaltyTotal = 0;
 
             foreach ($processedCollection as $item) {
-                $incomeTotal += $item['gross_revenue'] ?? $item['income_total'] ?? 0;
+                $incomeTotal += $item['gross_revenue'] ?? 0;
                 $royaltyTotal += $item['royalty_amount'] ?? 0;
             }
 
@@ -193,7 +202,7 @@ final readonly class PanelAnalyticsService
             $allIncomeTotal = 0;
 
             foreach ($processedAllCollection as $item) {
-                $allIncomeTotal += $item['gross_revenue'] ?? $item['income_total'] ?? 0;
+                $allIncomeTotal += $item['gross_revenue'] ?? 0;
             }
 
             $results[] = [
@@ -202,6 +211,11 @@ final readonly class PanelAnalyticsService
                 'all_income_total' => (int) round($allIncomeTotal),
                 'royalty_amount'   => (int) round($royaltyTotal),
             ];
+
+            Log::critical('allPartners.', [
+                'all_partners' => $results,
+            ]);
+
         }
 
         return array_reverse($results);
@@ -222,5 +236,13 @@ final readonly class PanelAnalyticsService
             'yclients_count' => $yclientsCount,
             'failed_count'   => $failedJobs,
         ];
+    }
+
+    private function getMangoCallsStats(): array
+    {
+        return $this->telnumsIncomingService->getHourlyCallsStats(
+            Carbon::now(Timezone::DEFAULT)->subHours(11),
+            12
+        );
     }
 }

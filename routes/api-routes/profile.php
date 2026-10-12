@@ -27,4 +27,9 @@ Route::prefix('v1/profile')
                 Route::get('staff/details', [Controllers\Statistics\StatisticsStaffController::class, 'staffDetails']);
                 Route::get('staff/total-compare', [Controllers\Statistics\StatisticsStaffController::class, 'totalCompare']);
             });
+
+        Route::prefix('telnums')
+            ->group(function () {
+                Route::get('incoming/{partnerId}/hourly', [Controllers\Telnums\TelnumsIncomingController::class, 'partnerDay']);
+            });
     });

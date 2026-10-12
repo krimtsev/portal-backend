@@ -49,9 +49,9 @@ final class PeriodResolutionService
 
             $parsedDate = Carbon::parse($date, $timezone)->startOfDay();
 
-            if ($parsedDate->gte($today)) {
+/*            if ($parsedDate->gte($today)) {
                 throw new InvalidArgumentException('Нельзя запустить команду за текущий или будущий день.');
-            }
+            }*/
 
             return [$parsedDate];
         }

@@ -52,6 +52,8 @@ final class PanelAnalyticsResource extends JsonResource
 
             'royalty_stats' => $this->resource['royalty'] ?? [],
 
+            'mango_calls' => $this->resource['mango_calls'] ?? [],
+
             'jobs' => $this->when(isset($this->resource['jobs']), function () {
                 return [
                     'total_count'    => $this->resource['jobs']['total_count'] ?? 0,

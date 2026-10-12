@@ -15,6 +15,7 @@ class Pagination
         array $searchColumns = [],
         array $sortable = [],
         array $filterable = [],
+        ?string $tieBreaker = null,
     ): array {
         [
             $sortBy,
@@ -52,6 +53,11 @@ class Pagination
         // Сортировка
         if (in_array($sortBy, $sortable)) {
             $query->orderBy($sortBy, $sortOrder);
+        }
+
+        // Вторичная сортировка
+        if ($tieBreaker !== null) {
+            $query->orderBy($tieBreaker);
         }
 
         // Пагинация
