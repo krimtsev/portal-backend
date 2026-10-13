@@ -16,13 +16,18 @@ final class TelnumsIncomingListRequest extends BaseListRequest
     public function rules(): array
     {
         return array_merge(parent::rules(), [
-            'filters.date' => [
+            'filters.date_from' => [
                 'required',
-                'date',
+                'date_format:Y-m-d'
+            ],
+            'filters.date_to' => [
+                'required',
+                'date_format:Y-m-d',
+                'after_or_equal:filters.date_from',
             ],
             'filters.partner_id' => [
                 'nullable',
-                'array',
+                'array'
             ],
         ]);
     }

@@ -22,7 +22,15 @@ class TelnumsIncomingPartnerDayRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'date' => ['required', 'date_format:Y-m-d'],
+            'date_from' => [
+                'required',
+                'date_format:Y-m-d'
+            ],
+            'date_to'   => [
+                'required',
+                'date_format:Y-m-d',
+                'after_or_equal:date_from'
+            ],
         ];
     }
 }

@@ -17,10 +17,10 @@ class TelnumsIncomingService
     /**
      * Партнеры + статистика входящих звонков за день.
      */
-    public function getIncomingStatsQuery(string $date): Builder
+    public function getIncomingStatsQuery(string $dateFrom, string $dateTo): Builder
     {
-        $startOfDay = Carbon::parse($date)->startOfDay();
-        $endOfDay = Carbon::parse($date)->endOfDay();
+        $start = Carbon::parse($dateFrom, Timezone::DEFAULT)->startOfDay()->utc();
+        $end = Carbon::parse($dateTo, Timezone::DEFAULT)->endOfDay()->utc();
 
         $stats = MangoCall::query()
             ->selectRaw(
@@ -33,8 +33,8 @@ class TelnumsIncomingService
                 ]
             )
             ->where('context_type', MangoContextType::INCOMING->value)
-            ->where('context_start_time', '>=', $startOfDay)
-            ->where('context_start_time', '<=', $endOfDay)
+            ->where('context_start_time', '>=', $start)
+            ->where('context_start_time', '<=', $end)
             ->groupBy('called_number');
 
         return Partner::query()
@@ -115,10 +115,12 @@ class TelnumsIncomingService
     /**
      * Почасовая статистика партнера за сутки (24 часа).
      */
-    public function getPartnerDayHourlyStats(Partner $partner, string $date): array
+    public function getPartnerPeriodHourlyStats(Partner $partner, string $dateFrom, string $dateTo): array
     {
-        $startOfDay = Carbon::parse($date, Timezone::DEFAULT)->startOfDay();
+        $start = Carbon::parse($dateFrom, Timezone::DEFAULT)->startOfDay();
+        $end = Carbon::parse($dateTo, Timezone::DEFAULT)->startOfDay();
+        $days = (int) round($start->diffInDays($end)) + 1;
 
-        return $this->getHourlyCallsStats($startOfDay, 24, $partner->mango_telnum);
+        return $this->getHourlyCallsStats($start, $days * 24, $partner->mango_telnum);
     }
 }

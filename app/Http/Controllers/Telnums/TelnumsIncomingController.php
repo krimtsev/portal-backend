@@ -13,11 +13,6 @@ use Illuminate\Http\Request;
 
 class TelnumsIncomingController
 {
-    private function isDashboard(): bool
-    {
-        return (bool) request()->attributes->get('is_dashboard', false);
-    }
-
     /**
      * Используется в панели для отображении таблицы по всем партнерам.
      */
@@ -28,8 +23,13 @@ class TelnumsIncomingController
     {
         $filters = $request->filters();
 
-        $date = $filters['date'];
-        unset($filters['date']);
+        $dateFrom = $filters['date_from'];
+        $dateTo = $filters['date_to'];
+
+        unset(
+            $filters['date_from'],
+            $filters['date_to']
+        );
 
         if (!empty($filters['partner_id'])) {
             $filters['partners.id'] = $filters['partner_id'];
@@ -38,7 +38,7 @@ class TelnumsIncomingController
 
         $request->merge(['filters' => $filters]);
 
-        $query = $service->getIncomingStatsQuery($date);
+        $query = $service->getIncomingStatsQuery($dateFrom, $dateTo);
 
         $result = Pagination::paginate(
             $query,
@@ -65,7 +65,11 @@ class TelnumsIncomingController
             ->findOrFail($partnerId);
 
         return JsonResponse::Send([
-            'data' => $service->getPartnerDayHourlyStats($partner, $request->validated('date'))
+            'data' => $service->getPartnerPeriodHourlyStats(
+                $partner,
+                $request->validated('date_from'),
+                $request->validated('date_to'),
+            ),
         ]);
     }
 }
