@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Services\Royalty;
 
 use App\Models\Partner\Partner;
+use App\Services\Royalty\Contracts\RoyaltyPercentCalculator;
+use App\Services\Royalty\DTO\RoyaltyContext;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -13,11 +15,9 @@ final class RoyaltyService
 {
     private const VAT_PERCENT = 5;
 
-    private const ROYALTY_STEP = 0.25;
-
-    private const MIN_ROYALTY_PERCENT = 2.5;
-
-    private const MAX_ROYALTY_PERCENT = 5;
+    public function __construct(
+        private readonly RoyaltyPercentCalculator $percentCalculator,
+    ) {}
 
     public function getPartnersWithStatsQuery(
         string $startDate,
@@ -58,23 +58,18 @@ final class RoyaltyService
     ): Collection {
         return $partners->map(
             function ($partner) use ($monthInput) {
-
                 $grossRevenue = round((float) $partner->income_total, 2);
 
-                $openedAt = $partner->opened_at ? Carbon::parse($partner->opened_at) : null;
-                $startAt = $partner->start_at ? Carbon::parse($partner->start_at) : null;
-
-                $royaltyPercent = $this->calculateRoyaltyPercent(
-                    $openedAt,
-                    $startAt,
-                    $monthInput
+                $royaltyPercent = $this->percentCalculator->calculate(
+                    new RoyaltyContext(
+                        grossRevenue: $grossRevenue,
+                        period: $monthInput,
+                        openedAt: $partner->opened_at ? Carbon::parse($partner->opened_at) : null,
+                        startAt: $partner->start_at ? Carbon::parse($partner->start_at) : null,
+                    )
                 );
 
-                $royaltyAmount = $this->calculateRoyaltyAmount(
-                    $grossRevenue,
-                    $royaltyPercent
-                );
-
+                $royaltyAmount = $this->calculateRoyaltyAmount($grossRevenue, $royaltyPercent);
                 $vatAmount = $this->calculateVatAmount($royaltyAmount);
 
                 return [
@@ -90,47 +85,6 @@ final class RoyaltyService
                 ];
             }
         );
-    }
-
-    public function calculateRoyaltyPercent(?Carbon $openedAt, ?Carbon $startAt, Carbon $targetDate): float
-    {
-        if (!$openedAt) {
-            return 0;
-        }
-
-        $targetMonth = $targetDate
-            ->copy()
-            ->startOfMonth();
-
-        $openedMonth = $openedAt
-            ->copy()
-            ->startOfMonth();
-
-        $freePeriodEnd = $openedMonth->copy()->addMonths(2);
-
-        /**
-         * Первые 2 месяца бесплатно
-         */
-        if ($targetMonth->lt($freePeriodEnd)) {
-            return 0;
-        }
-
-        $percent = self::MIN_ROYALTY_PERCENT;
-
-        /**
-         * Каждые 12 месяцев +0.25%
-         */
-        if ($startAt) {
-            $startMonth = $startAt->copy()->startOfMonth();
-
-            if ($targetMonth->gt($startMonth)) {
-                $start = (int) $startMonth->diffInMonths($targetMonth);
-                $yearsPassed = intdiv($start, 12);
-                $percent += $yearsPassed * self::ROYALTY_STEP;
-            }
-        }
-
-        return min($percent, self::MAX_ROYALTY_PERCENT);
     }
 
     public function calculateRoyaltyAmount(float $grossRevenue, float $royaltyPercent): float

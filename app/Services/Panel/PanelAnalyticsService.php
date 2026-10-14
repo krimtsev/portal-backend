@@ -5,16 +5,14 @@ declare(strict_types=1);
 namespace App\Services\Panel;
 
 use App\Constants\Timezone\Timezone;
-use App\Enums\Mango\MangoContextStatus;
+use App\Enums\Partner\PartnerCode;
 use App\Enums\Ticket\TicketState;
-use App\Models\Mango\MangoCall;
 use App\Models\Partner\Partner;
 use App\Models\Ticket\Ticket;
 use App\Services\Royalty\RoyaltyService;
 use App\Services\Telnums\TelnumsIncomingService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 
 final readonly class PanelAnalyticsService
@@ -22,6 +20,7 @@ final readonly class PanelAnalyticsService
     public function __construct(
         private RoyaltyService $royaltyService,
         private TelnumsIncomingService $telnumsIncomingService,
+        private PartnerCode $partner,
     ) {}
 
     /**
@@ -179,6 +178,7 @@ final readonly class PanelAnalyticsService
     {
         $results = [];
         $now = Carbon::now()->subMonth();
+        $reportsIncome = $this->partner->reportsRoyaltyIncome();
 
         for ($i = 0; $i < 6; $i++) {
             $monthInput = $now->copy()->subMonths($i)->startOfMonth();
@@ -205,17 +205,21 @@ final readonly class PanelAnalyticsService
                 $allIncomeTotal += $item['gross_revenue'] ?? 0;
             }
 
-            $results[] = [
-                'month'            => $monthInput->format('Y-m'),
-                'income_total'     => (int) round($incomeTotal),
-                'all_income_total' => (int) round($allIncomeTotal),
-                'royalty_amount'   => (int) round($royaltyTotal),
-            ];
-
-            Log::critical('allPartners.', [
-                'all_partners' => $results,
-            ]);
-
+            if ($reportsIncome) {
+                $results[] = [
+                    'month'            => $monthInput->format('Y-m'),
+                    'income_total'     => (int) round($incomeTotal),
+                    'all_income_total' => (int) round($allIncomeTotal),
+                    'royalty_amount'   => (int) round($royaltyTotal),
+                ];
+            } else {
+                $results[] = [
+                    'month'            => $monthInput->format('Y-m'),
+                    'income_total'     => (int) round($allIncomeTotal),
+                    'all_income_total' => 0,
+                    'royalty_amount'   => (int) round($royaltyTotal),
+                ];
+            }
         }
 
         return array_reverse($results);
