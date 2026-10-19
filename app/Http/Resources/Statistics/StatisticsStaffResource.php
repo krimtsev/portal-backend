@@ -26,7 +26,8 @@ final class StatisticsStaffResource extends JsonResource
             'specialization' => $this->specialization,
             'avatar'         => $this->avatar,
 
-            'work_days_count' => $this->work_days ? (int) $this->work_days->work_days_count : 0,
+            'work_days_count'              => $this->work_days ? (int) $this->work_days->work_days_count : 0,
+            'work_days_with_records_count' => $this->work_days ? (int) $this->work_days->work_days_with_records_count : 0,
 
             'income_goods'      => $income_goods,
             'income_total'      => $income_total,

@@ -205,29 +205,31 @@ final class StatisticsStaffService
      */
     private function getWorkDaysStats(int $companyId, string $start, string $end): Collection
     {
-        // Выбираем дни, когда сотрудник был в расписании
-        $scheduleDays = clone DB::table('yc_staff_work_days')
+        $workDays = DB::table('yc_staff_work_days')
             ->select('staff_id', 'date')
             ->where('company_id', $companyId)
             ->where('has_schedule', true)
-            ->whereBetween('date', [$start, $end]);
+            ->whereBetween('date', [$start, $end])
+            ->get()
+            ->groupBy('staff_id');
 
-        // Выбираем дни, когда у сотрудника были записи (отбрасываем время через DATE)
-        $recordDays = clone DB::table('yc_records')
+        $recordDays = DB::table('yc_records')
             ->select('staff_id', DB::raw('DATE(datetime) as date'))
             ->where('company_id', $companyId)
-            ->whereBetween('datetime', [$start, $end]);
-
-        // Объединяем оба подзапроса
-        $combined = $scheduleDays->union($recordDays);
-
-        // Считаем уникальные даты для каждого сотрудника
-        return DB::query()
-            ->fromSub($combined, 'combined_days')
-            ->select('staff_id')
-            ->selectRaw('COUNT(DISTINCT date) as work_days_count')
-            ->groupBy('staff_id')
+            ->whereBetween('datetime', [$start, $end])
             ->get()
-            ->keyBy('staff_id');
+            ->groupBy('staff_id');
+
+        $staffIds = $workDays->keys()->merge($recordDays->keys())->unique();
+
+        return $staffIds->mapWithKeys(function ($staffId) use ($workDays, $recordDays) {
+            $wd = $workDays->get($staffId, collect())->pluck('date');
+            $rd = $recordDays->get($staffId, collect())->pluck('date');
+
+            return [$staffId => (object) [
+                'work_days_count'              => $wd->unique()->count(),
+                'work_days_with_records_count' => $wd->merge($rd)->unique()->count(),
+            ]];
+        });
     }
 }

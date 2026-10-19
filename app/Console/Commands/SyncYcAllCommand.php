@@ -87,21 +87,27 @@ final class SyncYcAllCommand extends Command
 
         // Ежемесячные синхронизации (запускаются только если передан --month)
         if ($month) {
-            $this->warn("\n>>> Запуск ежемесячных задач за месяц: {$month}");
+            $currentMonth = now()->format('Y-m');
 
-            foreach ($this->monthlySyncCommands as $command) {
-                $this->line("Выполнение: {$command}...");
+            if ($month === $currentMonth) {
+                $this->line("\nПропуск ежемесячных задач: запуск за текущий месяц ({$month}) запрещен.");
+            } else {
+                $this->warn("\n>>> Запуск ежемесячных задач за месяц: {$month}");
 
-                $params = ['--month' => $month];
+                foreach ($this->monthlySyncCommands as $command) {
+                    $this->line("Выполнение: {$command}...");
 
-                if ($companyId) {
-                    $params['--company_id'] = $companyId;
-                }
+                    $params = ['--month' => $month];
 
-                $resultCode = $this->call($command, $params);
+                    if ($companyId) {
+                        $params['--company_id'] = $companyId;
+                    }
 
-                if ($resultCode !== self::SUCCESS) {
-                    $this->error("Ошибка при выполнении {$command} (код {$resultCode})");
+                    $resultCode = $this->call($command, $params);
+
+                    if ($resultCode !== self::SUCCESS) {
+                        $this->error("Ошибка при выполнении {$command} (код {$resultCode})");
+                    }
                 }
             }
         }
