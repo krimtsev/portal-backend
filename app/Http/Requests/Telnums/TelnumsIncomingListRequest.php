@@ -18,7 +18,7 @@ final class TelnumsIncomingListRequest extends BaseListRequest
         return array_merge(parent::rules(), [
             'filters.date_from' => [
                 'required',
-                'date_format:Y-m-d'
+                'date_format:Y-m-d',
             ],
             'filters.date_to' => [
                 'required',
@@ -27,7 +27,7 @@ final class TelnumsIncomingListRequest extends BaseListRequest
             ],
             'filters.partner_id' => [
                 'nullable',
-                'array'
+                'array',
             ],
         ]);
     }

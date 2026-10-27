@@ -74,16 +74,21 @@ Route::prefix('v1/dashboard')
 
             });
 
-        Route::prefix('users')
-            ->middleware(['role:sysadmin'])
-            ->group(function () {
-                Route::post('list', [Controllers\Users\UserController::class, 'list']);
-                Route::get('user/{user}', [Controllers\Users\UserController::class, 'get']);
-                Route::post('user/{user}', [Controllers\Users\UserController::class, 'create']);
-                Route::put('user/{user}', [Controllers\Users\UserController::class, 'update']);
-                Route::get('export', [Controllers\Users\UserController::class, 'export']);
-                Route::get('options', [Controllers\Users\UserController::class, 'options']);
-            });
+        Route::prefix('users')->group(function () {
+            Route::middleware(['role:sysadmin'])
+                ->group(function () {
+                    Route::post('list', [Controllers\Users\UserController::class, 'list']);
+                    Route::get('user/{user}', [Controllers\Users\UserController::class, 'get']);
+                    Route::post('user/{user}', [Controllers\Users\UserController::class, 'create']);
+                    Route::put('user/{user}', [Controllers\Users\UserController::class, 'update']);
+                    Route::get('export', [Controllers\Users\UserController::class, 'export']);
+                });
+
+            Route::middleware(['role:admin,sysadmin'])
+                ->group(function () {
+                    Route::get('options', [Controllers\Users\UserController::class, 'options']);
+                });
+        });
 
         Route::prefix('cloud')
             ->middleware(['role:admin,sysadmin'])
@@ -139,4 +144,8 @@ Route::prefix('v1/dashboard')
                 Route::get('maintenance', [Controllers\Maintenance\MaintenanceController::class, 'get']);
                 Route::put('maintenance', [Controllers\Maintenance\MaintenanceController::class, 'update']);
             });
+
+        Route::prefix('dadata')->group(function () {
+            Route::get('/bank/suggest',     [Controllers\DaData\DaDataController::class, 'bankSuggest']);
+        });
     });

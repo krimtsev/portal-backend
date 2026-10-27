@@ -9,7 +9,6 @@ use App\Http\Resources\Telnums\TelnumsIncomingListResource;
 use App\Models\Partner\Partner;
 use App\Responses\JsonResponse;
 use App\Services\Telnums\TelnumsIncomingService;
-use Illuminate\Http\Request;
 
 class TelnumsIncomingController
 {
@@ -19,8 +18,7 @@ class TelnumsIncomingController
     public function list(
         TelnumsIncomingListRequest $request,
         TelnumsIncomingService $service
-    )
-    {
+    ) {
         $filters = $request->filters();
 
         $dateFrom = $filters['date_from'];
@@ -58,8 +56,7 @@ class TelnumsIncomingController
         TelnumsIncomingPartnerDayRequest $request,
         int $partnerId,
         TelnumsIncomingService $service
-    )
-    {
+    ) {
         $partner = Partner::query()
             ->whereNotNull('mango_telnum')
             ->findOrFail($partnerId);

@@ -158,5 +158,11 @@ return [
             'path'   => storage_path('logs/mango.log'),
             'level'  => 'debug',
         ],
+
+        'dadata' => [
+            'driver' => 'single',
+            'path'   => storage_path('logs/dadata.log'),
+            'level'  => 'debug',
+        ],
     ],
 ];

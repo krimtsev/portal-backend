@@ -57,7 +57,7 @@ final readonly class PanelAnalyticsService
             'efficiency'    => $efficiency,
             'royalty'       => $royaltyStats,
             'jobs'          => $jobsStats,
-            'mango_calls'   => $mangoCallsStats
+            'mango_calls'   => $mangoCallsStats,
         ];
     }
 

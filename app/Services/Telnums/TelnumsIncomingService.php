@@ -50,7 +50,7 @@ class TelnumsIncomingService
             ->selectRaw('COALESCE(calls.failed_count, 0) AS failed_count')
             ->selectRaw('COALESCE(calls.success_count, 0) + COALESCE(calls.failed_count, 0) AS total_count')
             ->selectRaw(
-    'COALESCE(
+                'COALESCE(
                     COALESCE(calls.failed_count, 0) * 100
                     / NULLIF(COALESCE(calls.success_count, 0) + COALESCE(calls.failed_count, 0), 0),
                     0
@@ -61,10 +61,9 @@ class TelnumsIncomingService
     /**
      * Почасовая статистика входящих звонков.
      *
-     * @param Carbon      $startLocal   Начало окна (в локальной таймзоне), округляется до часа
-     * @param int         $hours        Сколько часов показать (12 для панели, 24 для суток)
-     * @param string|null $calledNumber Если задан - статистика только по этому номеру
-     *
+     * @param  Carbon  $startLocal  Начало окна (в локальной таймзоне), округляется до часа
+     * @param  int  $hours  Сколько часов показать (12 для панели, 24 для суток)
+     * @param  string|null  $calledNumber  Если задан - статистика только по этому номеру
      * @return array<int, array{time: string, incoming: int, missed: int}>
      */
     public function getHourlyCallsStats(
@@ -79,9 +78,9 @@ class TelnumsIncomingService
         for ($i = 0; $i < $hours; $i++) {
             $key = $startLocal->copy()->addHours($i)->format('H:00');
             $slots[$key] = [
-                'time' => $key,
+                'time'     => $key,
                 'incoming' => 0,
-                'missed' => 0
+                'missed'   => 0,
             ];
         }
 

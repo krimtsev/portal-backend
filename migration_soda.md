@@ -20,14 +20,12 @@ VALUES
     (12, 'Stylist', 'stylist');
 ```
 
+# Пример миграции со старой базой
 ``` sql
-UPDATE tickets
-SET department_id = CASE department_id
-    WHEN 5 THEN 10
-    WHEN 6 THEN 11
-    WHEN 7 THEN 12
-    END
-WHERE department_id IN (5, 6, 7);
+UPDATE tickets t
+    JOIN _tickets ut ON t.id = ut.id
+SET t.department_id = 9
+WHERE ut.category_id = 11;
 ```
 
 

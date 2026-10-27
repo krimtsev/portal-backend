@@ -38,7 +38,7 @@ enum PartnerCode: string
     public function reportsRoyaltyIncome(): bool
     {
         return match ($this) {
-            self::Soda => false,
+            self::Soda                => false,
             self::Britva, self::Lapki => true,
         };
     }

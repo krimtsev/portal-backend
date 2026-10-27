@@ -94,7 +94,10 @@ final class UserController extends Controller
         DB::transaction(function () use ($data, $user) {
             $user->update($data);
 
-            if (isset($data['departments'])) {
+            if (
+                array_key_exists('departments', $data) &&
+                is_array($data['departments'])
+            ) {
                 $user->departments()->sync($data['departments']);
             }
 
