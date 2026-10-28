@@ -1,12 +1,6 @@
 <?php
 
-use App\Http\Controllers\DaData\DaDataTestController;
-use App\Integrations\Mango\MangoApi;
-use App\Integrations\Mango\Resources\CallsStats\DTO\CallsStatsRequestFilters;
-use App\Integrations\Telegram\TelegramManager;
-use App\Models\Yclients\YcCompanyStaff;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () { return 'Hello World'; });
@@ -23,12 +17,6 @@ Route::prefix('debug')->group(function () {
                 'php_default_timezone' => date_default_timezone_get(),
             ],
         ]);
-    });
-
-    Route::prefix('test/dadata')->group(function () {
-        Route::get('/bank/suggest',     [DaDataTestController::class, 'bankSuggest']);
-        Route::get('/bank/find-by-bic', [DaDataTestController::class, 'bankFindById']);
-        Route::get('/clean/address',    [DaDataTestController::class, 'cleanAddress']);
     });
 
     /*Route::get('/telegram/msg', function (TelegramManager $telegram) {

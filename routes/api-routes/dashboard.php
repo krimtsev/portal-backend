@@ -144,8 +144,4 @@ Route::prefix('v1/dashboard')
                 Route::get('maintenance', [Controllers\Maintenance\MaintenanceController::class, 'get']);
                 Route::put('maintenance', [Controllers\Maintenance\MaintenanceController::class, 'update']);
             });
-
-        Route::prefix('dadata')->group(function () {
-            Route::get('/bank/suggest',     [Controllers\DaData\DaDataController::class, 'bankSuggest']);
-        });
     });
