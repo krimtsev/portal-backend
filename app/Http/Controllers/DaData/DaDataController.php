@@ -5,9 +5,9 @@ namespace App\Http\Controllers\DaData;
 use App\Enums\DaData\DaDataStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DaData\DaDataBaseRequest;
-use App\Http\Resources\DaData\AddressSuggestionResource;
-use App\Http\Resources\DaData\BankSuggestionResource;
-use App\Http\Resources\DaData\PartySuggestionResource;
+use App\Http\Resources\DaData\AddressResource;
+use App\Http\Resources\DaData\BankResource;
+use App\Http\Resources\DaData\PartyResource;
 use App\Integrations\DaData\DaDataApi;
 use App\Responses\JsonResponse;
 
@@ -17,15 +17,35 @@ class DaDataController extends Controller
         private readonly DaDataApi $dadata,
     ) {}
 
+    /**
+     * Банки - Автодополнение при вводе («подсказки»)
+     */
     public function bankSuggest(DaDataBaseRequest $request): \Illuminate\Http\JsonResponse
     {
         $query = $request->validated('query');
         $count = $request->validated('count', 5);
+        $statuses = $request->validated('status', [DaDataStatus::ACTIVE->value]);
 
-        $items = $this->dadata->bank()->suggest($query, $count);
+        $payload = ['status' => $statuses];
+
+        $items = $this->dadata->bank()->suggest($query, $count, $payload);
 
         return JsonResponse::Send([
-            'data' => BankSuggestionResource::collection($items),
+            'data' => BankResource::collection($items),
+        ]);
+    }
+
+    /**
+     * Банки - Точное совпадение по БИК, SWIFT, ИНН, рег. номеру
+     */
+    public function bankFindById(DaDataBaseRequest $request): \Illuminate\Http\JsonResponse
+    {
+        $query = $request->validated('query');
+
+        $items = $this->dadata->bank()->findById($query);
+
+        return JsonResponse::Send([
+            'data' => BankResource::collection($items),
         ]);
     }
 
@@ -37,7 +57,7 @@ class DaDataController extends Controller
         $items = $this->dadata->party()->suggest($query, $count);
 
         return JsonResponse::Send([
-            'data' => AddressSuggestionResource::collection($items),
+            'data' => AddressResource::collection($items),
         ]);
     }
 
@@ -55,7 +75,7 @@ class DaDataController extends Controller
         $items = $this->dadata->party()->suggest($query, $count, $payload);
 
         return JsonResponse::Send([
-            'data' => PartySuggestionResource::collection($items),
+            'data' => PartyResource::collection($items),
         ]);
     }
 
@@ -73,7 +93,7 @@ class DaDataController extends Controller
         $items = $this->dadata->party()->findById($query, $count, $payload);
 
         return JsonResponse::Send([
-            'data' => PartySuggestionResource::collection($items),
+            'data' => PartyResource::collection($items),
         ]);
     }
 }

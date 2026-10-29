@@ -26,8 +26,10 @@ final readonly class BankResource
 
     public function findById(string $query, array $payload = []): array
     {
-        return $this->client->suggestions->post('/findById/bank', array_merge([
+        $result = $this->client->suggestions->post('/findById/bank', array_merge([
             'query' => $query,
         ], $payload));
+
+        return $result['suggestions'] ?? [];
     }
 }

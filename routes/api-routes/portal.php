@@ -33,7 +33,10 @@ Route::prefix('v1')->group(function () {
 
         Route::prefix('dadata')->group(function () {
             Route::get('suggest/bank', [Controllers\DaData\DaDataController::class, 'bankSuggest']);
+            Route::get('find-by-id/bank', [Controllers\DaData\DaDataController::class, 'bankFindById']);
+
             Route::get('suggest/address', [Controllers\DaData\DaDataController::class, 'addressSuggest']);
+
             Route::get('suggest/party', [Controllers\DaData\DaDataController::class, 'partySuggest']);
             Route::get('find-by-id/party', [Controllers\DaData\DaDataController::class, 'partyFindById']);
         });
