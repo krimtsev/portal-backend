@@ -27,19 +27,12 @@ class PasswordChangedNotification extends Notification implements ShouldQueue
     public function middleware(): array
     {
         if (config('mail.rate_limit.enabled', false)) {
-            return [new RateLimited('external_mailer')];
+            return [
+                (new RateLimited('external_mailer'))->releaseAfter(60)
+            ];
         }
 
         return [];
-    }
-
-    public function retryUntil(): ?DateTimeInterface
-    {
-        if (config('mail.rate_limit.enabled', false)) {
-            return now()->addDay();
-        }
-
-        return null;
     }
 
     /**

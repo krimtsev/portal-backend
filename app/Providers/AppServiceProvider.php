@@ -54,7 +54,12 @@ class AppServiceProvider extends ServiceProvider
         /** Ограничения кол-ва писем за час */
         RateLimiter::for('external_mailer', function (object $job) {
             $limit = config('mail.rate_limit.per_hour', 100);
-
+            if (RateLimiter::attempts('external_mailer') >= $limit) {
+                Log::channel('rate_limit')->warning('Mail rate limit reached', [
+                    'attempts' => RateLimiter::attempts('external_mailer'),
+                    'limit'    => $limit,
+                ]);
+            }
             return Limit::perHour($limit);
         });
 

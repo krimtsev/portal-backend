@@ -141,6 +141,13 @@ return [
             'replace_placeholders' => true,
         ],
 
+        'rate_limit' => [
+            'driver' => 'daily',
+            'path'   => storage_path('logs/rate_limit.log'),
+            'level'  => 'error',
+            'days'   => 30,
+        ],
+
         'yclients' => [
             'driver' => 'single',
             'path'   => storage_path('logs/yclients.log'),
