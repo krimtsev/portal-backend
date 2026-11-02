@@ -40,6 +40,10 @@ Route::prefix('v1')->group(function () {
             Route::get('suggest/party', [Controllers\DaData\DaDataController::class, 'partySuggest']);
             Route::get('find-by-id/party', [Controllers\DaData\DaDataController::class, 'partyFindById']);
         });
+
+        Route::prefix('promo-dialog')->group(function () {
+            Route::post('{id}/read', [Controllers\PromoDialog\PromoDialogController::class, 'read']);
+        });
     });
 });
 

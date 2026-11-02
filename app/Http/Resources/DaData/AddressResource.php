@@ -12,9 +12,9 @@ class AddressResource extends JsonResource
         $data = data_get($this->resource, 'data', []);
 
         return [
-            "country" => data_get($data, 'country'),
-            "region"  => data_get($data, 'region'),
-            "city"    => data_get($data, 'city'),
+            'country' => data_get($data, 'country'),
+            'region'  => data_get($data, 'region'),
+            'city'    => data_get($data, 'city'),
         ];
     }
 }

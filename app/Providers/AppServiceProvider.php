@@ -60,6 +60,7 @@ class AppServiceProvider extends ServiceProvider
                     'limit'    => $limit,
                 ]);
             }
+
             return Limit::perHour($limit);
         });
 

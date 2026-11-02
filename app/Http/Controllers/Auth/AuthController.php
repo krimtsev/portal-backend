@@ -47,6 +47,9 @@ final class AuthController extends Controller
 
         $user->load(['access', 'partner']);
 
+        // Включённые диалоги, с которыми пользователь ещё не ознакомился
+        $user->setRelation('promoDialogs', $user->availablePromoDialogs());
+
         $responseData = [
             'data' => (new UserDataResource($user))->resolve(),
         ];

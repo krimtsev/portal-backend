@@ -12,7 +12,7 @@ class BankResource extends JsonResource
         $data = data_get($this->resource, 'data', []);
 
         return [
-            "name"                  => data_get($data, 'name.payment'),
+            'name'                  => data_get($data, 'name.payment'),
             'bic'                   => data_get($data, 'bic'),
             'inn'                   => data_get($data, 'inn'),
             'kpp'                   => data_get($data, 'kpp'),

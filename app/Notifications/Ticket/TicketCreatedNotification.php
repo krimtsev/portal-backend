@@ -4,7 +4,6 @@ namespace App\Notifications\Ticket;
 
 use App\Models\Ticket\Ticket;
 use App\Models\Ticket\TicketMessage;
-use DateTimeInterface;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -33,7 +32,7 @@ class TicketCreatedNotification extends Notification implements ShouldQueue
     {
         if (config('mail.rate_limit.enabled', false)) {
             return [
-                (new RateLimited('external_mailer'))->releaseAfter(60)
+                (new RateLimited('external_mailer'))->releaseAfter(60),
             ];
         }
 

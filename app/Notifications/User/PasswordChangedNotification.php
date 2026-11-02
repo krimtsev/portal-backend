@@ -3,7 +3,6 @@
 namespace App\Notifications\User;
 
 use App\Models\User\User;
-use DateTimeInterface;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -28,7 +27,7 @@ class PasswordChangedNotification extends Notification implements ShouldQueue
     {
         if (config('mail.rate_limit.enabled', false)) {
             return [
-                (new RateLimited('external_mailer'))->releaseAfter(60)
+                (new RateLimited('external_mailer'))->releaseAfter(60),
             ];
         }
 

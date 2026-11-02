@@ -28,8 +28,7 @@ final readonly class PartyResource
         string $query,
         int $count = Settings::SUGGESTION_COUNT,
         array $payload = []
-    ): array
-    {
+    ): array {
         $result = $this->client->suggestions->post('/findById/party', array_merge([
             'query' => $query,
             'count' => $count,

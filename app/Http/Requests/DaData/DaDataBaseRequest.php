@@ -19,13 +19,13 @@ class DaDataBaseRequest extends FormRequest
             'query' => [
                 'required',
                 'string',
-                'max:500'
+                'max:500',
             ],
             'count' => [
                 'sometimes',
                 'integer',
                 'min:1',
-                'max:20'
+                'max:20',
             ],
             'status' => [
                 'sometimes',

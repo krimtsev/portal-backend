@@ -9,10 +9,9 @@ use Illuminate\Support\Facades\DB;
  * Скрипт берёт актуальное состояние yc_tariffs из БД, поэтому его можно
  * безопасно перезапускать: закрытие и вставка идемпотентны.
  */
-
 $closeDate = '2026-10-15';
 $startDate = '2026-10-16';
-$now       = Carbon::now();
+$now = Carbon::now();
 
 /**
  * Новый список услуг БЕЗ цены (из soda.txt).
@@ -180,7 +179,7 @@ $openTariffs = DB::table('yc_tariffs')
     ->where('start_date', '<=', $closeDate)
     ->get(['service_id', 'cost']);
 
-$openFilterPrices  = []; // service_id => null
+$openFilterPrices = []; // service_id => null
 $openComplexPrices = []; // service_id => cost
 
 foreach ($openTariffs as $row) {
@@ -196,7 +195,7 @@ foreach ($openTariffs as $row) {
  *  - старые, которых нет в новом списке → закрыть;
  *  - новые, которых нет в открытых → вставить.
  */
-$filterToClose  = array_values(array_diff(array_keys($openFilterPrices), array_keys($newFilterServices)));
+$filterToClose = array_values(array_diff(array_keys($openFilterPrices), array_keys($newFilterServices)));
 $filterToInsert = array_values(array_diff(array_keys($newFilterServices), array_keys($openFilterPrices)));
 
 /**
@@ -207,9 +206,9 @@ $filterToInsert = array_values(array_diff(array_keys($newFilterServices), array_
  *      • цена та же → оставить как есть;
  *  - есть только старый → закрыть.
  */
-$complexToClose     = []; // service_id, которые нужно закрыть
+$complexToClose = []; // service_id, которые нужно закрыть
 $complexPriceChange = []; // service_id, у которых цена изменилась
-$complexToInsert    = []; // service_id, которые нужно вставить (новые + изменившиеся)
+$complexToInsert = []; // service_id, которые нужно вставить (новые + изменившиеся)
 
 $newComplexIds = array_keys($newComplexServices);
 $oldComplexIds = array_keys($openComplexPrices);
@@ -226,6 +225,7 @@ foreach ($newComplexServices as $serviceId => $data) {
     if (!array_key_exists($serviceId, $openComplexPrices)) {
         // новый id
         $complexToInsert[] = $serviceId;
+
         continue;
     }
 
@@ -235,14 +235,14 @@ foreach ($newComplexServices as $serviceId => $data) {
     if (abs($oldCost - $newCost) > 0.00001) {
         // цена изменилась
         $complexPriceChange[] = $serviceId;
-        $complexToClose[]     = $serviceId;
-        $complexToInsert[]    = $serviceId;
+        $complexToClose[] = $serviceId;
+        $complexToInsert[] = $serviceId;
     }
     // цена та же — ничего не делаем
 }
 
-$closedCount       = 0;
-$insertedCount     = 0;
+$closedCount = 0;
+$insertedCount = 0;
 $priceChangedCount = count($complexPriceChange);
 
 DB::transaction(function () use (
