@@ -154,5 +154,5 @@ Route::prefix('v1/dashboard')
                 Route::put('dialog/{promoDialog}', [Controllers\PromoDialog\PromoDialogController::class, 'update']);
                 Route::delete('dialog/{promoDialog}', [Controllers\PromoDialog\PromoDialogController::class, 'remove']);
                 Route::get('dialog/{promoDialog}/export', [Controllers\PromoDialog\PromoDialogController::class, 'export']);
-        });
+            });
     });
