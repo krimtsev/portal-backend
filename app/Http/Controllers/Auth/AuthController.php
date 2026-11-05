@@ -47,14 +47,19 @@ final class AuthController extends Controller
 
         $user->load(['access', 'partner']);
 
-        // Включённые диалоги, с которыми пользователь ещё не ознакомился
-        $user->setRelation('promoDialogs', $user->availablePromoDialogs());
+        $isMaintenance = (new MaintenanceService())->isEnabled();
+
+        $user->setRelation(
+            'promoDialogs',
+            $isMaintenance
+                ? collect()
+                : $user->availablePromoDialogs()
+        );
 
         $responseData = [
             'data' => (new UserDataResource($user))->resolve(),
         ];
 
-        $isMaintenance = (new MaintenanceService())->isEnabled();
         if ($isMaintenance) {
             $responseData['maintenance'] = [
                 'enabled' => $isMaintenance,

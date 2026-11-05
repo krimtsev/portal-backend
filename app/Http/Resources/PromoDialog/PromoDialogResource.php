@@ -2,16 +2,15 @@
 
 namespace App\Http\Resources\PromoDialog;
 
-use App\Enums\PromoDialog\PromoDialogType;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * @property int $id
- * @property string|null $code
  * @property string $title
  * @property string|null $description
- * @property PromoDialogType $type
+ * @property string|null $template
+ * @property numeric $disabled
  */
 final class PromoDialogResource extends JsonResource
 {
@@ -19,10 +18,10 @@ final class PromoDialogResource extends JsonResource
     {
         return [
             'id'          => $this->id,
-            'code'        => $this->code,
             'title'       => $this->title,
-            'description' => $this->description,
-            'type'        => $this->type->value,
+            'description' => $this->description ?? "",
+            'template'    => $this->template,
+            'disabled'    => (bool) $this->disabled,
         ];
     }
 }

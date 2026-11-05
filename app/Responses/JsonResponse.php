@@ -69,6 +69,15 @@ class JsonResponse
         return response()->json($content, Response::HTTP_BAD_REQUEST);
     }
 
+    public static function UnprocessableEntity(?string $message = 'Unprocessable Entity'): \Illuminate\Http\JsonResponse
+    {
+        $content = [
+            'message' => $message,
+        ];
+
+        return response()->json($content, Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
     public static function FileNotFound(string $message = 'File not found'): \Illuminate\Http\JsonResponse
     {
         return response()->json([

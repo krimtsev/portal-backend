@@ -144,4 +144,14 @@ Route::prefix('v1/dashboard')
                 Route::get('maintenance', [Controllers\Maintenance\MaintenanceController::class, 'get']);
                 Route::put('maintenance', [Controllers\Maintenance\MaintenanceController::class, 'update']);
             });
+
+        Route::prefix('promo-dialog')
+            ->middleware(['role:sysadmin'])
+            ->group(function () {
+                Route::post('list', [Controllers\PromoDialog\PromoDialogController::class, 'list']);
+                Route::get('dialog/{promoDialog}', [Controllers\PromoDialog\PromoDialogController::class, 'get']);
+                Route::post('dialog', [Controllers\PromoDialog\PromoDialogController::class, 'create']);
+                Route::put('dialog/{promoDialog}', [Controllers\PromoDialog\PromoDialogController::class, 'update']);
+                Route::delete('dialog/{promoDialog}', [Controllers\PromoDialog\PromoDialogController::class, 'remove']);
+        });
     });

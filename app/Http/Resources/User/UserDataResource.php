@@ -3,7 +3,7 @@
 namespace App\Http\Resources\User;
 
 use App\Constants\Timezone\Timezone;
-use App\Http\Resources\PromoDialog\PromoDialogResource;
+use App\Http\Resources\PromoDialog\PromoDialogReadResource;
 use App\Models\Promo\PromoDialog;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -36,7 +36,7 @@ class UserDataResource extends JsonResource
             ],
             'promoDialogs' => $this->whenLoaded(
                 'promoDialogs',
-                fn () => PromoDialogResource::collection($this->promoDialogs)->resolve()
+                fn () => PromoDialogReadResource::collection($this->promoDialogs)->resolve()
             ),
             'timeZoneName' => $this->time_zone_name ?? Timezone::DEFAULT,
         ];

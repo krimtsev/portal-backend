@@ -15,23 +15,20 @@ return new class extends Migration
             $table->id();
 
             // Код подготовленного шаблона на фронте.
-            $table->string('code', 100)->nullable()->unique();
+            $table->string('template', 50)->nullable()->unique();
 
             // Короткий заголовок диалога
-            $table->string('title', 150);
+            $table->string('title', 125);
 
             // Описание (текст) диалога
             $table->text('description')->nullable();
-
-            // Тип сообщения: template — подготовленный шаблон на фронте, custom — произвольный
-            $table->string('type');
 
             // Признак включённого диалога
             $table->boolean('disabled')->default(true);
 
             $table->timestamps();
 
-            $table->index(['disabled', 'type']);
+            $table->index(['disabled']);
         });
     }
 
