@@ -7,10 +7,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PromoDialog\PromoDialogCreateRequest;
 use App\Http\Requests\PromoDialog\PromoDialogReadRequest;
 use App\Http\Requests\PromoDialog\PromoDialogUpdateRequest;
+use App\Http\Resources\PromoDialog\PromoDialogExportResource;
 use App\Http\Resources\PromoDialog\PromoDialogListResource;
 use App\Http\Resources\PromoDialog\PromoDialogResource;
 use App\Models\Promo\PromoDialog;
 use App\Models\Promo\PromoDialogRead;
+use App\Models\User\User;
 use App\Responses\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -95,6 +97,38 @@ final class PromoDialogController extends Controller
 
         return JsonResponse::Send([
             'success' => true,
+        ]);
+    }
+
+    public function export(Request $request, PromoDialog $promoDialog): \Illuminate\Http\JsonResponse
+    {
+        $rows = User::query()
+            ->select([
+                'users.id',
+                'users.login',
+                'users.name',
+                'users.disabled',
+                'users.partner_id',
+            ])
+            ->with([
+                'partner' => fn ($q) => $q->select('id', 'name', 'organization')->withTrashed(),
+            ])
+            ->leftJoin('promo_dialog_reads', function ($join) use ($promoDialog): void {
+                $join->on('promo_dialog_reads.user_id', '=', 'users.id')
+                    ->where('promo_dialog_reads.promo_dialog_id', '=', $promoDialog->id);
+            })
+            ->addSelect('promo_dialog_reads.read_at as read_at')
+            ->orderByRaw('promo_dialog_reads.read_at IS NULL')
+            ->orderBy('promo_dialog_reads.read_at')
+            ->orderBy('users.login')
+            ->get();
+
+        return JsonResponse::Send([
+            'dialog' => [
+                'id'    => $promoDialog->id,
+                'title' => $promoDialog->title,
+            ],
+            'list' => PromoDialogExportResource::collection($rows),
         ]);
     }
 }
