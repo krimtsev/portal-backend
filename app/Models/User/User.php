@@ -83,41 +83,6 @@ final class User extends Authenticatable
         return $this->hasOne(UserAccess::class, 'user_id');
     }
 
-    /**
-     * Ознакомления пользователя с промо-диалогами
-     */
-    public function promoDialogReads(): HasMany
-    {
-        return $this->hasMany(PromoDialogRead::class, 'user_id');
-    }
-
-    /**
-     * Промо-диалоги, с которыми пользователь уже ознакомился
-     */
-    public function readPromoDialogs(): BelongsToMany
-    {
-        return $this->belongsToMany(
-            PromoDialog::class,
-            'promo_dialog_reads',
-            'user_id',
-            'promo_dialog_id'
-        )->withPivot('read_at')->withTimestamps();
-    }
-
-    /**
-     * Включённые промо-диалоги, с которыми пользователь ещё не ознакомился
-     *
-     * @return Collection<int, PromoDialog>
-     */
-    public function availablePromoDialogs(): Collection
-    {
-        return PromoDialog::query()
-            ->enabled()
-            ->notReadBy((int) $this->id)
-            ->orderBy('id')
-            ->get();
-    }
-
     protected function userName(): Attribute
     {
         return Attribute::make(
@@ -170,5 +135,40 @@ final class User extends Authenticatable
         );
 
         return $query->select($selectFields);
+    }
+
+    /**
+     * Ознакомления пользователя с промо-диалогами
+     */
+    public function promoDialogReads(): HasMany
+    {
+        return $this->hasMany(PromoDialogRead::class, 'user_id');
+    }
+
+    /**
+     * Промо-диалоги, с которыми пользователь уже ознакомился
+     */
+    public function readPromoDialogs(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            PromoDialog::class,
+            'promo_dialog_reads',
+            'user_id',
+            'promo_dialog_id'
+        )->withPivot('read_at')->withTimestamps();
+    }
+
+    /**
+     * Включённые промо-диалоги, с которыми пользователь ещё не ознакомился
+     *
+     * @return Collection<int, PromoDialog>
+     */
+    public function availablePromoDialogs(): Collection
+    {
+        return PromoDialog::query()
+            ->enabled()
+            ->notReadBy((int) $this->id)
+            ->orderBy('id')
+            ->get();
     }
 }

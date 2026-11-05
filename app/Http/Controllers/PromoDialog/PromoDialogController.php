@@ -110,6 +110,7 @@ final class PromoDialogController extends Controller
                 'users.disabled',
                 'users.partner_id',
             ])
+            ->where('users.disabled', false)
             ->with([
                 'partner' => fn ($q) => $q->select('id', 'name', 'organization')->withTrashed(),
             ])
