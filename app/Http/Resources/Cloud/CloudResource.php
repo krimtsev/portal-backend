@@ -9,6 +9,16 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 final class CloudResource extends JsonResource
 {
+    /**
+     * Дата обновления, иначе — дата создания (Y-m-d H:i:s)
+     */
+    private function dateValue($model): ?string
+    {
+        $date = $model->updated_at ?? $model->created_at;
+
+        return $date?->format('Y-m-d H:i:s');
+    }
+
     public function toArray(Request $request): array
     {
         return [
@@ -16,6 +26,7 @@ final class CloudResource extends JsonResource
             'name'        => $this->name,
             'slug'        => $this->slug,
             'category_id' => $this->category_id,
+            'can_remove'  => $this->canBeRemoved(),
 
             'files' => $this->whenLoaded('files', function () {
                 return $this->files->map(function ($file) {
@@ -25,6 +36,8 @@ final class CloudResource extends JsonResource
                         'ext'       => $file->ext,
                         'downloads' => $file->downloads,
                         'name'      => $file->name,
+                        'date'      => self::dateValue($file),
+                        'size'      => $file->size,
                     ];
                 });
             }),

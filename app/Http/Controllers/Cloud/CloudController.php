@@ -15,14 +15,17 @@ use App\Models\Cloud\CloudFile;
 use App\Models\Cloud\CloudFolder;
 use App\Repositories\Cloud\CloudRepository;
 use App\Responses\JsonResponse;
+use App\Services\Cloud\CloudFolderService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 final class CloudController extends Controller
 {
     public function __construct(
-        private CloudRepository $repository
+        private CloudRepository $repository,
+        private CloudFolderService $foldersService,
     ) {}
 
     private function getCacheKey(?string $slug, ?string $search): string
@@ -162,6 +165,13 @@ final class CloudController extends Controller
     {
         $data = $request->validated();
 
+        if ($this->foldersService->wouldCreateCycle(
+            $folder,
+            isset($data['category_id']) ? (int) $data['category_id'] : null,
+        )) {
+            return JsonResponse::Forbidden(trans('cloud.cannot_move_into_own_subtree'));
+        }
+
         $folder->update($data);
 
         Cache::flush(CloudFolder::CACHE_TAG);
@@ -171,22 +181,25 @@ final class CloudController extends Controller
 
     public function remove(Request $request, CloudFolder $folder): \Illuminate\Http\JsonResponse
     {
-        $hasSubfolders = CloudFolder::where('category_id', $folder->id)->exists();
+        if ($folder->isRoot()) {
+            return JsonResponse::Forbidden(trans('cloud.cannot_remove_root_folder'));
+        }
 
-        if ($hasSubfolders) {
+        if ($folder->hasChildren()) {
             return JsonResponse::Forbidden(trans('cloud.folder_contains_subdirectories'));
         }
 
         $folderId = $folder->id;
         $folderPath = $folder->folder;
 
-        CloudFile::where('cloud_folders_id', $folderId)->delete();
+        DB::transaction(function () use ($folder, $folderId): void {
+            CloudFile::where('cloud_folders_id', $folderId)->delete();
+            $folder->delete();
+        });
 
         if (Storage::disk('cloud')->exists($folderPath)) {
             Storage::disk('cloud')->deleteDirectory($folderPath);
         }
-
-        $folder->forceDelete();
 
         Cache::flush(CloudFolder::CACHE_TAG);
 

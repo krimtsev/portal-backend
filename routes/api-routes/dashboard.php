@@ -99,6 +99,7 @@ Route::prefix('v1/dashboard')
                 Route::get('folder/{folder}', [Controllers\Cloud\CloudController::class, 'get']);
                 Route::post('folder/{folder}', [Controllers\Cloud\CloudController::class, 'create']);
                 Route::put('folder/{folder}', [Controllers\Cloud\CloudController::class, 'update']);
+                Route::delete('folder/{folder}', [Controllers\Cloud\CloudController::class, 'remove']);
 
                 Route::get('folder/{folder}/files', [Controllers\Cloud\CloudFilesController::class, 'list']);
                 Route::post('folder/{folder}/files', [Controllers\Cloud\CloudFilesController::class, 'upload']);
@@ -154,5 +155,17 @@ Route::prefix('v1/dashboard')
                 Route::put('dialog/{promoDialog}', [Controllers\PromoDialog\PromoDialogController::class, 'update']);
                 Route::delete('dialog/{promoDialog}', [Controllers\PromoDialog\PromoDialogController::class, 'remove']);
                 Route::get('dialog/{promoDialog}/export', [Controllers\PromoDialog\PromoDialogController::class, 'export']);
+            });
+
+        Route::prefix('bank-detail')
+            ->middleware(['role:sysadmin'])
+            ->group(function () {
+                Route::post('list', [Controllers\BankDetails\BankDetailsController::class, 'list']);
+                Route::get('record/{bankDetail}', [Controllers\BankDetails\BankDetailsController::class, 'get']);
+                Route::post('record/{bankDetail}', [Controllers\BankDetails\BankDetailsController::class, 'create']);
+                Route::put('record/{bankDetail}', [Controllers\BankDetails\BankDetailsController::class, 'update']);
+                Route::delete('record/{bankDetail}', [Controllers\BankDetails\BankDetailsController::class, 'remove']);
+                Route::get('export', [Controllers\BankDetails\BankDetailsController::class, 'export']);
+
             });
     });

@@ -68,7 +68,7 @@ final class PromoDialogController extends Controller
     public function remove(Request $request, PromoDialog $promoDialog): \Illuminate\Http\JsonResponse
     {
         if ($promoDialog->template !== null) {
-            return JsonResponse::UnprocessableEntity('Диалог с шаблоном нельзя удалить');
+            return JsonResponse::UnprocessableEntity('The template dialog cannot be deleted.');
         }
 
         $promoDialog->delete();

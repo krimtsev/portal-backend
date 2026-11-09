@@ -63,7 +63,17 @@ final class CloudFolder extends Model
     public function files(): HasMany
     {
         return $this->hasMany(CloudFile::class, 'cloud_folders_id')
-            ->select('id', 'title', 'ext', 'downloads', 'cloud_folders_id', 'name');
+            ->select(
+                'id',
+                'title',
+                'ext',
+                'downloads',
+                'cloud_folders_id',
+                'name',
+                'created_at',
+                'updated_at',
+                'size'
+            );
     }
 
     /**
@@ -78,5 +88,30 @@ final class CloudFolder extends Model
         }
 
         return $ids;
+    }
+
+    /**
+     * Корневой каталог — тот, у которого нет родителя.
+     */
+    public function isRoot(): bool
+    {
+        return $this->category_id === null;
+    }
+
+    /**
+     * Есть ли вложенные каталоги.
+     */
+    public function hasChildren(): bool
+    {
+        return $this->children()->exists();
+    }
+
+    /**
+     * Можно ли удалить каталог:
+     * нельзя корневой и нельзя тот, у которого есть вложенные.
+     */
+    public function canBeRemoved(): bool
+    {
+        return !$this->isRoot() && !$this->hasChildren();
     }
 }

@@ -17,6 +17,9 @@ final class CloudFile extends Model
         'downloads',
         'ext',
         'cloud_folders_id',
+        'size',
+        'checksum',
+        'user_id',
     ];
 
     protected $casts = [

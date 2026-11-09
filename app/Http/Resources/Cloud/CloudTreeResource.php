@@ -17,8 +17,15 @@ final class CloudTreeResource extends JsonResource
     }
 
     /**
-     * Структура для папки
+     * Дата обновления, иначе — дата создания (Y-m-d H:i:s)
      */
+    private function dateValue(): ?string
+    {
+        $date = $this->updated_at ?? $this->created_at;
+
+        return $date?->format('Y-m-d H:i:s');
+    }
+
     private function folderToArray(): array
     {
         return [
@@ -32,15 +39,13 @@ final class CloudTreeResource extends JsonResource
                 'downloads' => null,
                 'slug'      => $this->slug,
                 'path'      => $this->path_array,
+                'date'      => $this->dateValue(),
             ],
             'children' => $this->getMergedChildren(),
             'leaf'     => false,
         ];
     }
 
-    /**
-     * Структура для файла
-     */
     private function fileToArray(): array
     {
         return [
@@ -53,6 +58,8 @@ final class CloudTreeResource extends JsonResource
                 'ext'       => $this->ext,
                 'downloads' => $this->downloads,
                 'slug'      => null,
+                'date'      => $this->dateValue(),
+                'size'      => $this->size,
             ],
             'children' => null,
             'leaf'     => true,

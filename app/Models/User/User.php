@@ -3,6 +3,7 @@
 namespace App\Models\User;
 
 use App\Enums\User\UserRole;
+use App\Models\BankDetail\BankDetail;
 use App\Models\Department\Department;
 use App\Models\Partner\Partner;
 use App\Models\Promo\PromoDialog;
@@ -170,5 +171,10 @@ final class User extends Authenticatable
             ->notReadBy((int) $this->id)
             ->orderBy('id')
             ->get();
+    }
+
+    public function bankDetails(): HasMany
+    {
+        return $this->hasMany(BankDetail::class, 'user_id');
     }
 }

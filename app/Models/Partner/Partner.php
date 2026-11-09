@@ -3,6 +3,7 @@
 namespace App\Models\Partner;
 
 use App\Enums\NotificationChannel;
+use App\Models\BankDetail\BankDetail;
 use App\Models\User\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -128,5 +129,10 @@ final class Partner extends Model
                     ->whereNotNull($channel->identifierColumn())
                     ->hasActiveSubscription();
             });
+    }
+
+    public function bankDetails(): HasMany
+    {
+        return $this->hasMany(BankDetail::class, 'partner_id');
     }
 }

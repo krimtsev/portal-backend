@@ -79,20 +79,29 @@ class CloudRepository
     {
         $sql = '
             WITH RECURSIVE folder_tree AS (
-                SELECT id, name, slug, category_id
+                SELECT id, name, slug, category_id, created_at, updated_at
                 FROM cloud_folders
                 WHERE category_id IS NULL
                 UNION ALL
-                SELECT f.id, f.name, f.slug, f.category_id
+                SELECT f.id, f.name, f.slug, f.category_id, f.created_at, f.updated_at
                 FROM cloud_folders f
                 INNER JOIN folder_tree ft ON f.category_id = ft.id
             ) SELECT * FROM folder_tree
-        ';
+    ';
 
         $allFolders = CloudFolder::hydrate(DB::select($sql));
 
         $allFolders->load(['files' => function ($query) {
-            $query->select('id', 'title', 'ext', 'downloads', 'cloud_folders_id');
+            $query->select(
+                'id',
+                'title',
+                'ext',
+                'downloads',
+                'cloud_folders_id',
+                'created_at',
+                'updated_at',
+                'size'
+            );
         }]);
 
         return $allFolders;
@@ -127,7 +136,7 @@ class CloudRepository
         if ($excludeId) {
             $sql = '
                 WITH RECURSIVE descendants AS (
-                    SELECT id FROM cloud_folders WHERE category_id = :exclude_id
+                    SELECT id FROM cloud_folders WHERE id = :exclude_id
                     UNION ALL
                     SELECT f.id FROM cloud_folders f
                     INNER JOIN descendants d ON f.category_id = d.id

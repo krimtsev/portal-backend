@@ -13,6 +13,7 @@ use App\Models\Cloud\CloudFile;
 use App\Models\Cloud\CloudFolder;
 use App\Responses\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -62,15 +63,23 @@ final class CloudFilesController extends Controller
         return null;
     }
 
-    private static function addFile($storagePath, $cloud_folders_id, $file)
-    {
-        $path = Storage::disk('cloud')->put($storagePath, $file);
+    private static function addFile(
+        string $storagePath,
+        int $cloud_folders_id,
+        UploadedFile $file
+    ) {
         $originalName = $file->getClientOriginalName();
+
+        $path = Storage::disk('cloud')->putFile($storagePath, $file);
 
         $rawFilename = pathinfo($originalName, PATHINFO_FILENAME);
         $title = Str::limit(strip_tags($rawFilename), 150, '');
 
         $ext = $file->guessExtension() ?? $file->getClientOriginalExtension();
+        $size = $file->getSize();
+        $checksum = Storage::disk('cloud')->checksum($path, [
+            'checksum_algo' => 'sha256',
+        ]);
 
         return CloudFile::create([
             'title'            => $title,
@@ -80,6 +89,9 @@ final class CloudFilesController extends Controller
             'type'             => $file->getMimeType(),
             'ext'              => Str::lower($ext),
             'cloud_folders_id' => $cloud_folders_id,
+            'size'             => $size,
+            'checksum'         => $checksum ?: null,
+            'user_id'          => auth()->id(),
             'downloads'        => 0,
         ]);
     }
