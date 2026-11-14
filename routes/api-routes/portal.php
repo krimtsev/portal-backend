@@ -44,6 +44,45 @@ Route::prefix('v1')->group(function () {
         Route::prefix('promo-dialog')->group(function () {
             Route::post('{id}/read', [Controllers\PromoDialog\PromoDialogController::class, 'read']);
         });
+
+        // PROFILE
+
+        Route::prefix('user-profile')->group(function () {
+            Route::get('/', [Controllers\Users\UserProfileController::class, 'show']);
+        });
+
+        Route::put('/change-password', [Controllers\Auth\ChangePasswordController::class, 'update']);
+
+        Route::prefix('tickets')->group(function () {
+            Route::post('list', [Controllers\Tickets\TicketsController::class, 'list']);
+            Route::post('ticket', [Controllers\Tickets\TicketsController::class, 'create']);
+            Route::get('ticket/{ticket}', [Controllers\Tickets\TicketsController::class, 'get']);
+            Route::post('ticket/{ticket}/message', [Controllers\Tickets\TicketsController::class, 'updateMessage']);
+            Route::delete('ticket/{ticket}', [Controllers\Tickets\TicketsController::class, 'remove']);
+            Route::get('ticket/{ticket}/download/{fileName}', [Controllers\Tickets\TicketsFilesController::class, 'download']);
+        });
+
+        Route::prefix('statistics')
+            ->group(function () {
+                Route::get('staff/compare', [Controllers\Statistics\StatisticsStaffController::class, 'compare']);
+                Route::get('staff/details', [Controllers\Statistics\StatisticsStaffController::class, 'staffDetails']);
+                Route::get('staff/total-compare', [Controllers\Statistics\StatisticsStaffController::class, 'totalCompare']);
+            });
+
+        Route::prefix('telnums')
+            ->group(function () {
+                Route::get('incoming/{partnerId}/hourly', [Controllers\Telnums\TelnumsIncomingController::class, 'partnerDay']);
+            });
+
+        Route::prefix('bank-detail')
+            ->group(function () {
+                Route::post('list', [Controllers\BankDetails\BankDetailsController::class, 'list']);
+                Route::get('record/{bankDetail}', [Controllers\BankDetails\BankDetailsController::class, 'get']);
+                Route::post('record/{bankDetail}', [Controllers\BankDetails\BankDetailsController::class, 'create']);
+                Route::put('record/{bankDetail}', [Controllers\BankDetails\BankDetailsController::class, 'update']);
+                Route::delete('record/{bankDetail}', [Controllers\BankDetails\BankDetailsController::class, 'remove']);
+                Route::get('options', [Controllers\BankDetails\BankDetailsController::class, 'userOptions']);
+            });
     });
 });
 

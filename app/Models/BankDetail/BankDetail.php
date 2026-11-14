@@ -18,6 +18,7 @@ final class BankDetail extends Model
         'bank_name',
         'bik',
         'correspondent_account',
+        'created_by',
     ];
 
     public function user(): BelongsTo

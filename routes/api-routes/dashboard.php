@@ -166,6 +166,5 @@ Route::prefix('v1/dashboard')
                 Route::put('record/{bankDetail}', [Controllers\BankDetails\BankDetailsController::class, 'update']);
                 Route::delete('record/{bankDetail}', [Controllers\BankDetails\BankDetailsController::class, 'remove']);
                 Route::get('export', [Controllers\BankDetails\BankDetailsController::class, 'export']);
-
             });
     });

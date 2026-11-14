@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         Schema::create('bank_details', function (Blueprint $table) {
@@ -39,12 +42,20 @@ return new class extends Migration
             $table->char('correspondent_account', 20)
                 ->comment('Корреспондентский счёт');
 
+            $table->foreignId('created_by')
+                ->nullable()
+                ->constrained('users')
+                ->nullOnDelete();
+
             $table->timestamps();
 
             $table->index(['user_id', 'partner_id']);
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::dropIfExists('bank_details');

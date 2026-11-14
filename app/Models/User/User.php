@@ -177,4 +177,36 @@ final class User extends Authenticatable
     {
         return $this->hasMany(BankDetail::class, 'user_id');
     }
+
+    /**
+     * Партнёры, доступные пользователю:
+     *  - партнёр, назначенный пользователю (User::$partner_id);
+     *  - все партнёры группы, в которую входит партнёр пользователя.
+     *
+     * @return list<int>
+     */
+    public function allowedPartnerIds(): array
+    {
+        if ($this->partner_id === null) {
+            return [];
+        }
+
+        $partner = Partner::query()
+            ->select(['id', 'group_id'])
+            ->find($this->partner_id);
+
+        if ($partner === null) {
+            return [];
+        }
+
+        if ($partner->group_id === null) {
+            return [(int) $partner->id];
+        }
+
+        return Partner::query()
+            ->where('group_id', $partner->group_id)
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id)
+            ->all();
+    }
 }

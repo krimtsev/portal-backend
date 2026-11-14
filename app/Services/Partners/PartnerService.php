@@ -15,37 +15,28 @@ final class PartnerService
      */
     public function getUserPartnersData(User $user): array
     {
-        $partnerId = $user->partner_id;
-
-        if (!$partnerId) {
+        if ($user->partner_id === null) {
             return [
                 'partner_id' => null,
                 'partners'   => [],
             ];
         }
 
-        $partner = Partner::with(['group.partners' => function ($query) {
-            $query->orderBy('name');
-        }])->findOrFail($partnerId);
+        $allowed = $user->allowedPartnerIds();
 
-        if ($partner->group) {
-            $partners = $partner->group->partners->map(function (Partner $p) {
-                return [
-                    'partner_id' => $p->id,
-                    'name'       => $p->name,
-                ];
-            });
-        } else {
-            $partners = collect([
-                [
-                    'partner_id' => $partner->id,
-                    'name'       => $partner->name,
-                ],
-            ]);
-        }
+        $partners = Partner::query()
+            ->whereIn('id', $allowed)
+            ->orderBy('name')
+            ->get(['id', 'name'])
+            ->map(fn (Partner $p) => [
+                'id'   => $p->id,
+                'name' => $p->name,
+            ])
+            ->values()
+            ->all();
 
         return [
-            'partner_id' => $partnerId,
+            'partner_id' => $user->partner_id,
             'partners'   => $partners,
         ];
     }
