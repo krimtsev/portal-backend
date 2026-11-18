@@ -61,7 +61,7 @@ final class CloudTreeResource extends JsonResource
                 'slug'      => null,
                 'date'      => $this->dateValue(),
                 'size'      => $this->size,
-                'author'    => $this->author
+                'author'    => $this->author,
             ],
             'children' => null,
             'leaf'     => true,
