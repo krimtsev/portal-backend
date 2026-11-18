@@ -4,7 +4,9 @@ namespace App\Constants\File;
 
 final class FileSettings
 {
-    public const IMAGE_MIMES = 'jpg,jpeg,png,webp,tif,ai';
+    public const IMAGE_WEB_MIMES = 'jpg,jpeg,png,webp';
+
+    public const IMAGE_SOURCE_MIMES = 'tif,ai';
 
     public const DOC_MIMES = 'pdf,doc,docx,xlsx,xls,txt,pptx';
 
@@ -17,7 +19,8 @@ final class FileSettings
     public static function allMimes(): string
     {
         return implode(',', [
-            self::IMAGE_MIMES,
+            self::IMAGE_WEB_MIMES,
+            self::IMAGE_SOURCE_MIMES,
             self::DOC_MIMES,
             self::VIDEO_MIMES,
             self::AUDIO_MIMES,

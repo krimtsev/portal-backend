@@ -12,6 +12,7 @@ use App\Http\Requests\BankDetail\BankDetailUpdateRequest;
 use App\Http\Resources\BankDetail\BankDetailExportResource;
 use App\Http\Resources\BankDetail\BankDetailListResource;
 use App\Http\Resources\BankDetail\BankDetailResource;
+use App\Http\Resources\BankDetail\BankDetailUserOptionResource;
 use App\Models\BankDetail\BankDetail;
 use App\Responses\JsonResponse;
 use Illuminate\Http\Request;
@@ -202,9 +203,11 @@ final class BankDetailsController extends Controller
     public function userOptions(Request $request): \Illuminate\Http\JsonResponse
     {
         $list = BankDetail::query()
+            ->with('partner:id,name')
             ->where('user_id', $request->user()->id)
             ->select(
                 'id',
+                'partner_id',
                 'entrepreneur_name',
                 'inn',
                 'checking_account',
@@ -215,7 +218,7 @@ final class BankDetailsController extends Controller
             ->get();
 
         return JsonResponse::Send([
-            'list' => $list,
+            'list' => BankDetailUserOptionResource::collection($list),
         ]);
     }
 }
