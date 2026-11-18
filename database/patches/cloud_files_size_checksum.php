@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
  *
  * Восстанавливает size и checksum для записей cloud_files.
  * Файлы, отсутствующие на диске, пропускаются (size = 0, checksum = null).
+ * updated_at у записей не изменяется.
  */
 try {
     $disk = Storage::disk('cloud');
@@ -33,7 +34,7 @@ try {
                         'checksum_algo' => 'sha256',
                     ]);
 
-                    CloudFile::whereKey($file->id)->update([
+                    CloudFile::whereKey($file->id)->toBase()->update([
                         'size'     => $size,
                         'checksum' => $checksum ?: null,
                     ]);

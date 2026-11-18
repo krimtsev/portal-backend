@@ -12,7 +12,7 @@ final class CloudResource extends JsonResource
     /**
      * Дата обновления, иначе — дата создания (Y-m-d H:i:s)
      */
-    private function dateValue($model): ?string
+    private static function dateValue($model): ?string
     {
         $date = $model->updated_at ?? $model->created_at;
 
@@ -27,6 +27,7 @@ final class CloudResource extends JsonResource
             'slug'        => $this->slug,
             'category_id' => $this->category_id,
             'can_remove'  => $this->canBeRemoved(),
+            'author'      => $this->author,
 
             'files' => $this->whenLoaded('files', function () {
                 return $this->files->map(function ($file) {
@@ -38,6 +39,7 @@ final class CloudResource extends JsonResource
                         'name'      => $file->name,
                         'date'      => self::dateValue($file),
                         'size'      => $file->size,
+                        'author'    => $file->author,
                     ];
                 });
             }),

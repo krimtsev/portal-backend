@@ -3,6 +3,7 @@
 namespace App\Models\Cloud;
 
 use App\Models\Cloud\Traits\HasBreadcrumbs;
+use App\Models\User\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,11 +24,24 @@ final class CloudFolder extends Model
         'slug',
         'folder',
         'category_id',
+        'user_id',
     ];
 
     protected $casts = [
         'created_at' => 'date:Y-m-d',
     ];
+
+    protected $appends = ['author'];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function getAuthorAttribute(): ?string
+    {
+        return $this->user?->name;
+    }
 
     /**
      * Дочерние папки
@@ -70,6 +84,7 @@ final class CloudFolder extends Model
                 'downloads',
                 'cloud_folders_id',
                 'name',
+                'user_id',
                 'created_at',
                 'updated_at',
                 'size'

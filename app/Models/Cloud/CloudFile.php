@@ -2,7 +2,9 @@
 
 namespace App\Models\Cloud;
 
+use App\Models\User\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 final class CloudFile extends Model
 {
@@ -25,4 +27,16 @@ final class CloudFile extends Model
     protected $casts = [
         'created_at' => 'date:Y-m-d',
     ];
+
+    protected $appends = ['author'];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function getAuthorAttribute(): ?string
+    {
+        return $this->user?->name;
+    }
 }

@@ -26,32 +26,51 @@ class CloudRepository
     /**
      * Получить список папок для текущего уровня
      */
-    public function getFolders(?CloudFolder $folder): array
+    public function getFolders(?CloudFolder $folder): Collection
     {
         $query = $folder
             ? $folder->children()
             : CloudFolder::whereNull('category_id');
 
-        return $query->select('id', 'name', 'slug', 'folder', 'category_id')
+        return $query->select(
+            'id',
+            'name',
+            'slug',
+            'folder',
+            'category_id',
+            'user_id',
+            'created_at',
+            'updated_at'
+        )
+            ->with('user:id,name')
             ->orderBy('name')
-            ->get()
-            ->toArray();
+            ->get();
     }
 
     /**
      * Получить список файлов в конкретной папке
      */
-    public function getFiles(?CloudFolder $folder): array
+    public function getFiles(?CloudFolder $folder): Collection
     {
         if (!$folder) {
-            return [];
+            return new Collection();
         }
 
-        return CloudFile::select('id', 'title', 'ext', 'name', 'cloud_folders_id')
+        return CloudFile::select(
+            'id',
+            'title',
+            'ext',
+            'name',
+            'cloud_folders_id',
+            'user_id',
+            'size',
+            'created_at',
+            'updated_at'
+        )
+            ->with('user:id,name')
             ->where('cloud_folders_id', $folder->id)
             ->orderBy('title')
-            ->get()
-            ->toArray();
+            ->get();
     }
 
     /**
@@ -59,7 +78,17 @@ class CloudRepository
      */
     public function searchFiles(string $search, ?CloudFolder $folder): array
     {
-        $query = CloudFile::select('id', 'title', 'ext', 'name', 'cloud_folders_id');
+        $query = CloudFile::select(
+            'id',
+            'title',
+            'ext',
+            'name',
+            'cloud_folders_id',
+            'user_id',
+            'created_at',
+            'updated_at'
+        )
+            ->with('user:id,name');
 
         if ($folder) {
             $folderIds = $folder->getAllChildrenIds();
@@ -68,8 +97,7 @@ class CloudRepository
 
         return $query->where('title', 'like', "%{$search}%")
             ->orderBy('title')
-            ->get()
-            ->toArray();
+            ->get();
     }
 
     /**
@@ -78,31 +106,35 @@ class CloudRepository
     public function getFullTreeData(): Collection
     {
         $sql = '
-            WITH RECURSIVE folder_tree AS (
-                SELECT id, name, slug, category_id, created_at, updated_at
-                FROM cloud_folders
-                WHERE category_id IS NULL
-                UNION ALL
-                SELECT f.id, f.name, f.slug, f.category_id, f.created_at, f.updated_at
-                FROM cloud_folders f
-                INNER JOIN folder_tree ft ON f.category_id = ft.id
-            ) SELECT * FROM folder_tree
+        WITH RECURSIVE folder_tree AS (
+            SELECT id, name, slug, category_id, user_id, created_at, updated_at
+            FROM cloud_folders
+            WHERE category_id IS NULL
+            UNION ALL
+            SELECT f.id, f.name, f.slug, f.category_id, f.user_id, f.created_at, f.updated_at
+            FROM cloud_folders f
+            INNER JOIN folder_tree ft ON f.category_id = ft.id
+        ) SELECT * FROM folder_tree
     ';
 
         $allFolders = CloudFolder::hydrate(DB::select($sql));
 
-        $allFolders->load(['files' => function ($query) {
-            $query->select(
-                'id',
-                'title',
-                'ext',
-                'downloads',
-                'cloud_folders_id',
-                'created_at',
-                'updated_at',
-                'size'
-            );
-        }]);
+        $allFolders->load([
+            'user:id,name',
+            'files' => function ($query) {
+                $query->select(
+                    'id',
+                    'title',
+                    'ext',
+                    'downloads',
+                    'cloud_folders_id',
+                    'user_id',
+                    'created_at',
+                    'updated_at',
+                    'size'
+                )->with('user:id,name');
+            },
+        ]);
 
         return $allFolders;
     }

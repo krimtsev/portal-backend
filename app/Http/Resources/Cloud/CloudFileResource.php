@@ -29,6 +29,7 @@ final class CloudFileResource extends JsonResource
             'name'      => $this->name,
             'date'      => $this->dateValue(),
             'size'      => $this->size,
+            'author'    => $this->author,
         ];
     }
 }

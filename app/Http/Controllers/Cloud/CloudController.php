@@ -8,6 +8,8 @@ use App\Helpers\Cache;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Cloud\CloudCreateRequest;
 use App\Http\Requests\Cloud\CloudUpdateRequest;
+use App\Http\Resources\Cloud\CloudFileListItemResource;
+use App\Http\Resources\Cloud\CloudFolderListItemResource;
 use App\Http\Resources\Cloud\CloudOptionTreeResource;
 use App\Http\Resources\Cloud\CloudResource;
 use App\Http\Resources\Cloud\CloudTreeResource;
@@ -70,8 +72,8 @@ final class CloudController extends Controller
                 : [];
 
             return [
-                'files'       => $files,
-                'folders'     => $folders,
+                'files'       => CloudFileListItemResource::collection($files)->resolve(),
+                'folders'     => CloudFolderListItemResource::collection($folders)->resolve(),
                 'breadcrumbs' => $breadcrumbs,
             ];
         }, CloudFolder::CACHE_TAG);
@@ -133,7 +135,23 @@ final class CloudController extends Controller
 
     public function get(Request $request, CloudFolder $folder): \Illuminate\Http\JsonResponse
     {
-        $folder->load('files');
+        $folder->load([
+            'user:id,name',
+            'files' => function ($query) {
+                $query->select(
+                    'id',
+                    'title',
+                    'ext',
+                    'downloads',
+                    'name',
+                    'size',
+                    'cloud_folders_id',
+                    'user_id',
+                    'created_at',
+                    'updated_at'
+                )->with('user:id,name');
+            },
+        ]);
 
         return JsonResponse::Send([
             'data' => new CloudResource($folder),
@@ -147,6 +165,7 @@ final class CloudController extends Controller
         $folderUuid = (string) Str::orderedUuid();
 
         $data['folder'] = $folderUuid;
+        $data['user_id'] = auth()->id();
 
         if (!Storage::disk('cloud')->makeDirectory($folderUuid)) {
             return JsonResponse::Forbidden(trans('cloud.fail_create_directory'));

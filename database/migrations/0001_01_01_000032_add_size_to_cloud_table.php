@@ -28,6 +28,14 @@ return new class extends Migration
 
             $table->index('checksum');
         });
+
+        Schema::table('cloud_folders', function (Blueprint $table) {
+            $table->foreignId('user_id')
+                ->nullable()
+                ->after('category_id')
+                ->constrained('users')
+                ->nullOnDelete();
+        });
     }
 
     /**
@@ -39,6 +47,10 @@ return new class extends Migration
             $table->dropIndex(['checksum']);
             $table->dropForeign(['user_id']);
             $table->dropColumn(['size', 'checksum', 'user_id']);
+        });
+
+        Schema::table('cloud_folders', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
         });
     }
 };

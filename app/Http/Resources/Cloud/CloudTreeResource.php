@@ -40,6 +40,7 @@ final class CloudTreeResource extends JsonResource
                 'slug'      => $this->slug,
                 'path'      => $this->path_array,
                 'date'      => $this->dateValue(),
+                'author'    => $this->author,
             ],
             'children' => $this->getMergedChildren(),
             'leaf'     => false,
@@ -60,6 +61,7 @@ final class CloudTreeResource extends JsonResource
                 'slug'      => null,
                 'date'      => $this->dateValue(),
                 'size'      => $this->size,
+                'author'    => $this->author
             ],
             'children' => null,
             'leaf'     => true,
