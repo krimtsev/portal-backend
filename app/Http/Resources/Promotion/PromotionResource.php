@@ -18,9 +18,9 @@ class PromotionResource extends JsonResource
             'image_url'   => $this->image
                 ? Storage::disk('public')->url($this->image)
                 : null,
-            'disabled'    => (bool) $this->disabled,
-            'expires_at'  => $this->expires_at?->format('Y-m-d'),
-            'user'        => $this->whenLoaded('user', fn () => $this->user ? [
+            'disabled'   => (bool) $this->disabled,
+            'expires_at' => $this->expires_at?->format('Y-m-d'),
+            'user'       => $this->whenLoaded('user', fn () => $this->user ? [
                 'id'   => $this->user->id,
                 'name' => $this->user->name,
             ] : null),

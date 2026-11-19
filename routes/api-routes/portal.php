@@ -42,7 +42,8 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::prefix('promo-dialog')->group(function () {
-            Route::post('{id}/read', [Controllers\PromoDialog\PromoDialogController::class, 'read']);
+            Route::get('dialog/{promoDialog}/image', [Controllers\PromoDialog\PromoDialogController::class, 'image']);
+            Route::post('dialog/{id}/read', [Controllers\PromoDialog\PromoDialogController::class, 'read']);
         });
 
         // PROFILE

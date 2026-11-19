@@ -16,6 +16,8 @@ use App\Models\User\User;
 use App\Responses\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class PromoDialogController extends Controller
 {
@@ -53,14 +55,41 @@ final class PromoDialogController extends Controller
 
     public function create(PromoDialogCreateRequest $request): \Illuminate\Http\JsonResponse
     {
-        $promoDialog = PromoDialog::create($request->validated());
+        $data = $request->safe()->except([
+            'image',
+            'remove_image',
+        ]);
+
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('', 'promo_dialogs');
+        }
+
+        PromoDialog::create($data);
 
         return JsonResponse::Created();
     }
 
     public function update(PromoDialogUpdateRequest $request, PromoDialog $promoDialog): \Illuminate\Http\JsonResponse
     {
-        $promoDialog->update($request->validated());
+        $data = $request->safe()->except([
+            'image',
+            'remove_image',
+        ]);
+
+        if ($request->hasFile('image')) {
+            if ($promoDialog->image) {
+                Storage::disk('promo_dialogs')->delete($promoDialog->image);
+            }
+
+            $data['image'] = $request->file('image')->store('', 'promo_dialogs');
+        } elseif ($request->boolean('remove_image')) {
+            if ($promoDialog->image) {
+                Storage::disk('promo_dialogs')->delete($promoDialog->image);
+            }
+            $data['image'] = null;
+        }
+
+        $promoDialog->update($data);
 
         return JsonResponse::Updated();
     }
@@ -69,6 +98,10 @@ final class PromoDialogController extends Controller
     {
         if ($promoDialog->template !== null) {
             return JsonResponse::UnprocessableEntity('The template dialog cannot be deleted.');
+        }
+
+        if ($promoDialog->image) {
+            Storage::disk('promo_dialogs')->delete($promoDialog->image);
         }
 
         $promoDialog->delete();
@@ -131,5 +164,16 @@ final class PromoDialogController extends Controller
             ],
             'list' => PromoDialogExportResource::collection($rows),
         ]);
+    }
+
+    public function image(Request $request, PromoDialog $promoDialog): StreamedResponse|\Illuminate\Http\JsonResponse
+    {
+        $disk = Storage::disk('promo_dialogs');
+
+        if (!$promoDialog->image || !$disk->exists($promoDialog->image)) {
+            return JsonResponse::FileNotFound();
+        }
+
+        return $disk->response($promoDialog->image);
     }
 }

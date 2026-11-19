@@ -31,4 +31,19 @@ class PublicFileController extends Controller
 
         return response()->file($disk->path($targetPath));
     }
+
+    /*    public function show(string $category, string $fileName): BinaryFileResponse
+        {
+            $cleanCategory = basename($category);
+            $cleanFileName = basename($fileName);
+
+            $disk = Storage::disk('public');
+            $targetPath = "{$cleanCategory}/{$cleanFileName}";
+
+            if (!$disk->exists($targetPath)) {
+                abort(404, 'Файл не найден');
+            }
+
+            return response()->file($disk->path($targetPath));
+        }*/
 }

@@ -16,7 +16,7 @@ final class BankDetailUserOptionResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'                    => $this->id,
+            'id'      => $this->id,
             'partner' => $this->whenLoaded('partner', function () {
                 return [
                     'id'   => $this->partner->id,

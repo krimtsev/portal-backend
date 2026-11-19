@@ -91,11 +91,19 @@ return [
             'throw'  => false,
         ],
 
+        // TODO: убрать публичную папку с маршрутами партнеров
         'partners_public' => [
             'driver'     => 'local',
             'root'       => storage_path('app/public/_partners'),
             'url'        => env('APP_URL') . '/storage/_partners',
             'visibility' => 'public',
+            'throw'      => false,
+        ],
+
+        'promo_dialogs' => [
+            'driver'     => 'local',
+            'root'       => storage_path('app/promo-dialogs'),
+            'visibility' => 'private',
             'throw'      => false,
         ],
 

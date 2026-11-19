@@ -10,6 +10,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  * @property string $title
  * @property string|null $description
  * @property string|null $template
+ * @property string|null $image
  */
 final class PromoDialogReadResource extends JsonResource
 {
@@ -20,6 +21,7 @@ final class PromoDialogReadResource extends JsonResource
             'title'       => $this->title,
             'description' => $this->description,
             'template'    => $this->template,
+            'image'       => $this->image,
         ];
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\PromoDialog;
 
+use App\Constants\File\FileSettings;
 use Illuminate\Foundation\Http\FormRequest;
 
 final class PromoDialogCreateRequest extends FormRequest
@@ -24,6 +25,16 @@ final class PromoDialogCreateRequest extends FormRequest
             'description' => [
                 'nullable',
                 'string',
+            ],
+            'image' => [
+                'nullable',
+                'image',
+                'mimes:' . FileSettings::IMAGE_WEB_MIMES,
+                'max:5120',
+            ],
+            'remove_image' => [
+                'sometimes',
+                'boolean',
             ],
             'disabled' => [
                 'boolean',

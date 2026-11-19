@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Promotion;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Promotion\PromotionCreateRequest;
 use App\Http\Requests\Promotion\PromotionUpdateRequest;
 use App\Http\Resources\Promotion\PromotionResource;
 use App\Models\Promotion\Promotion;
+use App\Responses\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
-use App\Responses\JsonResponse;
-use App\Http\Controllers\Controller;
 
 class PromotionController extends Controller
 {

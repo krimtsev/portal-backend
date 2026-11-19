@@ -15,28 +15,28 @@ class PromotionCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title'       => [
+            'title' => [
                 'required',
                 'string',
-                'max:255'
+                'max:255',
             ],
             'description' => [
                 'nullable',
-                'string'
+                'string',
             ],
-            'image'       => [
+            'image' => [
                 'nullable',
                 'image',
                 'mimes:' . FileSettings::IMAGE_WEB_MIMES,
-                'max:5120'
+                'max:5120',
             ],
-            'disabled'    => [
+            'disabled' => [
                 'sometimes',
-                'boolean'
+                'boolean',
             ],
-            'expires_at'  => [
+            'expires_at' => [
                 'nullable',
-                'date'
+                'date',
             ],
         ];
     }

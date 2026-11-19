@@ -25,7 +25,9 @@ final class PromoDialog extends Model
         'template',
         'title',
         'description',
+        'image',
         'disabled',
+        'user_id',
     ];
 
     /**

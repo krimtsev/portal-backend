@@ -152,9 +152,10 @@ Route::prefix('v1/dashboard')
                 Route::post('list', [Controllers\PromoDialog\PromoDialogController::class, 'list']);
                 Route::get('dialog/{promoDialog}', [Controllers\PromoDialog\PromoDialogController::class, 'get']);
                 Route::post('dialog', [Controllers\PromoDialog\PromoDialogController::class, 'create']);
-                Route::put('dialog/{promoDialog}', [Controllers\PromoDialog\PromoDialogController::class, 'update']);
+                Route::post('dialog/{promoDialog}', [Controllers\PromoDialog\PromoDialogController::class, 'update']);
                 Route::delete('dialog/{promoDialog}', [Controllers\PromoDialog\PromoDialogController::class, 'remove']);
                 Route::get('dialog/{promoDialog}/export', [Controllers\PromoDialog\PromoDialogController::class, 'export']);
+                Route::get('dialog/{promoDialog}/image', [Controllers\PromoDialog\PromoDialogController::class, 'image']);
             });
 
         Route::prefix('bank-detail')
