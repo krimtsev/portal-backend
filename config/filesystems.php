@@ -107,6 +107,15 @@ return [
             'throw'      => false,
         ],
 
+        'promotions' => [
+            'driver'     => 'local',
+            'root'       => storage_path('app/public/promotions'),
+            'url'        => env('APP_URL') . '/storage/promotions',
+            'visibility' => 'public',
+            'throw'      => false,
+            'report'     => false,
+        ],
+
         'broadcasts' => [
             'driver' => 'local',
             'root'   => storage_path('app/broadcasts'),

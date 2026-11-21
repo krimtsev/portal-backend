@@ -4,7 +4,7 @@ namespace App\Http\Resources\User;
 
 use App\Constants\Timezone\Timezone;
 use App\Http\Resources\PromoDialog\PromoDialogReadResource;
-use App\Models\Promo\PromoDialog;
+use App\Models\PromoDialog\PromoDialog;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;

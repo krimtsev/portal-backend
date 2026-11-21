@@ -2,67 +2,70 @@
 
 namespace App\Http\Controllers\Promotion;
 
+use App\Helpers\Pagination\Pagination;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Promotion\PromotionCreateRequest;
 use App\Http\Requests\Promotion\PromotionUpdateRequest;
+use App\Http\Resources\Promotion\PromotionExportResource;
+use App\Http\Resources\Promotion\PromotionListResource;
+use App\Http\Resources\Promotion\PromotionPublicListResource;
 use App\Http\Resources\Promotion\PromotionResource;
 use App\Models\Promotion\Promotion;
 use App\Responses\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class PromotionController extends Controller
 {
-    /**
-     * Список промо-акций (с фильтрами и пагинацией).
-     */
-    /*public function list(Request $request): AnonymousResourceCollection
+    public function list(Request $request): \Illuminate\Http\JsonResponse
     {
-        $promotions = Promotion::query()
-            ->when(
-                $request->boolean('visible'),
-                fn ($q) => $q->visible()
-            )
-            ->when(
-                $request->filled('q'),
-                fn ($q) => $q->where('title', 'like', '%' . $request->string('q') . '%')
-            )
-            ->when(
-                $request->filled('user_id'),
-                fn ($q) => $q->where('user_id', $request->integer('user_id'))
-            )
-            ->with('user:id,name')
-            ->latest()
-            ->paginate($request->integer('per_page', 15))
-            ->withQueryString();
+        $query = Promotion::query()
+            ->with([
+                'user:id,name,login',
+            ])
+            ->select(
+                'id',
+                'title',
+                'disabled',
+                'expires_at',
+                'created_at',
+                'user_id'
+            );
 
-        return PromotionResource::collection($promotions);
-    }*/
+        $result = Pagination::paginate(
+            $query,
+            $request,
+            [
+                'title',
+            ],
+            ['title'],
+            ['disabled'],
+        );
 
-    public function get(Promotion $promotion): \Illuminate\Http\JsonResponse
+        $result['list'] = PromotionListResource::collection($result['list']);
+
+        return JsonResponse::Send($result);
+    }
+
+    public function get(Request $request, Promotion $promotion): \Illuminate\Http\JsonResponse
     {
         return JsonResponse::Send([
-            'data' => new PromotionResource(
-                $promotion->load([
-                    'user:id,name,login',
-                ])
-            ),
+            'data' => new PromotionResource( $promotion),
         ]);
     }
 
-    /**
-     * Создать промо-акцию.
-     */
     public function create(PromotionCreateRequest $request): \Illuminate\Http\JsonResponse
     {
-        $data = $request->validated();
+        $data = $request->safe()->except([
+            'image',
+            'remove_image',
+        ]);
 
         $data['user_id'] = $request->user()?->id;
 
         if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('promotions', 'public');
+            $data['image'] = $request->file('image')->store('', 'promotions');
         }
 
         Promotion::create($data);
@@ -70,36 +73,40 @@ class PromotionController extends Controller
         return JsonResponse::Created();
     }
 
-    /**
-     * Обновить промо-акцию.
-     */
-    public function update(PromotionUpdateRequest $request, Promotion $promotion): PromotionResource
+    public function update(PromotionUpdateRequest $request, Promotion $promotion): \Illuminate\Http\JsonResponse
     {
-        $data = $request->validated();
+        $data = $request->safe()->except([
+            'image',
+            'remove_image',
+        ]);
 
         if ($request->hasFile('image')) {
-            $this->deleteImage($promotion->image);
-            $data['image'] = $request->file('image')->store('promotions', 'public');
-        } elseif ($request->exists('image') && $request->input('image') === null) {
+            if ($promotion->image) {
+                Storage::disk('promotions')->delete($promotion->image);
+            }
 
-            $this->deleteImage($promotion->image);
+            $data['image'] = $request->file('image')->store('', 'promotions');
+        } elseif ($request->boolean('remove_image')) {
+            if ($promotion->image) {
+                Storage::disk('promotions')->delete($promotion->image);
+            }
             $data['image'] = null;
         }
 
         $promotion->update($data);
 
-        return new PromotionResource($promotion->fresh()->load('user:id,name'));
+        return JsonResponse::Updated();
     }
 
-    /**
-     * Удалить промо-акцию (soft delete + удаление файла).
-     */
-    /*public function remove(Promotion $promotion): Response
+    public function remove(Promotion $promotion): \Illuminate\Http\JsonResponse
     {
-        $this->deleteImage($promotion->image);
+        if ($promotion->image) {
+            Storage::disk('promotions')->delete($promotion->image);
+        }
+
         $promotion->delete();
 
-        return response()->noContent();
+        return JsonResponse::Removed();
     }
 
     protected function deleteImage(?string $path): void
@@ -107,5 +114,56 @@ class PromotionController extends Controller
         if ($path && Storage::disk('public')->exists($path)) {
             Storage::disk('public')->delete($path);
         }
-    }*/
+    }
+
+    public function export(): array
+    {
+        $promotions = Promotion::query()
+            ->with([
+                'user:id,name',
+            ])
+            ->select(
+                'id',
+                'title',
+                'description',
+                'disabled',
+                'expires_at',
+                'user_id',
+                'created_at',
+            )
+            ->orderBy('created_at')
+            ->get();
+
+        return PromotionExportResource::collection($promotions)->resolve();
+    }
+
+    public function image(Request $request, Promotion $promotion): \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+    {
+        if (!$promotion->image) {
+            return JsonResponse::FileNotFound();
+        }
+
+        return redirect(Storage::disk('promotions')->url($promotion->image));
+    }
+
+    /**
+     * Публичный список активных акций (для внешнего API).
+     */
+    public function publicList(): \Illuminate\Http\JsonResponse
+    {
+        $promotions = Promotion::query()
+            ->visible()
+            ->select(
+                'title',
+                'description',
+                'created_at',
+                'image'
+            )
+            ->orderByDesc('created_at')
+            ->get();
+
+        return JsonResponse::Send([
+            'list' => PromotionPublicListResource::collection($promotions),
+        ]);
+    }
 }

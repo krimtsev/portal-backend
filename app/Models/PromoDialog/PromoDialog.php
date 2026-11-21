@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Promo;
+namespace App\Models\PromoDialog;
 
 use App\Models\User\User;
 use Illuminate\Database\Eloquent\Builder;

@@ -10,24 +10,28 @@ use Illuminate\Http\Request;
 
 final readonly class TokenAuth
 {
-    /**
-     * Handle an incoming request.
-     */
-    public function handle(Request $request, Closure $next): \Illuminate\Http\JsonResponse
+    public function handle(Request $request, Closure $next, ?string $ability = null): \Illuminate\Http\JsonResponse
     {
-        /**
-         * TODO: ПЕРЕНЕСТИ ПОТОМ В КОНФИГ
-         */
-        $token = env('DEBUG_QUERY_API_KEY');
-        $requestToken = $request->query('token');
+        $bearer = $request->bearerToken();
 
-        if (empty($token) || $requestToken !== $token) {
+        if (empty($bearer)) {
             return JsonResponse::Send(null, trans('auth.invalid_key'), 401);
         }
 
-        if ($request->has('token')) {
-            $request->headers->set('Authorization', 'Bearer ' . $request->query('token'));
+        $tokenData = config('api_tokens.tokens')[$bearer] ?? null;
+
+        if ($tokenData === null) {
+            return JsonResponse::Send(null, trans('auth.invalid_key'), 401);
         }
+
+        $abilities = $tokenData['abilities'] ?? [];
+
+        if ($ability !== null && !in_array($ability, $abilities, true)) {
+            return JsonResponse::Send(null, trans('auth.forbidden'), 403);
+        }
+
+        $request->attributes->set('portal', $tokenData['portal'] ?? null);
+        $request->attributes->set('token_abilities', $abilities);
 
         return $next($request);
     }

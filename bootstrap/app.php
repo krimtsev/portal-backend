@@ -20,7 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->statefulApi();
         $middleware->alias([
-            'query.token'       => TokenAuth::class,
+            'token.auth'        => TokenAuth::class,
             'role'              => CheckRole::class,
             'dashboard.context' => DashboardContext::class,
             'maintenance'       => CheckMaintenanceMode::class,

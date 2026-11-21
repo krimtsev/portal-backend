@@ -12,7 +12,6 @@ class PromotionListResource extends JsonResource
         return [
             'id'          => $this->id,
             'title'       => $this->title,
-            'description' => $this->description,
             'disabled'    => (bool) $this->disabled,
             'expires_at'  => $this->expires_at?->format('Y-m-d'),
             'is_expired'  => $this->expires_at?->isPast() ?? false,
@@ -23,7 +22,6 @@ class PromotionListResource extends JsonResource
                 ] : null;
             }),
             'created_at' => $this->created_at?->format('Y-m-d'),
-            'updated_at' => $this->updated_at?->format('Y-m-d'),
         ];
     }
 }

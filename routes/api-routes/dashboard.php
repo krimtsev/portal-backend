@@ -158,6 +158,18 @@ Route::prefix('v1/dashboard')
                 Route::get('dialog/{promoDialog}/image', [Controllers\PromoDialog\PromoDialogController::class, 'image']);
             });
 
+        Route::prefix('promotions')
+            ->middleware(['role:admin,sysadmin'])
+            ->group(function () {
+                Route::post('list', [Controllers\Promotion\PromotionController::class, 'list']);
+                Route::get('event/{promotion}', [Controllers\Promotion\PromotionController::class, 'get']);
+                Route::post('event', [Controllers\Promotion\PromotionController::class, 'create']);
+                Route::post('event/{promotion}', [Controllers\Promotion\PromotionController::class, 'update']);
+                Route::delete('event/{promotion}', [Controllers\Promotion\PromotionController::class, 'remove']);
+                Route::get('export', [Controllers\Promotion\PromotionController::class, 'export']);
+                Route::get('event/{promotion}/image', [Controllers\Promotion\PromotionController::class, 'image']);
+            });
+
         Route::prefix('bank-detail')
             ->middleware(['role:sysadmin'])
             ->group(function () {

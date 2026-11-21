@@ -2,8 +2,10 @@
 
 namespace App\Models\Promotion;
 
+use App\Models\User\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Promotion extends Model
@@ -23,6 +25,11 @@ class Promotion extends Model
         'disabled'   => 'boolean',
         'expires_at' => 'datetime',
     ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
     /**
      * Только активные и не истёкшие акции.
