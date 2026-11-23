@@ -22,7 +22,6 @@ final class CloudFilesController extends Controller
 {
     public function download(Request $request, CloudFolder $folder, string $fileName): \Illuminate\Http\JsonResponse|StreamedResponse
     {
-
         $file = CloudFile::where('name', $fileName)
             ->where('cloud_folders_id', $folder->id)
             ->first();
@@ -31,19 +30,51 @@ final class CloudFilesController extends Controller
             return JsonResponse::FileNotFound();
         }
 
-        $path = $file->path;
+        $disk = Storage::disk('cloud');
 
-        if (!Storage::disk('cloud')->exists($path)) {
+        if (!$disk->exists($file->path)) {
             return JsonResponse::FileNotFound();
         }
 
-        $file->increment('downloads');
+        if ($request->isMethod('GET')) {
+            $file->increment('downloads');
+        }
 
-        $downloadName = sprintf('%s.%s', $file->title, $file->ext);
+        $downloadName  = sprintf('%s.%s', $file->title, $file->ext);
+        $size          = $disk->size($file->path);
+        $mime          = $file->type ?? 'application/octet-stream';
+        $asciiFallback = preg_replace('/[^\x20-\x7E]/', '_', $downloadName);
+        $disposition   = sprintf(
+            "attachment; filename=\"%s\"; filename*=UTF-8''%s",
+            addcslashes($asciiFallback, '"\\'),
+            rawurlencode($downloadName)
+        );
 
-        return Storage::disk('cloud')->download($file->path, $downloadName, [
-            'Content-Type'   => $file->type ?? 'application/octet-stream',
-            'Content-Length' => Storage::disk('cloud')->size($file->path),
+        return response()->stream(function () use ($disk, $file) {
+            while (ob_get_level() > 0) {
+                ob_end_flush();
+            }
+
+            $stream = $disk->readStream($file->path);
+            if ($stream === false) {
+                return;
+            }
+
+            while (!feof($stream)) {
+                if (connection_aborted()) {
+                    break;
+                }
+                echo fread($stream, 8192);
+                flush();
+            }
+
+            fclose($stream);
+        }, 200, [
+            'Content-Type'           => $mime,
+            'Content-Length'         => (string) $size,
+            'Content-Disposition'    => $disposition,
+            'Cache-Control'          => 'private, no-store',
+            'X-Content-Type-Options' => 'nosniff',
         ]);
     }
 
