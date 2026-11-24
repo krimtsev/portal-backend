@@ -3,6 +3,8 @@
 use App\Http\Middleware\CheckMaintenanceMode;
 use App\Http\Middleware\CheckRole;
 use App\Http\Middleware\DashboardContext;
+use App\Http\Middleware\EnsureDashboardAccess;
+use App\Http\Middleware\EnsureDashboardSection;
 use App\Http\Middleware\TokenAuth;
 use App\Responses\JsonResponse;
 use Illuminate\Foundation\Application;
@@ -22,6 +24,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'token.auth'        => TokenAuth::class,
             'role'              => CheckRole::class,
+            'dashboard.access'  => EnsureDashboardAccess::class,
+            'dashboard.section' => EnsureDashboardSection::class,
             'dashboard.context' => DashboardContext::class,
             'maintenance'       => CheckMaintenanceMode::class,
         ]);

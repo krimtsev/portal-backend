@@ -14,9 +14,9 @@ class PromotionResource extends JsonResource
             'id'          => $this->id,
             'title'       => $this->title,
             'description' => $this->description,
-            'disabled'   => (bool) $this->disabled,
-            'expires_at' => $this->expires_at?->format('Y-m-d'),
-            'image'      => $this->image
+            'disabled'    => (bool) $this->disabled,
+            'expires_at'  => $this->expires_at?->format('Y-m-d'),
+            'image'       => $this->image
                 ? Storage::disk('promotions')->url($this->image)
                 : null,
         ];

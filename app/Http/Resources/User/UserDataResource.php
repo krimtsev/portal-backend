@@ -3,6 +3,7 @@
 namespace App\Http\Resources\User;
 
 use App\Constants\Timezone\Timezone;
+use App\Enums\User\DashboardSection;
 use App\Http\Resources\PromoDialog\PromoDialogReadResource;
 use App\Models\PromoDialog\PromoDialog;
 use Illuminate\Database\Eloquent\Collection;
@@ -39,6 +40,8 @@ class UserDataResource extends JsonResource
                 fn () => PromoDialogReadResource::collection($this->promoDialogs)->resolve()
             ),
             'timeZoneName' => $this->time_zone_name ?? Timezone::DEFAULT,
+
+            'sections' => DashboardSection::accessibleFor($this->role ?? null)
         ];
     }
 }

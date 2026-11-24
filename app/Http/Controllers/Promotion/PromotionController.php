@@ -12,9 +12,9 @@ use App\Http\Resources\Promotion\PromotionPublicListResource;
 use App\Http\Resources\Promotion\PromotionResource;
 use App\Models\Promotion\Promotion;
 use App\Responses\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class PromotionController extends Controller
 {
@@ -51,7 +51,7 @@ class PromotionController extends Controller
     public function get(Request $request, Promotion $promotion): \Illuminate\Http\JsonResponse
     {
         return JsonResponse::Send([
-            'data' => new PromotionResource( $promotion),
+            'data' => new PromotionResource($promotion),
         ]);
     }
 
@@ -137,7 +137,7 @@ class PromotionController extends Controller
         return PromotionExportResource::collection($promotions)->resolve();
     }
 
-    public function image(Request $request, Promotion $promotion): \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+    public function image(Request $request, Promotion $promotion): RedirectResponse|\Illuminate\Http\JsonResponse
     {
         if (!$promotion->image) {
             return JsonResponse::FileNotFound();

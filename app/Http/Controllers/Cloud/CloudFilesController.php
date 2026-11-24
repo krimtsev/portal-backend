@@ -40,11 +40,11 @@ final class CloudFilesController extends Controller
             $file->increment('downloads');
         }
 
-        $downloadName  = sprintf('%s.%s', $file->title, $file->ext);
-        $size          = $disk->size($file->path);
-        $mime          = $file->type ?? 'application/octet-stream';
+        $downloadName = sprintf('%s.%s', $file->title, $file->ext);
+        $size = $disk->size($file->path);
+        $mime = $file->type ?? 'application/octet-stream';
         $asciiFallback = preg_replace('/[^\x20-\x7E]/', '_', $downloadName);
-        $disposition   = sprintf(
+        $disposition = sprintf(
             "attachment; filename=\"%s\"; filename*=UTF-8''%s",
             addcslashes($asciiFallback, '"\\'),
             rawurlencode($downloadName)
