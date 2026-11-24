@@ -41,7 +41,7 @@ class UserDataResource extends JsonResource
             ),
             'timeZoneName' => $this->time_zone_name ?? Timezone::DEFAULT,
 
-            'sections' => DashboardSection::accessibleFor($this->role ?? null)
+            'sections' => DashboardSection::accessibleFor($this->role ?? null),
         ];
     }
 }

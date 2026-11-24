@@ -57,7 +57,9 @@ enum DashboardSection: string
 
             self::PartnerNotifications,
             self::PartnerMessages,
-            self::Settings => [UserRole::Sysadmin],
+            self::Settings => [
+                UserRole::Sysadmin,
+            ],
 
             self::EventCalendar => [
                 UserRole::Sysadmin,
